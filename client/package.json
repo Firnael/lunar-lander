@@ -1,0 +1,38 @@
+{
+  "name": "lunar-lander-client",
+  "version": "0.0.1",
+  "description": "Lunar Lander (client)",
+  "main": "app.ts",
+  "private": true,
+  "scripts": {
+    "start": "npm run build && node dist/app.js",
+    "dev": "nodemon ./src/app.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "socket.io-client": "^4.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.6.1",
+    "ts-node": "^10.9.1",
+    "nodemon": "^2.0.19",
+    "typescript": "^4.6.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/maxds-tech-team/lunar-lander.git"
+  },
+  "keywords": [
+    "lunar-lander",
+    "client"
+  ],
+  "author": "Audron",
+  "license": "WTFPL",
+  "bugs": {
+    "url": "https://gitlab.com/maxds-tech-team/lunar-lander/issues"
+  },
+  "homepage": "https://gitlab.com/maxds-tech-team/lunar-lander#readme",
+  "volta": {
+    "node": "16.16.0"
+  }
+}
