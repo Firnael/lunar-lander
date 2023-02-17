@@ -35,9 +35,10 @@ const defineListeners = () => {
 const handleConnection = (socket: io.Socket) => {
     const clientName = socket.handshake.query['clientName'] as string || 'MISSING_NAME'
     const clientUid = socket.handshake.query['clientUid'] as string || 'MISSING_UID'
-    const client = new Client(clientName, clientUid, socket)
+    const clientEmoji = socket.handshake.query['clientEmoji'] as string || '🚫'
+    const client = new Client(clientName, clientUid, clientEmoji, socket)
 
-    console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Player <${client.name}> (UID: ${client.uid}) connected ⚡`)
+    console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Player <${client.name}> ${client.emoji} (UID: ${client.uid}) connected ⚡`)
     clients.set(socket.id, client)
 
     // store 'display' client socket ID for further exchanges
@@ -52,7 +53,7 @@ const handleConnection = (socket: io.Socket) => {
         });
         server.to(displaySocketID).emit('playerList', playerList)
     } else {
-        server.emit('playerJoins', { name: client.name, uid: client.uid })
+        server.emit('playerJoins', { name: client.name, uid: client.uid, emoji: client.emoji })
     }
 }
 

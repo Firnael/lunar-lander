@@ -1,6 +1,7 @@
 export interface Player {
     name: string
     uid: string
+    emoji: string
     lander: LanderData,
     actions?: PlayerActions
 }
@@ -30,6 +31,7 @@ export enum LanderRotation {
 export interface PlayerJoins {
     name: string
     uid: string
+    emoji: string
 }
 
 export interface PlayerLeaves {
@@ -41,6 +43,7 @@ export interface PlayerLeaves {
 export interface UpdatePlayerActions {
     name: string
     uid: string
+    emoji: string
     actions: PlayerActions
 }
 

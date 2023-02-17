@@ -17,6 +17,7 @@ export class Ship extends Physics.Arcade.Sprite {
     private LANDING_MAX_SPEED = new Phaser.Math.Vector2(40, 40)
 
     public playerName: string
+    public playerEmoji: string
     public usedFuel: number
     public actions: PlayerActions
     public parts: Phaser.GameObjects.Group
@@ -35,7 +36,7 @@ export class Ship extends Physics.Arcade.Sprite {
     private leftEngine: Phaser.GameObjects.Particles.ParticleEmitter
     private rightEngine: Phaser.GameObjects.Particles.ParticleEmitter
 
-    constructor(scene: Phaser.Scene, x: number, y: number, texture: string, playerName: string, invincible?: boolean) {
+    constructor(scene: Phaser.Scene, x: number, y: number, texture: string, playerName: string, playerEmoji: string, invincible?: boolean) {
         super(scene, x, y, texture)
         scene.add.existing(this)
         scene.physics.add.existing(this)
@@ -56,6 +57,7 @@ export class Ship extends Physics.Arcade.Sprite {
         }
 
         this.playerName = playerName
+        this.playerEmoji = playerEmoji
         this.usedFuel = 0
         this.isAlive = true
         this.hasLanded = false
@@ -68,7 +70,7 @@ export class Ship extends Physics.Arcade.Sprite {
         // setup indicator
         this.indicator = new Indicator(scene, 0, 0, 'indicator', playerName)
         // setup flag
-        this.flag = new Flag(scene, 0, 0, 'flag')
+        this.flag = new Flag(scene, 0, 0, 'flag', playerEmoji)
         this.flag.setVisible(false)
 
         // setup engines particules emitters
@@ -313,9 +315,7 @@ export class Ship extends Physics.Arcade.Sprite {
         this.hud.update()
 
         // plant flag
-        this.flag.setVisible(true)
-        this.flag.x = this.x - this.width
-        this.flag.y = this.y + this.height / 2
+        this.flag.plant(this.x - this.width, this.y + this.height / 2)
 
         // send event to webapp
         this.scene.game.events.emit('SHIP_LANDED', { name: this.playerName, usedFuel: this.usedFuel })

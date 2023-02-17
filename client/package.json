@@ -1,12 +1,12 @@
 {
   "name": "lunar-lander-client",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Lunar Lander (client)",
   "main": "app.ts",
   "private": true,
   "scripts": {
     "start": "npm run build && node dist/app.js",
-    "dev": "nodemon ./src/app.ts",
+    "dev": "nodemon src/app.ts",
     "build": "tsc"
   },
   "dependencies": {
@@ -30,6 +30,6 @@
   "license": "MIT",
   "homepage": "https://github.com/Firnael/lunar-lander/blob/main/client/README.md",
   "volta": {
-    "node": "16.16.0"
+    "node": "18.14.1"
   }
 }

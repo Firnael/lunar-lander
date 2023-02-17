@@ -1,21 +1,25 @@
 import { randomUUID } from "crypto"
-import io, { Socket } from "socket.io-client"
+import { io, Socket } from "socket.io-client"
 import { LanderData, LanderAction } from "../models/lander"
 
 let socket: Socket
 let clientUid: string
 let clientName: string
+let clientEmoji: string
 
 const service = {
 
-    start: function (endpoint: string, playerName: string) {
+    start: function (endpoint: string, playerName: string, playerEmoji: string) {
         clientName = playerName.substring(0, 12)
-        clientUid = randomUUID()
+        clientUid = randomUUID(),
+        clientEmoji = /\p{Extended_Pictographic}/ug.test(playerEmoji) ? playerEmoji : '💩'
+
         console.log('Connecting to server...')
         socket = io(endpoint, {
             query: {
-                clientName: clientName,
-                clientUid: clientUid
+                clientName,
+                clientUid,
+                clientEmoji
             },
         })
 

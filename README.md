@@ -17,9 +17,20 @@ Vérifiez que tous les clients peuvent accéder au serveur sur l'URL : `IP_DE_LA
 Ensuite, chaque client doit lancer son programme :
 ```shell
 cd client
+...
+# penser à mettre à jour cette ligne en haut de app.ts
+const SERVER_URL = process.env.SERVER_URL || 'http://127.0.0.1:4000';
+...
 npm run dev
 ```
 L'application redémarrera automatiquement à chaque modification dans le code.
+
+Chaque client peut customiser son vaisseau avec un nom et un emoji : 
+
+```javascript
+const PLAYER_NAME = process.env.PLAYER_NAME || 'NO_NAME';
+const PLAYER_EMOJI = process.env.PLAYER_EMOJI || '💩';
+```
 
 ## Comment jouer
 

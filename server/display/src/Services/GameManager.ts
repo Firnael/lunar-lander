@@ -4,6 +4,7 @@ import { Player, PlayerJoins, PlayerLeaves, LanderRotation, UpdatePlayerActions,
 const SERVER_URL = 'http://127.0.0.1:4000'
 const CLIENT_NAME = 'display'
 const CLIENT_UID = '0000'
+const CLIENT_EMOJI = '🤖'
 let socket: Socket
 
 let game: Phaser.Game
@@ -16,7 +17,8 @@ const service = {
         socket = io(SERVER_URL, {
             query: {
                 clientName: CLIENT_NAME,
-                clientUid: CLIENT_UID
+                clientUid: CLIENT_UID,
+                clientEmoji: CLIENT_EMOJI
             },
         })
 
@@ -37,8 +39,7 @@ const service = {
             data.forEach((d: PlayerJoins) => {
                 const index = players.findIndex(p => p.uid === d.uid)
                 if(index < 0) {
-                    createPlayer(d.name, d.uid)
-                    // TODO marche pas
+                    createPlayer(d.name, d.uid, d.emoji)
                     game.events.emit('CREATE_LANDER', d)
                 }
             })
@@ -46,7 +47,7 @@ const service = {
         
         socket.on("playerJoins", (payload: PlayerJoins) => {
             console.log('Create new player', payload.name)
-            createPlayer(payload.name, payload.uid)
+            createPlayer(payload.name, payload.uid, payload.emoji)
             game.events.emit('CREATE_LANDER', payload)
         })
 
@@ -60,7 +61,7 @@ const service = {
             const playerIndex = players.findIndex(p => p.uid === payload.uid)
             if (playerIndex < 0) {
                 // le joueur est inconnu du display, il faut le créer (possible si le display s'est déco/reco)
-                createPlayer(payload.name, payload.uid)
+                createPlayer(payload.name, payload.uid, payload.emoji)
             } else {
                 players[playerIndex].actions = payload.actions
             }
@@ -84,10 +85,11 @@ const service = {
     }
 }
 
-function createPlayer(name: string, uid: string) {
+function createPlayer(name: string, uid: string, emoji: string) {
     const player: Player = {
-        uid: uid,
-        name: name,
+        uid,
+        name,
+        emoji,
         lander: {
             vx: 0,
             vy: 0,

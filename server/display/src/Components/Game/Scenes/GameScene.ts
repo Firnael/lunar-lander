@@ -89,7 +89,7 @@ export class GameScene extends Phaser.Scene {
 
 	private createShip(data: any) {
 		// Add the ship to the stage
-		const ship: Ship = new Ship(this, 0, 0, 'ship', data.name, false)
+		const ship: Ship = new Ship(this, 0, 0, 'ship', data.name, data.emoji, data.name === 'Croclardon')
 		// Choose a random starting angle and velocity for the ship
 		ship.reset()
 		// Enable collisions between ship and ground
