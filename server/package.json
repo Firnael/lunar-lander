@@ -1,6 +1,6 @@
 {
   "name": "lunar-lander-server",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Lunar Lander (server)",
   "private": true,
   "scripts": {
@@ -39,18 +39,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@gitlab.com/maxds-tech-team/lunar-lander.git"
+    "url": "git+ssh://git@github.com:Firnael/lunar-lander.git"
   },
   "keywords": [
     "lunar-lander",
     "server"
   ],
   "author": "Audron",
-  "license": "WTFPL",
-  "bugs": {
-    "url": "https://gitlab.com/maxds-tech-team/lunar-lander/issues"
-  },
-  "homepage": "https://gitlab.com/maxds-tech-team/lunar-lander#readme",
+  "license": "MIT",
+  "homepage": "https://github.com/Firnael/lunar-lander/blob/main/server/README.md",
   "volta": {
     "node": "16.15.0"
   }

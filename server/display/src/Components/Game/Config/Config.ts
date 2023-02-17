@@ -2,8 +2,8 @@ import 'phaser';
 import { GameScene } from '../Scenes/GameScene';
 
 const config: Phaser.Types.Core.GameConfig = {
-    title: "Croc's Bot Battle",
-    url: 'https://gitlab.com/maxds-tech-team/crocs-bot-battle',
+    title: "Lunar Lander",
+    url: 'https://github.com/Firnael/lunar-lander',
     version: '1.0',
     width: 1280,
     height: 920,
