@@ -7,6 +7,13 @@
     flex: auto;
 }
 
+.server-info-container {
+    position: absolute;
+    bottom: 10px;
+    right: 20px;
+    color: linen;
+}
+
 table {
     border-collapse: collapse;
     overflow: hidden;

@@ -9,11 +9,17 @@ export default function Game() {
 
   const [game, setGame] = useState<Phaser.Game>({} as Phaser.Game)
   const [players, setPlayers] = useState<Player[]>([])
+  const [localIps, setLocalIps] = useState<any>()
 
   useEffect(() => {
     // create game
     const game: Phaser.Game = new Phaser.Game(config)
     setGame(game)
+    // retrieve local ips
+    gameManager.fetchLocalIps().then(res => res.json()).then(ips => {
+      console.log(ips)
+      setLocalIps(ips)
+    })
 
     // handle game events
     game.events.on('LANDERS_DATA', (data: any) => gameManager.updatePlayersData(data))
@@ -95,6 +101,11 @@ export default function Game() {
     </tr>
   )
 
+  // { localIps && Object.entries(localIps).map(([k,v]: any) => `${k} - ${v}`) }
+  const renderedLocalIps = localIps && Object.entries(localIps).map(([k,v]: any) => 
+    <p>{k} - {v}</p>
+  )
+
   return (
     <main className="main-container">
       <div id="game" />
@@ -114,6 +125,9 @@ export default function Game() {
             {listPlayers}
           </tbody>
         </table>
+      </div>
+      <div className="server-info-container">
+        <strong>{renderedLocalIps}</strong>
       </div>
     </main>
   )

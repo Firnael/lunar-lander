@@ -69,6 +69,10 @@ const service = {
         })
     },
 
+    fetchLocalIps: async function () {
+        return window.fetch(SERVER_URL + '/ips');
+    },
+
     // From the 'display'
     updatePlayersData: function (payload: UpdatePlayersData) {
         if (players.length === 0) {
