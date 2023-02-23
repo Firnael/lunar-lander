@@ -123,8 +123,8 @@ export class Ship extends Physics.Arcade.Sprite {
         // update indicator
         this.indicator.update(this.body.position)
 
+        // check if we hit the ground
         this.isOnTheGround = this.body.touching.down
-
         if (this.isOnTheGround) {
             if (this.isTooFastToLand() || this.isBadAngleToLand()) {
                 // The ship hit the ground too hard, or with too great angle with the ground, blow it up and start over
@@ -193,13 +193,15 @@ export class Ship extends Physics.Arcade.Sprite {
 
         // Select a random starting angle and velocity
         this.setAngle(Phaser.Math.Between(-180, 180))
-        this.setVelocity(Phaser.Math.Between(-100, 200), 0)
+        this.setVelocity(Phaser.Math.Between(-150, 150), 0)
         this.setAngularVelocity(Phaser.Math.Between(-100, 100))
 
         // ship becomes alive / landable again after a small time offset
         this.scene.time.addEvent({
             callback: () => {
                 if (this.scene) {
+                    // Set collisions back
+                    this.body.enable = true
                     this.isAlive = true
                     this.hasLanded = false
                     // display ship and hud
@@ -219,6 +221,8 @@ export class Ship extends Physics.Arcade.Sprite {
         this.setVisible(false)
         this.hud.setContainerVisible(false)
         this.enginesContainer.setVisible(false)
+        // disable collisions
+        this.body.enable = false;
 
         // create explosion
         const explosion = new Explosion(this.scene, this.x, this.y, 'explosion')

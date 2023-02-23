@@ -17,6 +17,7 @@ export class GameScene extends Phaser.Scene {
 	private GRAVITY = 50
 
 	private ships: Ship[] = []
+	private shipsCollisionGroup!: Phaser.GameObjects.Group
 
 	private dataHeartBeat!: Phaser.Time.TimerEvent
 	
@@ -48,6 +49,12 @@ export class GameScene extends Phaser.Scene {
 		// Init event listeners (use from outside Phaser to communicate with React)
 		this.initEventListeners()
 
+		this.input.on('pointerdown', (pointer: any) => {
+			console.log('down');
+			this.ships[0]?.setPosition(pointer.x, pointer.y);
+			this.ships[0]?.setVelocityX(200);
+		});
+
 		// Create the data heartbeat
 		this.dataHeartBeat = this.time.addEvent({
 			callback: this.sendShipsDataToServer,
@@ -63,7 +70,11 @@ export class GameScene extends Phaser.Scene {
 		this.physics.world.gravity.y = this.GRAVITY;
 
 		// Set background image
-		this.add.image(0, 0, 'background').setOrigin(0, 0)
+		const backgroundImage = this.add.image(0, 0, 'background').setOrigin(0, 0)
+		const scaleX = this.cameras.main.width / backgroundImage.width
+		const scaleY = this.cameras.main.height / backgroundImage.height
+		const scale = Math.max(scaleX, scaleY)
+		backgroundImage.setScale(scale).setScrollFactor(0)
 
 		// Create some ground for the ship to land on
 		this.groundGroup = this.add.group()
@@ -75,6 +86,9 @@ export class GameScene extends Phaser.Scene {
 			groundBlock.body.setAllowGravity(false)
 			this.groundGroup.add(groundBlock)
 		}
+
+		// Create the ships collision group
+		this.shipsCollisionGroup = this.add.group()
 	}
 
 	update(): void {
@@ -87,17 +101,25 @@ export class GameScene extends Phaser.Scene {
 		}
 	}
 
-	private createShip(data: any) {
+	private createShip(data: any, x = 0, y = 0) {
 		// Add the ship to the stage
-		const ship: Ship = new Ship(this, 0, 0, 'ship', data.name, data.emoji, data.name === 'Croclardon')
+		const ship: Ship = new Ship(this, x, y, 'ship', data.name, data.emoji, data.name === 'Croclardon')
 		// Choose a random starting angle and velocity for the ship
 		ship.reset()
 		// Enable collisions between ship and ground
 		this.physics.add.collider(ship, this.groundGroup)
+		// Enable collisions betweend ships
+		this.physics.add.collider(ship, this.shipsCollisionGroup, (s1, s2) => {
+			const ship1 = s1 as Ship
+			const ship2 = s2 as Ship
+			ship1.explode(true)
+			ship2.explode(true)
+		});
 		// Enable collisions between ship parts and ground
 		this.physics.add.collider(ship.parts, this.groundGroup)
 		// Add to ship array
 		this.ships.push(ship)
+		this.shipsCollisionGroup.add(ship)
 	}
 
 	private destroyShip(data: any) {
