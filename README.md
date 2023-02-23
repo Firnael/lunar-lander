@@ -1,4 +1,6 @@
-# Coding Contest : Lunar Lander
+# Lunar Lander
+
+Un *Coding Contest* en mode *Bot Battle*.
 
 Qui arrivera à faire atterir son vaisseau le premier sans l'exploser ?
 
@@ -35,6 +37,10 @@ const PLAYER_EMOJI = process.env.PLAYER_EMOJI || '💩';
 ## Comment jouer
 
 Vous devez implémenter un algorithme qui permettra à votre vaisseau d'atterir sur la Lune sans exploser.  
+Pour celà, votre vaisseau devra respecter une limite de vitesse et d'angle lorsqu'il touche le sol.  
+Par défaut, ces valeurs sont vx=40, vy=40, ang=15.  
+Au dessus, vous êtes dans la [DANGER ZONE](https://www.youtube.com/watch?v=siwpn14IE7E&ab_channel=KennyLogginsVEVO).  
+
 Pour celà, il faudra compléter le callback de la fonction `io.handleLander()` dans `app.ts`.  
 Votre callback doit retourner un objet `actions`, à vous de déterminer avec quelles valeurs.  
 
@@ -45,7 +51,7 @@ const actions = {
 }
 ```
 
-## FAQ
+## Télémétrie
 
 ### Données à envoyer au serveur
 

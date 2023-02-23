@@ -100,7 +100,6 @@ export default function Game() {
     </tr>
   )
 
-  // { localIps && Object.entries(localIps).map(([k,v]: any) => `${k} - ${v}`) }
   const renderedLocalIps = localIps && Object.entries(localIps).map(([k,v]: any) => 
     <p>{k} - {v}</p>
   )

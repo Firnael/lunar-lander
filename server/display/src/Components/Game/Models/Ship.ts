@@ -15,6 +15,7 @@ export class Ship extends Physics.Arcade.Sprite {
     private DRAG = 0 // no drag in space duhh
     private BOUNCE = 0
     private LANDING_MAX_SPEED = new Phaser.Math.Vector2(40, 40)
+    private LANDING_MAX_ANGLE = 15
 
     public playerName: string
     public playerEmoji: string
@@ -125,8 +126,8 @@ export class Ship extends Physics.Arcade.Sprite {
         this.isOnTheGround = this.body.touching.down
 
         if (this.isOnTheGround) {
-            if (this.isTooFastToLand()) {
-                // The ship hit the ground too hard, blow it up and start over
+            if (this.isTooFastToLand() || this.isBadAngleToLand()) {
+                // The ship hit the ground too hard, or with too great angle with the ground, blow it up and start over
                 return this.explode(true)
             } else {
                 // we've landed !
@@ -268,7 +269,17 @@ export class Ship extends Physics.Arcade.Sprite {
         const vy = Math.abs(this.velocityHistory[0].y) - Math.abs(this.velocityHistory[1].y)
 
         if (vx > this.LANDING_MAX_SPEED.x || vy > this.LANDING_MAX_SPEED.y) {
-            console.log(`Going too fast : vx=${vx}, vy=${vy}`)
+            return true
+        }
+        return false
+    }
+
+    isBadAngleToLand(): boolean {
+        if (this.isInvincible) {
+            return false
+        }
+
+        if (Math.abs(this.angle) > this.LANDING_MAX_ANGLE) {
             return true
         }
         return false
@@ -276,10 +287,7 @@ export class Ship extends Physics.Arcade.Sprite {
 
     isInDangerZone(): boolean {
         if (this.y > this.scene.sys.canvas.height - 200) {
-            if (Math.abs(this.body.velocity.x) > this.LANDING_MAX_SPEED.x
-                || Math.abs(this.body.velocity.y) > this.LANDING_MAX_SPEED.y) {
-                return true
-            }
+            return this.isTooFastToLand() || this.isBadAngleToLand()
         }
         return false
     }
