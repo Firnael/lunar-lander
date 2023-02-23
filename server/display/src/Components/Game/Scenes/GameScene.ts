@@ -66,11 +66,11 @@ export class GameScene extends Phaser.Scene {
 		this.add.image(0, 0, 'background').setOrigin(0, 0)
 
 		// Create some ground for the ship to land on
-		this.groundY = this.CANVAS.height - 40
 		this.groundGroup = this.add.group()
 		for (let x = 0; x < this.CANVAS.width; x += 60) {
 			// Add the ground blocks, enable physics on each, make them immovable
 			const groundBlock = this.physics.add.sprite(x, this.groundY, 'ground').setOrigin(0, 0)
+			groundBlock.setPosition(x, this.CANVAS.height - groundBlock.height)
 			groundBlock.body.setImmovable(true)
 			groundBlock.body.setAllowGravity(false)
 			this.groundGroup.add(groundBlock)

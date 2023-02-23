@@ -2,9 +2,14 @@
     display: flex;
 }
 
+.game-container {
+    height: 100%;
+    flex: 3;
+}
+
 .table-container {
     background: linear-gradient(45deg, #49a09d, #5f2c82);
-    flex: auto;
+    flex: 1;
 }
 
 .server-info-container {

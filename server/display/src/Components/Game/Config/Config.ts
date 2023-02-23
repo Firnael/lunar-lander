@@ -5,10 +5,13 @@ const config: Phaser.Types.Core.GameConfig = {
     title: "Lunar Lander",
     url: 'https://github.com/Firnael/lunar-lander',
     version: '1.0',
-    width: 1280,
-    height: 920,
     type: Phaser.AUTO,
-    parent: 'game', // besoin d'une div id="game"
+    scale: {
+      parent: 'game', // besoin d'une div id="game"
+      mode: Phaser.Scale.FIT,
+      width: '100%',
+      height: '100%',
+    },
     scene: [
       GameScene
     ],

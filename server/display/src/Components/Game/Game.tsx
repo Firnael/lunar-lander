@@ -17,7 +17,6 @@ export default function Game() {
     setGame(game)
     // retrieve local ips
     gameManager.fetchLocalIps().then(res => res.json()).then(ips => {
-      console.log(ips)
       setLocalIps(ips)
     })
 
@@ -108,7 +107,7 @@ export default function Game() {
 
   return (
     <main className="main-container">
-      <div id="game" />
+      <div id="game" className="game-container" />
       <div className="table-container">
         <table>
           <thead>
