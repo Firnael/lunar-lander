@@ -49,6 +49,7 @@ export class GameScene extends Phaser.Scene {
 		// Init event listeners (use from outside Phaser to communicate with React)
 		this.initEventListeners()
 
+		// DEBUG - teleport first player ship and give it a bump
 		this.input.on('pointerdown', (pointer: any) => {
 			console.log('down');
 			this.ships[0]?.setPosition(pointer.x, pointer.y);
