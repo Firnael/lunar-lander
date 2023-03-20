@@ -56,15 +56,20 @@ export default function Game() {
       let updated = [...p]
       const index = updated.findIndex((t: any) => t.name === data.name)
       const player = updated[index]
+      player.attempts++
+      player.successAttempts++
+
+      // if player never landed before, register timestamp and attempt count
       if (!player.landed) {
         player.landed = new Date().getTime()
+        player.firstLandingAttemptCount = player.attempts
       }
-      player.attempts++
-      player.firstLandingAttemptCount = player.attempts
-      player.successAttempts++
+      
+      // update fuel info
       player.usedFuelAvg = player.usedFuelAvg ? (player.usedFuelAvg * (player.successAttempts - 1) + data.usedFuel) / player.successAttempts : data.usedFuel
       player.usedFuelAvg = parseInt(player.usedFuelAvg!.toFixed())
       player.usedFuelBest = player.usedFuelBest ? (player.usedFuelBest < data.usedFuel ? player.usedFuelBest : data.usedFuel) : data.usedFuel
+      
       updated[index] = player
       updated = updated.sort((a, b) => {
         if (a.landed && b.landed) {

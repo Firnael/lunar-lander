@@ -14,9 +14,8 @@ export class Hud extends Phaser.GameObjects.Sprite {
 
     // reference to the ship, to retrieve data about it
     private shipRef: Ship
-    // needs the canvas height to display altitude
+    // needs the canvas width to know when to flip the HUD
     private canvasWidth: number
-    private canvasHeight: number
     private flipLimit: number
 
     constructor(scene: Phaser.Scene, x: number, y: number, texture: string, shipRef: Ship) {
@@ -28,7 +27,6 @@ export class Hud extends Phaser.GameObjects.Sprite {
 
         const { width, height } = scene.sys.canvas
         this.canvasWidth = width
-        this.canvasHeight = height
 
         this.flipLimit = this.canvasWidth / 2
 
@@ -72,7 +70,7 @@ export class Hud extends Phaser.GameObjects.Sprite {
         this.vxText.setText('vx:   ' + this.shipRef.body.velocity.x.toFixed())
         this.vyText.setText('vy:   ' + this.shipRef.body.velocity.y.toFixed())
         this.angleText.setText('ang:  ' + this.shipRef.angle.toFixed() + '°')
-        this.altitudeText.setText('alt:   ' + (this.canvasHeight - this.shipRef.y - this.shipRef.height - 24).toFixed())
+        this.altitudeText.setText('alt:   ' + this.shipRef.altitude.toFixed())
         this.fuelUsedText.setText('fuel: ' + this.shipRef.usedFuel)
     }
 

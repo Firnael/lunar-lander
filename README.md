@@ -1,4 +1,4 @@
-# Lunar Lander
+# Lunar Lander 🧑‍🚀🚀
 
 Un *Coding Contest* en mode *Bot Battle*.
 
@@ -72,3 +72,32 @@ const actions = {
 - `vy` : vitesse vertical
 - `altitude` : distance entre le vaisseau et le sol
 - `usedFuel` : la quantité de carburant utilisé dans cette tentative
+
+## Test de charge 
+
+Voici une solution un peu nulle mais qui fonctionne pour lancer plein de clients en local :
+
+```bash
+# installer ce package pour lancer N commandes en parallèle 
+npm i -g concurrently
+# lancer ça pour pop 10 clients, je suis pas expert en bash laissez moi tranquille
+concurrently "PLAYER_NAME=N1 npm run dev" "PLAYER_NAME=N2 npm run dev" "PLAYER_NAME=N3 npm run dev" "PLAYER_NAME=N4 npm run dev" "PLAYER_NAME=N5 npm run dev" "PLAYER_NAME=N6 npm run dev" "PLAYER_NAME=N7 npm run dev" "PLAYER_NAME=N8 npm run dev" "PLAYER_NAME=N9 npm run dev" "PLAYER_NAME=N10 npm run dev"
+```
+
+Voici un algo tout péter pour que les landers volent un peu mais pas trop :
+
+```js
+// Full random pour tester
+actions.thrust = Math.random() < 0.5;
+if (data.altitude > 800) {
+    actions.thrust = false
+}
+
+actions.rotate = LanderRotation.NONE;
+const rotateRand = Math.random();
+if (rotateRand < 0.33) {
+    actions.rotate = LanderRotation.CLOCKWISE;
+} else if (rotateRand > 0.66) {
+    actions.rotate = LanderRotation.COUNTERCLOCKWISE;
+}
+```

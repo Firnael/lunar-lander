@@ -4,7 +4,7 @@ import { GameScene } from '../Scenes/GameScene';
 const config: Phaser.Types.Core.GameConfig = {
     title: "Lunar Lander",
     url: 'https://github.com/Firnael/lunar-lander',
-    version: '1.0',
+    version: '1.1.0',
     type: Phaser.AUTO,
     scale: {
       parent: 'game', // besoin d'une div id="game"

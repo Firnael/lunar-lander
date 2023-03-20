@@ -21,7 +21,6 @@ export class GameScene extends Phaser.Scene {
 
 	private dataHeartBeat!: Phaser.Time.TimerEvent
 	
-	private groundY = 0
 	private groundGroup!: Phaser.GameObjects.Group
 
 	constructor() {
@@ -51,7 +50,6 @@ export class GameScene extends Phaser.Scene {
 
 		// DEBUG - teleport first player ship and give it a bump
 		this.input.on('pointerdown', (pointer: any) => {
-			console.log('down');
 			this.ships[0]?.setPosition(pointer.x, pointer.y);
 			this.ships[0]?.setVelocityX(200);
 		});
@@ -80,8 +78,8 @@ export class GameScene extends Phaser.Scene {
 		// Create some ground for the ship to land on
 		this.groundGroup = this.add.group()
 		for (let x = 0; x < this.CANVAS.width; x += 60) {
-			// Add the ground blocks, enable physics on each, make them immovable
-			const groundBlock = this.physics.add.sprite(x, this.groundY, 'ground').setOrigin(0, 0)
+			// Add the ground blocks to the bottom of canvas, enable physics on each, make them immovable
+			const groundBlock = this.physics.add.sprite(x, 0, 'ground').setOrigin(0, 0)
 			groundBlock.setPosition(x, this.CANVAS.height - groundBlock.height)
 			groundBlock.body.setImmovable(true)
 			groundBlock.body.setAllowGravity(false)
@@ -107,20 +105,20 @@ export class GameScene extends Phaser.Scene {
 		const ship: Ship = new Ship(this, x, y, 'ship', data.name, data.emoji, data.name === 'Croclardon')
 		// Choose a random starting angle and velocity for the ship
 		ship.reset()
-		// Enable collisions between ship and ground
-		this.physics.add.collider(ship, this.groundGroup)
+		// Enable and handle collisions between ship and ground
+		this.physics.add.collider(ship, this.groundGroup, (s, g) => {
+			(s as Ship).hitTheGround()
+		})
 		// Enable collisions betweend ships
 		this.physics.add.collider(ship, this.shipsCollisionGroup, (s1, s2) => {
-			const ship1 = s1 as Ship
-			const ship2 = s2 as Ship
-			ship1.explode(true)
-			ship2.explode(true)
+			(s1 as Ship).explode(true);
+			(s2 as Ship).explode(true);
 		});
 		// Enable collisions between ship parts and ground
 		this.physics.add.collider(ship.parts, this.groundGroup)
 		// Add to ship array
 		this.ships.push(ship)
-		this.shipsCollisionGroup.add(ship)
+		//this.shipsCollisionGroup.add(ship)
 	}
 
 	private destroyShip(data: any) {
@@ -148,7 +146,7 @@ export class GameScene extends Phaser.Scene {
 				vx: s.body.velocity.x,
 				vy: s.body.velocity.y,
 				angle: s.angle,
-				altitude: this.groundY - s.y - s.height / 2,
+				altitude: s.altitude,
 				usedFuel: s.usedFuel,
 			}
 		})
