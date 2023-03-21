@@ -2,13 +2,15 @@ import { useState, useEffect } from 'react'
 import 'phaser'
 import gameManager from '../../Services/GameManager'
 import config from './Config/Config'
-import { Player } from './Models/Player'
+import { PlayerStats, PlayerJoins, PlayerLeaves, UpdatePlayersData } from '../../Models/player'
 import './Game.css'
 
 export default function Game() {
 
+  const SUCCESS_RATE_SAMPLE_SIZE = 10
+
   const [game, setGame] = useState<Phaser.Game>({} as Phaser.Game)
-  const [players, setPlayers] = useState<Player[]>([])
+  const [playerStats, setPlayerStats] = useState<PlayerStats[]>([])
   const [localIps, setLocalIps] = useState<any>()
 
   useEffect(() => {
@@ -21,9 +23,9 @@ export default function Game() {
     })
 
     // handle game events
-    game.events.on('LANDERS_DATA', (data: any) => gameManager.updatePlayersData(data))
+    game.events.on('LANDERS_DATA', (data: UpdatePlayersData) => gameManager.updatePlayersData(data))
     // handle creation and destruction of ships in the game when player connect / disconnect
-    game.events.on('CREATE_LANDER', (data: any) => handleCreateLander(data))
+    game.events.on('CREATE_LANDER', (data: PlayerJoins) => handleCreateLander(data))
     game.events.on('DESTROY_LANDER', (data: any) => handleDestroyLander(data))
     // handle scores updates when ships reach the ground, either way
     game.events.on('SHIP_LANDED', (data: any) => handleShipLanded(data))
@@ -33,28 +35,29 @@ export default function Game() {
     gameManager.start(game)
   }, [])
 
-  function handleCreateLander(data: any) {
+  function handleCreateLander(data: PlayerJoins) {
     console.log('CREATE_LANDER : ', data)
     // add player to the list if it doesn't exists already
-    setPlayers((players: Player[]) => {
-      if (players.findIndex((p: Player) => p.name === data.name) < 0) {
-        const player: Player = { name: data.name, attempts: 0, firstLandingAttemptCount: 0, successAttempts: 0 }
-        return [...players, player]
+    setPlayerStats((stats: PlayerStats[]) => {
+      if (stats.findIndex((s: PlayerStats) => s.name === data.name) < 0) {
+        const s: PlayerStats = { name: data.name, attempts: 0, firstLandingAttemptCount: 0, successAttempts: 0, history: [] }
+        return [...stats, s]
       }
-      return players
+      return playerStats
     })
   }
 
-  function handleDestroyLander(data: any) {
+  function handleDestroyLander(data: PlayerLeaves) {
     console.log('DESTROY_LANDER :', data)
     //setPlayers(players.filter((p: any) => p.name !== data.name))
   }
 
   function handleShipLanded(data: any) {
     console.log('SHIP_LANDED :', data)
-    setPlayers((p: Player[]) => {
-      let updated = [...p]
-      const index = updated.findIndex((t: any) => t.name === data.name)
+    setPlayerStats((stats: PlayerStats[]) => {
+      // copy stats to an updated version will will edit
+      let updated = [...stats]
+      const index = updated.findIndex((s: any) => s.name === data.name)
       const player = updated[index]
       player.attempts++
       player.successAttempts++
@@ -70,7 +73,17 @@ export default function Game() {
       player.usedFuelAvg = parseInt(player.usedFuelAvg!.toFixed())
       player.usedFuelBest = player.usedFuelBest ? (player.usedFuelBest < data.usedFuel ? player.usedFuelBest : data.usedFuel) : data.usedFuel
       
+      // update history and success rate
+      player.history.push(1)
+      const attemptsCount = Math.min(player.history.length, SUCCESS_RATE_SAMPLE_SIZE)
+      const lastNthAttemptsHistory = player.history.slice(-attemptsCount)
+      player.successRate = lastNthAttemptsHistory.reduce((acc, c) => acc += c, 0) / attemptsCount * 100
+      player.successRate = Math.floor(player.successRate)
+
+      // update player stats
       updated[index] = player
+
+      // sort players by rank
       updated = updated.sort((a, b) => {
         if (a.landed && b.landed) {
           return a.usedFuelBest! - b.usedFuelBest!
@@ -86,22 +99,24 @@ export default function Game() {
 
   function handleShipExploded(data: any) {
     console.log('SHIP_EXPLODED :', data)
-    setPlayers((players: Player[]) => {
-      const updated = [...players]
-      const index = updated.findIndex((t: any) => t.name === data.name)
+    setPlayerStats((stats: PlayerStats[]) => {
+      const updated = [...stats]
+      const index = updated.findIndex((s: any) => s.name === data.name)
       updated[index].attempts++
+      updated[index].history.push(0)
       return updated
     })
   }
 
-  const listPlayers = players.map((p: Player) =>
+  const playerStatsList = playerStats.map((s: PlayerStats) =>
     <tr>
-      <td><strong>{p.name}</strong></td>
-      <td>{p.attempts}</td>
-      <td>{p.landed ? '✔️ (' + p.firstLandingAttemptCount + ')' : '❌'} </td>
-      <td>{p.rank ? (p.rank === 1 ? `${p.rank}er` : `${p.rank}ème`) : '-'} </td>
-      <td>{p.usedFuelBest ? p.usedFuelBest : '-'}</td>
-      <td>{p.usedFuelAvg ? p.usedFuelAvg : '-'}</td>
+      <td><strong>{s.name}</strong></td>
+      <td>{s.attempts}</td>
+      <td>{s.landed ? '✔️ (' + s.firstLandingAttemptCount + ')' : '❌'}</td>
+      <td>{s.rank ? (s.rank === 1 ? `${s.rank}er` : `${s.rank}ème`) : '-'}</td>
+      <td>{s.usedFuelBest ? s.usedFuelBest : '-'}</td>
+      <td>{s.usedFuelAvg ? s.usedFuelAvg : '-'}</td>
+      <td>{s.successRate ? s.successRate + '%' : '-'}</td>
     </tr>
   )
 
@@ -121,11 +136,12 @@ export default function Game() {
               <th>Landed<br/>📥</th>
               <th>Rank<br/>🥇</th>
               <th>Best<br/>🛢️</th>
-              <th>Avg<br/>  🛢️</th>
+              <th>Avg<br/>🛢️</th>
+              <th>%<br/>📈</th>
             </tr>
           </thead>
           <tbody>
-            {listPlayers}
+            {playerStatsList}
           </tbody>
         </table>
       </div>

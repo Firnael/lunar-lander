@@ -11,6 +11,7 @@ import danger_sign_sprite_url from '../Assets/images/danger_sign.png'
 import smoke_particule_sprite_url from '../Assets/images/smoke_particule.png'
 import fire_particule_sprite_url from '../Assets/images/fire_particule.png'
 import { Ship } from '../Models/Ship'
+import { PlayerJoins, PlayerLeaves, PlayerUpdates } from '../../../Models/player'
 
 export class GameScene extends Phaser.Scene {
 	private CANVAS!: Phaser.Game["canvas"]
@@ -19,9 +20,10 @@ export class GameScene extends Phaser.Scene {
 	private ships: Ship[] = []
 	private shipsCollisionGroup!: Phaser.GameObjects.Group
 
-	private dataHeartBeat!: Phaser.Time.TimerEvent
-	
 	private groundGroup!: Phaser.GameObjects.Group
+
+	/** Server heartbeat timer */
+	private dataHeartBeat!: Phaser.Time.TimerEvent
 
 	constructor() {
 		super({
@@ -100,9 +102,9 @@ export class GameScene extends Phaser.Scene {
 		}
 	}
 
-	private createShip(data: any, x = 0, y = 0) {
+	private createShip(data: PlayerJoins, x = 0, y = 0) {
 		// Add the ship to the stage
-		const ship: Ship = new Ship(this, x, y, 'ship', data.name, data.emoji, data.name === 'Croclardon')
+		const ship: Ship = new Ship(this, x, y, 'ship', data.name, data.emoji, data.uuid, data.name === 'Croclardon')
 		// Choose a random starting angle and velocity for the ship
 		ship.reset()
 		// Enable and handle collisions between ship and ground
@@ -121,22 +123,22 @@ export class GameScene extends Phaser.Scene {
 		//this.shipsCollisionGroup.add(ship)
 	}
 
-	private destroyShip(data: any) {
+	private destroyShip(data: PlayerLeaves) {
 		const index = this.ships.findIndex(s => s.playerName === data.name)
 		this.ships[index].explode(false)
 		this.ships[index].destroy()
 		this.ships.splice(index, 1)
 	}
 
-	private updateShip(data: any) {
+	private updateShip(data: PlayerUpdates) {
 		const index = this.ships.findIndex(s => s.playerName === data.name)
 		this.ships[index].changeActions(data.actions)
 	}
 
 	private initEventListeners(): void {
-		this.game.events.on('CREATE_LANDER', (data: any) => this.createShip(data), this)
-		this.game.events.on('DESTROY_LANDER', (data: any) => this.destroyShip(data), this)
-		this.game.events.on('UPDATE_LANDER', (data: any) => this.updateShip(data), this)
+		this.game.events.on('CREATE_LANDER', (data: PlayerJoins) => this.createShip(data), this)
+		this.game.events.on('DESTROY_LANDER', (data: PlayerLeaves) => this.destroyShip(data), this)
+		this.game.events.on('UPDATE_LANDER', (data: PlayerUpdates) => this.updateShip(data), this)
 	}
 
 	private sendShipsDataToServer(): void {
@@ -148,6 +150,7 @@ export class GameScene extends Phaser.Scene {
 				angle: s.angle,
 				altitude: s.altitude,
 				usedFuel: s.usedFuel,
+				status: s.status
 			}
 		})
 		this.game.events.emit('LANDERS_DATA', { landersData: data })

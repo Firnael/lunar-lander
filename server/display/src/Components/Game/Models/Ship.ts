@@ -3,7 +3,7 @@ import { Explosion } from './Explosion';
 import { Flag } from './Flag';
 import { Indicator } from './Indicator';
 import { Hud } from './Hud';
-import { PlayerActions, LanderRotation } from '../../../Models/player';
+import { PlayerActions, LanderRotation, LanderStatus } from '../../../Models/player';
 
 export class Ship extends Physics.Arcade.Sprite {
 
@@ -19,16 +19,16 @@ export class Ship extends Physics.Arcade.Sprite {
 
     public playerName: string
     public playerEmoji: string
+    public playerUuid: string
     public usedFuel: number
     public altitude: number
+    public status: LanderStatus
     public actions: PlayerActions
     public parts: Phaser.GameObjects.Group
 
     private canvasWidth: number
     private canvasHeight: number
     private isInvincible: boolean
-    private isAlive: boolean
-    private hasLanded: boolean
     private indicator: Indicator
     private flag: Flag
     private hud: Hud
@@ -39,7 +39,7 @@ export class Ship extends Physics.Arcade.Sprite {
     private leftEngine: Phaser.GameObjects.Particles.ParticleEmitter
     private rightEngine: Phaser.GameObjects.Particles.ParticleEmitter
 
-    constructor(scene: Phaser.Scene, x: number, y: number, texture: string, playerName: string, playerEmoji: string, invincible?: boolean) {
+    constructor(scene: Phaser.Scene, x: number, y: number, texture: string, playerName: string, playerEmoji: string, playerUuid: string, invincible?: boolean) {
         super(scene, x, y, texture)
         scene.add.existing(this)
         scene.physics.add.existing(this)
@@ -63,11 +63,11 @@ export class Ship extends Physics.Arcade.Sprite {
             rotate: LanderRotation.NONE
         }
 
+        this.status = LanderStatus.ALIVE
         this.playerName = playerName
         this.playerEmoji = playerEmoji
+        this.playerUuid = playerUuid
         this.usedFuel = 0
-        this.isAlive = true
-        this.hasLanded = false
         this.isInvincible = invincible || false
         this.velocityHistory = []
         this.altitude = 0
@@ -107,13 +107,8 @@ export class Ship extends Physics.Arcade.Sprite {
     }
 
     update(): void {
-        // do nothing if ship is dead
-        if (!this.isAlive) {
-            return
-        }
-
-        // do nothing if ship has already landed
-        if (this.hasLanded) {
+        // do nothing if ship status is different from 'ALIVE'
+        if (this.status !== LanderStatus.ALIVE) {
             return
         }
 
@@ -175,7 +170,8 @@ export class Ship extends Physics.Arcade.Sprite {
     }
 
     hitTheGround(): void {
-        if (this.hasLanded || !this.isAlive) {
+        // do nothing if ship status if not ALIVE
+        if (this.status !== LanderStatus.ALIVE) {
             return
         }
 
@@ -189,6 +185,7 @@ export class Ship extends Physics.Arcade.Sprite {
     }
 
     reset(): void {
+        this.status = LanderStatus.SPAWNED
         // Reset usedFuel
         this.usedFuel = 0
         // hide flag
@@ -199,10 +196,9 @@ export class Ship extends Physics.Arcade.Sprite {
         this.enginesContainer.setVisible(false)
 
         // Move the ship back to the top of the stage, at a random X position
-        const { width, height } = this.scene.sys.canvas
-        this.setPosition(Phaser.Math.Between(40, width - 40), 32)
-        this.setAcceleration(0, 0)
-        this.setAngularAcceleration(0)
+        this.setPosition(Phaser.Math.Between(40, this.canvasWidth - 40), 32)
+        this.setAcceleration(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-200, 200))
+        this.setAngularAcceleration(Phaser.Math.Between(-100, 100))
 
         // Select a random starting angle and velocity
         this.setAngle(Phaser.Math.Between(-180, 180))
@@ -213,10 +209,9 @@ export class Ship extends Physics.Arcade.Sprite {
         this.scene.time.addEvent({
             callback: () => {
                 if (this.scene) {
+                    this.status = LanderStatus.ALIVE
                     // Set collisions back
                     this.body.enable = true
-                    this.isAlive = true
-                    this.hasLanded = false
                     // display ship and hud
                     this.setVisible(true)
                     this.hud.setContainerVisible(true)
@@ -230,7 +225,7 @@ export class Ship extends Physics.Arcade.Sprite {
     }
 
     explode(respawn: boolean): void {
-        this.isAlive = false
+        this.status = LanderStatus.DEAD
         this.setVisible(false)
         this.hud.setContainerVisible(false)
         this.enginesContainer.setVisible(false)
@@ -259,7 +254,7 @@ export class Ship extends Physics.Arcade.Sprite {
         }
 
         if (respawn) {
-            this.setResetCallback()
+            this.setResetCallback(3000)
         }
         this.scene.game.events.emit('SHIP_EXPLODED', { name: this.playerName })
     }
@@ -306,28 +301,32 @@ export class Ship extends Physics.Arcade.Sprite {
     }
 
     isInDangerZone(): boolean {
-        if (this.y > this.scene.sys.canvas.height - 200) {
+        if (this.y > this.canvasHeight - 200) {
             return this.isTooFastToLand() || this.isBadAngleToLand()
         }
         return false
     }
 
-    setResetCallback(): void {
+    setResetCallback(delay: number): void {
         this.scene.time.addEvent({
-            callback: () => { if (this.scene) this.reset() }, // ship could have been destroyed during that time
+            callback: () => {
+                // scene could have been destroyed during that time (page reload, etc.)
+                if (this.scene) { this.reset() }
+            }, 
             callbackScope: this,
-            delay: 3000,
+            delay: delay,
             loop: false
         })
     }
 
     private land(): void {
-        // ship has landed
-        this.hasLanded = true
+        this.status = LanderStatus.LANDED
+        // reset actions
         this.actions = {
             thrust: false,
             rotate: LanderRotation.NONE
         }
+        // turn off engines
         this.mainEngine.stop()
         this.leftEngine.stop()
         this.rightEngine.stop()
@@ -349,6 +348,6 @@ export class Ship extends Physics.Arcade.Sprite {
         this.scene.game.events.emit('SHIP_LANDED', { name: this.playerName, usedFuel: this.usedFuel })
 
         // reset ship in 3 seconds
-        this.setResetCallback();
+        this.setResetCallback(3000);
     }
 }

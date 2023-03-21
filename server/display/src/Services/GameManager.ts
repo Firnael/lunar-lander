@@ -1,9 +1,9 @@
 import io, { Socket } from "socket.io-client"
-import { Player, PlayerJoins, PlayerLeaves, LanderRotation, UpdatePlayerActions, UpdatePlayersData } from "../Models/player"
+import { Player, PlayerJoins, PlayerLeaves, LanderRotation, PlayerUpdates, UpdatePlayersData, LanderData, LanderStatus } from "../Models/player"
 
 const SERVER_URL = 'http://127.0.0.1:4000'
 const CLIENT_NAME = 'display'
-const CLIENT_UID = '0000'
+const CLIENT_UUID = '0000'
 const CLIENT_EMOJI = '🤖'
 let socket: Socket
 
@@ -17,7 +17,7 @@ const service = {
         socket = io(SERVER_URL, {
             query: {
                 clientName: CLIENT_NAME,
-                clientUid: CLIENT_UID,
+                clientUuid: CLIENT_UUID,
                 clientEmoji: CLIENT_EMOJI
             },
         })
@@ -37,9 +37,9 @@ const service = {
         socket.on("playerList", (data: PlayerJoins[]) => {
             console.log('Retrieving player list', data)
             data.forEach((d: PlayerJoins) => {
-                const index = players.findIndex(p => p.uid === d.uid)
+                const index = players.findIndex(p => p.uuid === d.uuid)
                 if(index < 0) {
-                    createPlayer(d.name, d.uid, d.emoji)
+                    createPlayer(d.name, d.uuid, d.emoji)
                     game.events.emit('CREATE_LANDER', d)
                 }
             })
@@ -47,21 +47,21 @@ const service = {
         
         socket.on("playerJoins", (payload: PlayerJoins) => {
             console.log('Create new player', payload.name)
-            createPlayer(payload.name, payload.uid, payload.emoji)
+            createPlayer(payload.name, payload.uuid, payload.emoji)
             game.events.emit('CREATE_LANDER', payload)
         })
 
         socket.on("playerLeaves", (payload: PlayerLeaves) => {
             console.log('Delete player', payload)
-            deletePlayer(payload.uid)
+            deletePlayer(payload.uuid)
             game.events.emit('DESTROY_LANDER', payload)
         })
 
-        socket.on("updatePlayerActions", (payload: UpdatePlayerActions) => {
-            const playerIndex = players.findIndex(p => p.uid === payload.uid)
+        socket.on("playerUpdates", (payload: PlayerUpdates) => {
+            const playerIndex = players.findIndex(p => p.uuid === payload.uuid)
             if (playerIndex < 0) {
                 // le joueur est inconnu du display, il faut le créer (possible si le display s'est déco/reco)
-                createPlayer(payload.name, payload.uid, payload.emoji)
+                createPlayer(payload.name, payload.uuid, payload.emoji)
             } else {
                 players[playerIndex].actions = payload.actions
             }
@@ -80,18 +80,17 @@ const service = {
             // TODO afficher ça dans la webapp
             return
         }
-        // console.log("Updating players data", payload.landersData)
-        payload.landersData.forEach((d: any) => {
+        payload.landersData.forEach((d: LanderData) => {
             const playerIndex = players.findIndex(p => p.name === d.name)
-            players[playerIndex].lander = { vx: d.vx, vy: d.vy, angle: d.angle, altitude: d.altitude, usedFuel: d.usedFuel }
+            players[playerIndex].lander = { vx: d.vx, vy: d.vy, angle: d.angle, altitude: d.altitude, usedFuel: d.usedFuel, status: d.status }
         })
         socket.emit('landersData', payload.landersData)
     }
 }
 
-function createPlayer(name: string, uid: string, emoji: string) {
+function createPlayer(name: string, uuid: string, emoji: string) {
     const player: Player = {
-        uid,
+        uuid,
         name,
         emoji,
         lander: {
@@ -99,7 +98,8 @@ function createPlayer(name: string, uid: string, emoji: string) {
             vy: 0,
             angle: 0,
             altitude: 0,
-            usedFuel: 0
+            usedFuel: 0,
+            status: LanderStatus.SPAWNED
         },
         actions: {
             thrust: false,
@@ -109,8 +109,8 @@ function createPlayer(name: string, uid: string, emoji: string) {
     players.push(player)
 }
 
-function deletePlayer(uid: string) {
-    players.splice(players.findIndex(p => p.uid === uid), 1)
+function deletePlayer(uuid: string) {
+    players.splice(players.findIndex(p => p.uuid === uuid), 1)
 }
 
 export default service

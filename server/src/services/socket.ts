@@ -1,7 +1,6 @@
 import io from "socket.io"
 import http from 'http'
 import Client from "../models/client"
-import gameManager from '../../display/src/Services/GameManager'
 
 // the SocketIO Server instance
 let server: io.Server
@@ -34,34 +33,34 @@ const defineListeners = () => {
 
 const handleConnection = (socket: io.Socket) => {
     const clientName = socket.handshake.query['clientName'] as string || 'MISSING_NAME'
-    const clientUid = socket.handshake.query['clientUid'] as string || 'MISSING_UID'
+    const clientUuid = socket.handshake.query['clientUuid'] as string || 'MISSING_UUID'
     const clientEmoji = socket.handshake.query['clientEmoji'] as string || '🚫'
-    const client = new Client(clientName, clientUid, clientEmoji, socket)
+    const client = new Client(clientName, clientUuid, clientEmoji, socket)
 
-    console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Player <${client.name}> ${client.emoji} (UID: ${client.uid}) connected ⚡`)
+    console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Player <${client.name}> ${client.emoji} (UUID: ${client.uuid}) connected ⚡`)
     clients.set(socket.id, client)
 
     // store 'display' client socket ID for further exchanges
-    if (client.uid === '0000') {
+    if (client.uuid === '0000') {
         displaySocketID = socket.id
         // send clients list to display (it may be oblivious of clients if you refreshed the page)
         const playerList: any[] = []
         clients.forEach((v, k) => {
-            if(v.uid !== '0000') { // do not create lander for display
-                playerList.push({ name: v.name, uid: v.uid })
+            if(v.uuid !== '0000') { // do not create lander for display
+                playerList.push({ name: v.name, uuid: v.uuid })
             }
         });
         server.to(displaySocketID).emit('playerList', playerList)
     } else {
-        server.emit('playerJoins', { name: client.name, uid: client.uid, emoji: client.emoji })
+        server.emit('playerJoins', { name: client.name, uuid: client.uuid, emoji: client.emoji })
     }
 }
 
 const handleDisconnect = (socket: io.Socket) => {
     socket.on('disconnect', () => {
         const client = clients.get(socket.id)!
-        console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Player <${client.name}> (UID: ${client.uid}) disconnected 🔌`)
-        server.emit('playerLeaves', { name: client.name, uid: client.uid })
+        console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Player <${client.name}> (UUID: ${client.uuid}) disconnected 🔌`)
+        server.emit('playerLeaves', { name: client.name, uuid: client.uuid })
         clients.delete(socket.id)
     });
 }
@@ -76,7 +75,7 @@ const handleGameEvents = (socket: io.Socket) => {
         }
 
         console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Received player actions from <${client.name}>, sending to display`, data)
-        server.to(displaySocketID).emit('updatePlayerActions', { name: client.name, uid: client.uid, actions: data })
+        server.to(displaySocketID).emit('playerUpdates', { name: client.name, uuid: client.uuid, actions: data })
     })
 
     // Réception des données venant du 'display', broadcast à tous les clients

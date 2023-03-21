@@ -5,6 +5,7 @@ export interface LanderData {
     angle: number
     altitude: number
     usedFuel: number
+    status: string
 }
 
 /** Représente les informations que vous devez communiquer au serveur pour piloter votre lander */
