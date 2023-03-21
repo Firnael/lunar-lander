@@ -43,7 +43,7 @@ export default function Game() {
         const s: PlayerStats = { name: data.name, attempts: 0, firstLandingAttemptCount: 0, successAttempts: 0, history: [] }
         return [...stats, s]
       }
-      return playerStats
+      return [...stats]
     })
   }
 
@@ -75,10 +75,7 @@ export default function Game() {
       
       // update history and success rate
       player.history.push(1)
-      const attemptsCount = Math.min(player.history.length, SUCCESS_RATE_SAMPLE_SIZE)
-      const lastNthAttemptsHistory = player.history.slice(-attemptsCount)
-      player.successRate = lastNthAttemptsHistory.reduce((acc, c) => acc += c, 0) / attemptsCount * 100
-      player.successRate = Math.floor(player.successRate)
+      player.successRate = updateSuccessRate(player.history)
 
       // update player stats
       updated[index] = player
@@ -104,19 +101,39 @@ export default function Game() {
       const index = updated.findIndex((s: any) => s.name === data.name)
       updated[index].attempts++
       updated[index].history.push(0)
+      updated[index].successRate = updateSuccessRate(updated[index].history)
       return updated
     })
   }
 
-  const playerStatsList = playerStats.map((s: PlayerStats) =>
+  function updateSuccessRate(playerHistory: number[]): number {
+    const attemptsCount = Math.min(playerHistory.length, SUCCESS_RATE_SAMPLE_SIZE)
+    const lastNthAttemptsHistory = playerHistory.slice(-attemptsCount)
+    const successRate = lastNthAttemptsHistory.reduce((acc, c) => acc += c, 0) / attemptsCount * 100
+    return Math.floor(successRate)
+  }
+
+  const playerStatsList = playerStats.map((s: PlayerStats, i) =>
     <tr>
       <td><strong>{s.name}</strong></td>
-      <td>{s.attempts}</td>
-      <td>{s.landed ? '✔️ (' + s.firstLandingAttemptCount + ')' : '❌'}</td>
-      <td>{s.rank ? (s.rank === 1 ? `${s.rank}er` : `${s.rank}ème`) : '-'}</td>
-      <td>{s.usedFuelBest ? s.usedFuelBest : '-'}</td>
-      <td>{s.usedFuelAvg ? s.usedFuelAvg : '-'}</td>
-      <td>{s.successRate ? s.successRate + '%' : '-'}</td>
+      <td><div key={i + s.attempts} className="pop">
+        {s.attempts}
+      </div></td>
+      <td><div key={i + (s.landed ? 'landed' : 'not-landed') } className="pop">
+        {s.landed ? '✔️(' + s.firstLandingAttemptCount + ')' : '❌'}
+      </div></td>
+      <td><div key={i + (s.rank ? s.rank.toString() : 'unranked')} className="pop">
+        {s.rank ? (s.rank === 1 ? `${s.rank}er` : `${s.rank}ème`) : '-'}
+      </div></td>
+      <td><div key={i + (s.usedFuelBest ? s.usedFuelBest.toString() : 'no-usedFuelBest')} className="pop">
+        {s.usedFuelBest ? s.usedFuelBest : '-'}
+      </div></td>
+      <td><div key={i + (s.usedFuelAvg ? s.usedFuelAvg.toString() : 'no-usedFuelAvg')} className="pop">
+        {s.usedFuelAvg ? s.usedFuelAvg : '-'}
+      </div></td>
+      <td><div key={i + (s.successRate ? s.successRate.toString() : 'no-successRate')} className="pop">
+        {s.successRate ? s.successRate + '%' : '-'}
+      </div></td>
     </tr>
   )
 
@@ -131,13 +148,13 @@ export default function Game() {
         <table>
           <thead>
             <tr>
-              <th>Name<br/>🚀</th>
-              <th>Tries<br/>♻️</th>
-              <th>Landed<br/>📥</th>
-              <th>Rank<br/>🥇</th>
-              <th>Best<br/>🛢️</th>
-              <th>Avg<br/>🛢️</th>
-              <th>%<br/>📈</th>
+              <th>🧑‍🚀</th>
+              <th>🚀</th>
+              <th>🎉</th>
+              <th>🥇</th>
+              <th>🛢️🔝</th>
+              <th>🛢️♻️</th>
+              <th>📈％</th>
             </tr>
           </thead>
           <tbody>
