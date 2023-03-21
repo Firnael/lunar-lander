@@ -2,9 +2,6 @@ import io, { Socket } from "socket.io-client"
 import { Player, PlayerJoins, PlayerLeaves, LanderRotation, PlayerUpdates, UpdatePlayersData, LanderData, LanderStatus } from "../Models/player"
 
 const SERVER_URL = 'http://127.0.0.1:4000'
-const CLIENT_NAME = 'display'
-const CLIENT_UUID = '0000'
-const CLIENT_EMOJI = '🤖'
 let socket: Socket
 
 let game: Phaser.Game
@@ -16,9 +13,10 @@ const service = {
         game = gameInstance
         socket = io(SERVER_URL, {
             query: {
-                clientName: CLIENT_NAME,
-                clientUuid: CLIENT_UUID,
-                clientEmoji: CLIENT_EMOJI
+                clientName: 'display',
+                clientUuid: '0000',
+                clientEmoji: '🤖',
+                clientColor: 'FFFFFF'
             },
         })
 
@@ -39,7 +37,7 @@ const service = {
             data.forEach((d: PlayerJoins) => {
                 const index = players.findIndex(p => p.uuid === d.uuid)
                 if(index < 0) {
-                    createPlayer(d.name, d.uuid, d.emoji)
+                    createPlayer(d.name, d.uuid, d.emoji, d.color)
                     game.events.emit('CREATE_LANDER', d)
                 }
             })
@@ -47,7 +45,7 @@ const service = {
         
         socket.on("playerJoins", (payload: PlayerJoins) => {
             console.log('Create new player', payload.name)
-            createPlayer(payload.name, payload.uuid, payload.emoji)
+            createPlayer(payload.name, payload.uuid, payload.emoji, payload.color)
             game.events.emit('CREATE_LANDER', payload)
         })
 
@@ -61,7 +59,7 @@ const service = {
             const playerIndex = players.findIndex(p => p.uuid === payload.uuid)
             if (playerIndex < 0) {
                 // le joueur est inconnu du display, il faut le créer (possible si le display s'est déco/reco)
-                createPlayer(payload.name, payload.uuid, payload.emoji)
+                createPlayer(payload.name, payload.uuid, payload.emoji, payload.color)
             } else {
                 players[playerIndex].actions = payload.actions
             }
@@ -88,11 +86,12 @@ const service = {
     }
 }
 
-function createPlayer(name: string, uuid: string, emoji: string) {
+function createPlayer(name: string, uuid: string, emoji: string, color: string) {
     const player: Player = {
         uuid,
         name,
         emoji,
+        color,
         lander: {
             vx: 0,
             vy: 0,

@@ -34,8 +34,9 @@ const defineListeners = () => {
 const handleConnection = (socket: io.Socket) => {
     const clientName = socket.handshake.query['clientName'] as string || 'MISSING_NAME'
     const clientUuid = socket.handshake.query['clientUuid'] as string || 'MISSING_UUID'
-    const clientEmoji = socket.handshake.query['clientEmoji'] as string || '🚫'
-    const client = new Client(clientName, clientUuid, clientEmoji, socket)
+    const clientEmoji = socket.handshake.query['clientEmoji'] as string || '💩'
+    const clientColor = socket.handshake.query['clientColor'] as string || 'FFFFFF'
+    const client = new Client(clientName, clientUuid, clientEmoji, clientColor, socket)
 
     console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Player <${client.name}> ${client.emoji} (UUID: ${client.uuid}) connected ⚡`)
     clients.set(socket.id, client)
@@ -52,7 +53,7 @@ const handleConnection = (socket: io.Socket) => {
         });
         server.to(displaySocketID).emit('playerList', playerList)
     } else {
-        server.emit('playerJoins', { name: client.name, uuid: client.uuid, emoji: client.emoji })
+        server.emit('playerJoins', { name: client.name, uuid: client.uuid, emoji: client.emoji, color: client.color })
     }
 }
 

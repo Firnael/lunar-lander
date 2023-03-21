@@ -1,6 +1,7 @@
 /** Used by the webapp to rank players  */
 export interface PlayerStats {
     name: string             // the player name
+    color: string            // the player chosen color (in hexa string without the #)
     attempts: number         // the attempts count
     firstLandingAttemptCount: number // the attemps count when first landing occured
     successAttempts: number  // the attempts count
@@ -23,6 +24,7 @@ export interface Player {
     name: string
     uuid: string
     emoji: string
+    color: string
     lander: LanderData,
     actions?: PlayerActions
 }
@@ -54,6 +56,7 @@ export interface PlayerJoins {
     name: string
     uuid: string
     emoji: string
+    color: string
 }
 
 export interface PlayerLeaves {
@@ -66,6 +69,7 @@ export interface PlayerUpdates {
     name: string
     uuid: string
     emoji: string
+    color: string
     actions: PlayerActions
 }
 

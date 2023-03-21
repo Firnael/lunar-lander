@@ -18,8 +18,9 @@ export class Ship extends Physics.Arcade.Sprite {
     private LANDING_MAX_ANGLE = 15
 
     public playerName: string
-    public playerEmoji: string
     public playerUuid: string
+    public playerEmoji: string
+    public playerColor: string
     public usedFuel: number
     public altitude: number
     public status: LanderStatus
@@ -39,7 +40,7 @@ export class Ship extends Physics.Arcade.Sprite {
     private leftEngine: Phaser.GameObjects.Particles.ParticleEmitter
     private rightEngine: Phaser.GameObjects.Particles.ParticleEmitter
 
-    constructor(scene: Phaser.Scene, x: number, y: number, texture: string, playerName: string, playerEmoji: string, playerUuid: string, invincible?: boolean) {
+    constructor(scene: Phaser.Scene, x: number, y: number, texture: string, name: string, uuid: string, emoji: string, color: string, invincible?: boolean) {
         super(scene, x, y, texture)
         scene.add.existing(this)
         scene.physics.add.existing(this)
@@ -54,7 +55,19 @@ export class Ship extends Physics.Arcade.Sprite {
         this.setMaxVelocity(this.MAX_SPEED, this.MAX_SPEED)
         this.setDrag(this.DRAG, this.DRAG)
         this.setBounce(this.BOUNCE, this.BOUNCE)
-        // this.setTint(0xff00ff)
+
+        // player preferencies
+        this.playerName = name
+        this.playerUuid = uuid
+        this.playerEmoji = emoji
+        this.playerColor = color
+
+        // apply outline with plugin
+        const outlinePlugin = scene.plugins.get('rexoutlinepipelineplugin') as any; // avoid f***ing type error
+        outlinePlugin.add(this, {
+            thickness: 2,
+            outlineColor: parseInt(color, 16)
+        });
 
         this.parts = this.scene.add.group()
 
@@ -64,9 +77,6 @@ export class Ship extends Physics.Arcade.Sprite {
         }
 
         this.status = LanderStatus.ALIVE
-        this.playerName = playerName
-        this.playerEmoji = playerEmoji
-        this.playerUuid = playerUuid
         this.usedFuel = 0
         this.isInvincible = invincible || false
         this.velocityHistory = []
@@ -75,9 +85,9 @@ export class Ship extends Physics.Arcade.Sprite {
         this.hud = new Hud(scene, 0, 0, 'hudLine', this)
 
         // setup indicator
-        this.indicator = new Indicator(scene, 0, 0, 'indicator', playerName)
+        this.indicator = new Indicator(scene, 0, 0, 'indicator', name, color)
         // setup flag
-        this.flag = new Flag(scene, 0, 0, 'flag', playerEmoji)
+        this.flag = new Flag(scene, 0, 0, 'flag', emoji)
         this.flag.setVisible(false)
 
         // setup engines particules emitters

@@ -6,20 +6,23 @@ let socket: Socket
 let clientUuid: string
 let clientName: string
 let clientEmoji: string
+let clientColor: string
 
 const service = {
 
-    start: function (endpoint: string, playerName: string, playerEmoji: string) {
+    start: function (endpoint: string, playerName: string, playerEmoji: string, playerColor: string) {
         clientName = playerName.substring(0, 12)
         clientUuid = randomUUID(),
         clientEmoji = /\p{Extended_Pictographic}/ug.test(playerEmoji) ? playerEmoji : '💩'
+        clientColor = playerColor.match(/[0-9A-Fa-f]{6}/g) ? playerColor : Math.floor(Math.random()*16777215).toString(16);
 
         console.log('Connecting to server...')
         socket = io(endpoint, {
             query: {
                 clientName,
                 clientUuid,
-                clientEmoji
+                clientEmoji,
+                clientColor
             },
         })
 

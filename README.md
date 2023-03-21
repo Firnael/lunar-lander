@@ -30,11 +30,12 @@ npm run dev
 ```
 L'application redémarrera automatiquement à chaque modification dans le code.
 
-Chaque client peut customiser son vaisseau avec un nom et un emoji : 
+Chaque client peut customiser son vaisseau avec un nom, un [emoji](https://emojipedia.org/) et une [couleur](https://www.colorhexa.com/) : 
 
 ```javascript
 const PLAYER_NAME = process.env.PLAYER_NAME || 'NO_NAME';
 const PLAYER_EMOJI = process.env.PLAYER_EMOJI || '💩';
+const PLAYER_EMOJI = process.env.PLAYER_COLOR || 'FFFFFF';
 ```
 
 ## Comment jouer
@@ -95,7 +96,7 @@ Voici une solution un peu nulle mais qui fonctionne pour lancer plein de clients
 # installer ce package pour lancer N commandes en parallèle 
 npm i -g concurrently
 # lancer ça pour pop 10 clients, je suis pas expert en bash laissez moi tranquille
-concurrently "PLAYER_NAME=N1 npm run dev" "PLAYER_NAME=N2 npm run dev" "PLAYER_NAME=N3 npm run dev" "PLAYER_NAME=N4 npm run dev" "PLAYER_NAME=N5 npm run dev" "PLAYER_NAME=N6 npm run dev" "PLAYER_NAME=N7 npm run dev" "PLAYER_NAME=N8 npm run dev" "PLAYER_NAME=N9 npm run dev" "PLAYER_NAME=N10 npm run dev"
+concurrently "PLAYER_NAME=N1 PLAYER_COLOR=FF0000 npm run dev" "PLAYER_NAME=N2 PLAYER_COLOR=FFFF00 npm run dev" "PLAYER_NAME=N3 PLAYER_COLOR=FF00FF npm run dev" "PLAYER_NAME=N4 PLAYER_COLOR=0000FF npm run dev" "PLAYER_NAME=N5 PLAYER_COLOR=00FF00 npm run dev" "PLAYER_NAME=N6 PLAYER_COLOR=00FFFF npm run dev" "PLAYER_NAME=N7 PLAYER_COLOR=CC0000 npm run dev" "PLAYER_NAME=N8 PLAYER_COLOR=00CC00 npm run dev" "PLAYER_NAME=N9 PLAYER_COLOR=0000CC npm run dev" "PLAYER_NAME=N10 PLAYER_COLOR=CCCC00 npm run dev" "PLAYER_NAME=N11 PLAYER_COLOR=00CCCC npm run dev" "PLAYER_NAME=N12 PLAYER_COLOR=CC00CC npm run dev"
 ```
 
 Voici un algo tout péter pour que les vaisseaux volent un peu mais pas trop :

@@ -4,9 +4,10 @@ import io from './services/socket'
 const SERVER_URL = process.env.SERVER_URL || 'http://127.0.0.1:4000';
 const PLAYER_NAME = process.env.PLAYER_NAME || 'NO_NAME';
 const PLAYER_EMOJI = process.env.PLAYER_EMOJI || '💩';
+const PLAYER_COLOR = process.env.PLAYER_COLOR || 'FFFFFF';
 
 (async () => {
-    io.start(SERVER_URL, PLAYER_NAME, PLAYER_EMOJI)
+    io.start(SERVER_URL, PLAYER_NAME, PLAYER_EMOJI, PLAYER_COLOR)
     io.handleLander((data: LanderData) => {
         // Ici vous faites ce que vous voulez, mais vous DEVEZ return un objet LanderAction
         const actions = {
@@ -45,11 +46,6 @@ const PLAYER_EMOJI = process.env.PLAYER_EMOJI || '💩';
             if (data.altitude <= 300 && data.vy > 30) {
                 actions.thrust = true
             }
-        }
-
-        if (data.altitude > 800) {
-            actions.thrust = false
-            actions.rotate = LanderRotation.NONE
         }
 
         return actions

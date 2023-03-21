@@ -37,13 +37,20 @@ export default function Game() {
 
   function handleCreateLander(data: PlayerJoins) {
     console.log('CREATE_LANDER : ', data)
-    // add player to the list if it doesn't exists already
+    
     setPlayerStats((stats: PlayerStats[]) => {
-      if (stats.findIndex((s: PlayerStats) => s.name === data.name) < 0) {
-        const s: PlayerStats = { name: data.name, attempts: 0, firstLandingAttemptCount: 0, successAttempts: 0, history: [] }
+      const index = stats.findIndex((s: PlayerStats) => s.name === data.name);
+      if (index < 0) {
+        // add player to the list if it doesn't exists already
+        const s: PlayerStats = { name: data.name, color: data.color, attempts: 0, firstLandingAttemptCount: 0, successAttempts: 0, history: [] }
         return [...stats, s]
       }
-      return [...stats]
+      else {
+        // update color if player changed it
+        let updated = [...stats]
+        updated[index].color = data.color
+        return updated
+      }
     })
   }
 
@@ -115,7 +122,7 @@ export default function Game() {
 
   const playerStatsList = playerStats.map((s: PlayerStats, i) =>
     <tr>
-      <td><strong>{s.name}</strong></td>
+      <td><strong style={{textShadow: '2px 2px 2px #' + s.color}}>{s.name}</strong></td>
       <td><div key={i + s.attempts} className="pop">
         {s.attempts}
       </div></td>

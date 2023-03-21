@@ -32,8 +32,10 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	preload(): void {
+		// spritesheets
 		this.load.spritesheet('explosion', explosion_spritesheet_url, { frameWidth: 128, frameHeight: 128 })
 		this.load.spritesheet('shipParts', ship_parts_spritesheet_url, { frameWidth: 25, frameHeight: 16 })
+		// images
 		this.load.image('ship', ship_sprite_url)
 		this.load.image('background', background_sprite_url)
 		this.load.image('ground', ground_sprite_url)
@@ -44,6 +46,9 @@ export class GameScene extends Phaser.Scene {
 		// particules
 		this.load.image('smoke_particule', smoke_particule_sprite_url)
 		this.load.image('fire_particule', fire_particule_sprite_url)
+		// outline plugin
+		// https://rexrainbow.github.io/phaser3-rex-notes/docs/site/shader-outline/
+		this.load.plugin('rexoutlinepipelineplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexoutlinepipelineplugin.min.js', true);
 	}
 
 	create(): void {
@@ -104,7 +109,7 @@ export class GameScene extends Phaser.Scene {
 
 	private createShip(data: PlayerJoins, x = 0, y = 0) {
 		// Add the ship to the stage
-		const ship: Ship = new Ship(this, x, y, 'ship', data.name, data.emoji, data.uuid, data.name === 'Croclardon')
+		const ship: Ship = new Ship(this, x, y, 'ship', data.name, data.uuid, data.emoji, data.color, data.name === 'Croclardon')
 		// Choose a random starting angle and velocity for the ship
 		ship.reset()
 		// Enable and handle collisions between ship and ground
