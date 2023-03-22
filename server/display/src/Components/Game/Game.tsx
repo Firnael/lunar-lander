@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react'
 import 'phaser'
 import gameManager from '../../Services/GameManager'
 import config from './Config/Config'
-import { PlayerStats, PlayerJoins, PlayerLeaves, UpdatePlayersData } from '../../Models/player'
+import { PlayerStats, PlayerJoins, PlayerLeaves, UpdatePlayersData, AttemptsHistory } from '../../Models/player'
 import './Game.css'
 
 export default function Game() {
 
-  const SUCCESS_RATE_SAMPLE_SIZE = 10
+  const SUCCESS_RATE_SAMPLE_SIZE = 20
 
   const [game, setGame] = useState<Phaser.Game>({} as Phaser.Game)
   const [playerStats, setPlayerStats] = useState<PlayerStats[]>([])
@@ -42,7 +42,7 @@ export default function Game() {
       const index = stats.findIndex((s: PlayerStats) => s.name === data.name);
       if (index < 0) {
         // add player to the list if it doesn't exists already
-        const s: PlayerStats = { name: data.name, color: data.color, attempts: 0, firstLandingAttemptCount: 0, successAttempts: 0, history: [] }
+        const s: PlayerStats = { name: data.name, color: data.color, attempts: 0, firstLandingAttemptCount: 0, successAttempts: 0, attemptsHistory: [] }
         return [...stats, s]
       }
       else {
@@ -61,36 +61,47 @@ export default function Game() {
 
   function handleShipLanded(data: any) {
     console.log('SHIP_LANDED :', data)
+    updatePlayerStats(data, true)
+  }
+
+  function handleShipExploded(data: any) {
+    console.log('SHIP_EXPLODED :', data)
+    updatePlayerStats(data, false)
+  }
+
+  function updatePlayerStats(data: any, success: boolean) {
     setPlayerStats((stats: PlayerStats[]) => {
       // copy stats to an updated version will will edit
       let updated = [...stats]
       const index = updated.findIndex((s: any) => s.name === data.name)
       const player = updated[index]
       player.attempts++
-      player.successAttempts++
 
-      // if player never landed before, register timestamp and attempt count
-      if (!player.landed) {
-        player.landed = new Date().getTime()
-        player.firstLandingAttemptCount = player.attempts
+      if (success) {
+        player.successAttempts++
+        
+        // update all time best fuel used info
+        player.usedFuelBest = player.usedFuelBest ? (player.usedFuelBest < data.usedFuel ? player.usedFuelBest : data.usedFuel) : data.usedFuel
+
+        // if player never landed before, register timestamp and first successful landing attempt count
+        if (!player.landed) {
+          player.landed = new Date().getTime()
+          player.firstLandingAttemptCount = player.attempts
+        }
       }
       
-      // update fuel info
-      player.usedFuelAvg = player.usedFuelAvg ? (player.usedFuelAvg * (player.successAttempts - 1) + data.usedFuel) / player.successAttempts : data.usedFuel
-      player.usedFuelAvg = parseInt(player.usedFuelAvg!.toFixed())
-      player.usedFuelBest = player.usedFuelBest ? (player.usedFuelBest < data.usedFuel ? player.usedFuelBest : data.usedFuel) : data.usedFuel
-      
-      // update history and success rate
-      player.history.push(1)
-      player.successRate = updateSuccessRate(player.history)
+      // update attemps history, success rate and average used fuel
+      player.attemptsHistory.push({ success: success, usedFuel: data.usedFuel })
+      player.successRate = updateSuccessRate(player.attemptsHistory)
+      player.usedFuelAvg = updateUsedFuelAverage(player.attemptsHistory)
 
-      // update player stats
+      // replace old with new data
       updated[index] = player
 
-      // sort players by rank
+      // sort players by rank (best combination of success rate and average used fuel)
       updated = updated.sort((a, b) => {
         if (a.landed && b.landed) {
-          return a.usedFuelBest! - b.usedFuelBest!
+          return (b.successRate! / b.usedFuelAvg!) - (a.successRate! / a.usedFuelAvg!)
         }
         return a.landed ? -1 : 1
       })
@@ -101,23 +112,23 @@ export default function Game() {
     })
   }
 
-  function handleShipExploded(data: any) {
-    console.log('SHIP_EXPLODED :', data)
-    setPlayerStats((stats: PlayerStats[]) => {
-      const updated = [...stats]
-      const index = updated.findIndex((s: any) => s.name === data.name)
-      updated[index].attempts++
-      updated[index].history.push(0)
-      updated[index].successRate = updateSuccessRate(updated[index].history)
-      return updated
-    })
+  function updateSuccessRate(history: AttemptsHistory[]): number {
+    const lastNthAttemptsHistory = retrieveNthLastAttemptsHistory(history)
+    const successRate = lastNthAttemptsHistory
+      .reduce((acc, c) => acc += (c.success ? 1 : 0), 0) / lastNthAttemptsHistory.length * 100
+    return Math.floor(successRate)
   }
 
-  function updateSuccessRate(playerHistory: number[]): number {
-    const attemptsCount = Math.min(playerHistory.length, SUCCESS_RATE_SAMPLE_SIZE)
-    const lastNthAttemptsHistory = playerHistory.slice(-attemptsCount)
-    const successRate = lastNthAttemptsHistory.reduce((acc, c) => acc += c, 0) / attemptsCount * 100
-    return Math.floor(successRate)
+  function updateUsedFuelAverage(history: AttemptsHistory[]): number {
+    const lastNthAttemptsHistory = retrieveNthLastAttemptsHistory(history)
+    const usedFuelAverage = lastNthAttemptsHistory
+      .reduce((acc, c) => acc += c.usedFuel, 0) / lastNthAttemptsHistory.length
+    return Math.floor(usedFuelAverage)
+  }
+
+  function retrieveNthLastAttemptsHistory(history: AttemptsHistory[]): AttemptsHistory[] {
+    const attemptsCount = Math.min(history.length, SUCCESS_RATE_SAMPLE_SIZE)
+    return history.slice(-attemptsCount)
   }
 
   const playerStatsList = playerStats.map((s: PlayerStats, i) =>

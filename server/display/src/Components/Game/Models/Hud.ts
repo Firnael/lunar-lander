@@ -14,16 +14,19 @@ export class Hud extends Phaser.GameObjects.Sprite {
 
     // reference to the ship, to retrieve data about it
     private shipRef: Ship
+    // we need this info to print warning sign if fuel tank is empty
+    private fuelTankSize: number
     // needs the canvas width to know when to flip the HUD
     private canvasWidth: number
     private flipLimit: number
 
-    constructor(scene: Phaser.Scene, x: number, y: number, texture: string, shipRef: Ship) {
+    constructor(scene: Phaser.Scene, x: number, y: number, texture: string, fuelTankSize: number, shipRef: Ship) {
         super(scene, x, y, texture)
         scene.add.existing(this)
 
         this.setOrigin(0, 1)
         this.shipRef = shipRef
+        this.fuelTankSize = fuelTankSize
 
         const { width, height } = scene.sys.canvas
         this.canvasWidth = width
@@ -45,7 +48,6 @@ export class Hud extends Phaser.GameObjects.Sprite {
         this.hudContainer = scene.add.container(0, 0, [
             this.nameText, this.vxText, this.vyText, this.angleText, this.altitudeText, this.fuelUsedText, this.dangerSignSprite
         ])
-
     }
 
     update(): void {
@@ -73,7 +75,7 @@ export class Hud extends Phaser.GameObjects.Sprite {
         this.vyText.setText('vy:   ' + this.shipRef.body.velocity.y.toFixed())
         this.angleText.setText('ang:  ' + this.shipRef.angle.toFixed() + '°')
         this.altitudeText.setText('alt:   ' + this.shipRef.altitude.toFixed())
-        this.fuelUsedText.setText('fuel: ' + this.shipRef.usedFuel)
+        this.fuelUsedText.setText(`fuel:  ${this.shipRef.usedFuel}${this.shipRef.usedFuel >= this.fuelTankSize ? '⚠️' : ''}`)
     }
 
     setContainerVisible(value: boolean): void {

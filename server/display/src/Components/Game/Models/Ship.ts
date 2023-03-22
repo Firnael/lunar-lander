@@ -16,16 +16,7 @@ export class Ship extends Physics.Arcade.Sprite {
     private BOUNCE = 0
     private LANDING_MAX_SPEED = new Phaser.Math.Vector2(40, 40)
     private LANDING_MAX_ANGLE = 15
-
-    public playerName: string
-    public playerUuid: string
-    public playerEmoji: string
-    public playerColor: string
-    public usedFuel: number
-    public altitude: number
-    public status: LanderStatus
-    public actions: PlayerActions
-    public parts: Phaser.GameObjects.Group
+    private FUEL_TANK_SIZE = 3000
 
     private canvasWidth: number
     private canvasHeight: number
@@ -39,6 +30,16 @@ export class Ship extends Physics.Arcade.Sprite {
     private mainEngine: Phaser.GameObjects.Particles.ParticleEmitter
     private leftEngine: Phaser.GameObjects.Particles.ParticleEmitter
     private rightEngine: Phaser.GameObjects.Particles.ParticleEmitter
+
+    public playerName: string
+    public playerUuid: string
+    public playerEmoji: string
+    public playerColor: string
+    public usedFuel: number
+    public altitude: number
+    public status: LanderStatus
+    public actions: PlayerActions
+    public parts: Phaser.GameObjects.Group
 
     constructor(scene: Phaser.Scene, x: number, y: number, texture: string, name: string, uuid: string, emoji: string, color: string, invincible?: boolean) {
         super(scene, x, y, texture)
@@ -82,7 +83,7 @@ export class Ship extends Physics.Arcade.Sprite {
         this.velocityHistory = []
         this.altitude = 0
 
-        this.hud = new Hud(scene, 0, 0, 'hudLine', this)
+        this.hud = new Hud(scene, 0, 0, 'hudLine', this.FUEL_TANK_SIZE, this)
 
         // setup indicator
         this.indicator = new Indicator(scene, 0, 0, 'indicator', name, color)
@@ -95,10 +96,10 @@ export class Ship extends Physics.Arcade.Sprite {
         const fireParticles = scene.add.particles('fire_particule')
 
         const enginesParticulesOptions: Phaser.Types.GameObjects.Particles.ParticleEmitterConfig = {
-            speed: 50,
-            lifespan: 200,
+            speed: 75,
+            lifespan: 300,
             frequency: 1,
-            scale: { start: 1, end: 0.2 },
+            scale: { start: 1.5, end: 0.2 },
             alpha: 0.5,
             angle: 90,
             blendMode: Phaser.BlendModes.ADD,
@@ -111,7 +112,7 @@ export class Ship extends Physics.Arcade.Sprite {
         this.mainEngine.setPosition(0, 15)
         this.mainEngine.setTint([0xff0000, 0xff6600, 0xffff00]) // fire tints !
         this.mainEngine.setSpeed(100)
-        this.mainEngine.setScale({ start: 2, end: 0.2 })
+        this.mainEngine.setScale({ start: 2.5, end: 0.2 })
 
         this.enginesContainer = scene.add.container(0, 0, [smokeParticles, fireParticles])
     }
@@ -141,41 +142,51 @@ export class Ship extends Physics.Arcade.Sprite {
         this.enginesContainer.setPosition(this.x, this.y)
         this.enginesContainer.setAngle(this.angle)
 
-        // handle player actions
-        switch (this.actions.rotate) {
-            case LanderRotation.COUNTERCLOCKWISE:
-                // rotate left
-                this.usedFuel++
-                this.setAngularAcceleration(-this.ANGULAR_ACCELERATION)
-                this.setAngularVelocity(-this.ROTATION_SPEED)
-                this.leftEngine.start()
-                break;
-            case LanderRotation.CLOCKWISE:
-                // rotate right
-                this.usedFuel++
-                this.setAngularAcceleration(this.ANGULAR_ACCELERATION)
-                this.setAngularVelocity(this.ROTATION_SPEED)
-                this.rightEngine.start()
-                break;
-            default:
-                // stop rotation
-                this.setAngularAcceleration(0)
-                this.leftEngine.stop()
-                this.rightEngine.stop()
-        }
-
-        if (this.actions.thrust) {
-            this.usedFuel+=2 // main engine fuel cost is greater
-            // Calculate acceleration vector based on this.angle and this.ACCELERATION
-            this.setAccelerationX(Math.cos(this.rotation - 90) * this.ACCELERATION)
-            this.setAccelerationY(Math.sin(this.rotation - 90) * this.ACCELERATION)
-            // Start main engine !
-            this.mainEngine.start()
-        } else {
-            // Otherwise, stop thrusting
+        // no more fuel, sorry :D
+        if (this.usedFuel >= this.FUEL_TANK_SIZE) {
+            // stop rotation
             this.setAcceleration(0, 0)
-            // Stop main engine
+            this.setAngularAcceleration(0)
             this.mainEngine.stop()
+            this.leftEngine.stop()
+            this.rightEngine.stop()
+        } else {
+            // handle player actions
+            switch (this.actions.rotate) {
+                case LanderRotation.COUNTERCLOCKWISE:
+                    // rotate left
+                    this.usedFuel++
+                    this.setAngularAcceleration(-this.ANGULAR_ACCELERATION)
+                    this.setAngularVelocity(-this.ROTATION_SPEED)
+                    this.leftEngine.start()
+                    break;
+                case LanderRotation.CLOCKWISE:
+                    // rotate right
+                    this.usedFuel++
+                    this.setAngularAcceleration(this.ANGULAR_ACCELERATION)
+                    this.setAngularVelocity(this.ROTATION_SPEED)
+                    this.rightEngine.start()
+                    break;
+                default:
+                    // stop rotation
+                    this.setAngularAcceleration(0)
+                    this.leftEngine.stop()
+                    this.rightEngine.stop()
+            }
+
+            if (this.actions.thrust) {
+                this.usedFuel+=2 // main engine fuel cost is greater
+                // Calculate acceleration vector based on this.angle and this.ACCELERATION
+                this.setAccelerationX(Math.cos(this.rotation - 90) * this.ACCELERATION)
+                this.setAccelerationY(Math.sin(this.rotation - 90) * this.ACCELERATION)
+                // Start main engine !
+                this.mainEngine.start()
+            } else {
+                // Otherwise, stop thrusting
+                this.setAcceleration(0, 0)
+                // Stop main engine
+                this.mainEngine.stop()
+            }
         }
     }
 
@@ -266,7 +277,7 @@ export class Ship extends Physics.Arcade.Sprite {
         if (respawn) {
             this.setResetCallback(3000)
         }
-        this.scene.game.events.emit('SHIP_EXPLODED', { name: this.playerName })
+        this.scene.game.events.emit('SHIP_EXPLODED', { name: this.playerName, usedFuel: this.FUEL_TANK_SIZE })
     }
 
     changeActions(actions: PlayerActions) {

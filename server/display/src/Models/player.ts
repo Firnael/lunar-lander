@@ -1,16 +1,22 @@
 /** Used by the webapp to rank players  */
 export interface PlayerStats {
-    name: string             // the player name
-    color: string            // the player chosen color (in hexa string without the #)
-    attempts: number         // the attempts count
+    name: string            // the player name
+    color: string           // the player chosen color (in hexa string without the #)
+    attempts: number        // the attempts count
     firstLandingAttemptCount: number // the attemps count when first landing occured
-    successAttempts: number  // the attempts count
-    landed?: number          // is a timestamp, set during the player's ship first landing
-    rank?: number            // the player rank
-    usedFuelBest?: number    // the least amount of fuel used for a landing
-    usedFuelAvg?: number     // the average amount of fuel used for a landing
-    successRate?: number     // the player success rate over the N last landing
-    history: number[]        // the player attempts history (0 is a failed attempt, 1 is a success)
+    successAttempts: number // the successful attempts count
+    landed?: number         // is a timestamp, set during the player's ship first landing
+    rank?: number           // the player rank
+    usedFuelBest?: number   // the least amount of fuel used for a landing
+    usedFuelAvg?: number    // the average amount of fuel used for a landing
+    successRate?: number    // the player success rate over the N last landing
+    attemptsHistory: AttemptsHistory[] // the player attempts history
+}
+
+/**  Represents a player landing history */
+export interface AttemptsHistory {
+    success: boolean // the result of the landing (true if lander didn't explode)
+    usedFuel: number // the fuel used to land
 }
 
 export enum LanderStatus {
