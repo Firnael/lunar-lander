@@ -34,7 +34,7 @@ export class Hud extends Phaser.GameObjects.Sprite {
         this.flipLimit = this.canvasWidth / 2
 
         const textOptions = { font: '14px Arial', color: '#dddddd' }
-        this.nameText = scene.add.text(0, -60, this.shipRef.playerName, { font: 'bold 16px Arial', color: '#dddddd' }).setOrigin(0, 0.5)
+        this.nameText = scene.add.text(0, -62, this.shipRef.playerName, { font: 'bold 16px Arial', color: '#dddddd', backgroundColor: '#' + shipRef.playerColor }).setOrigin(0, 0.5)
         this.nameText.setStroke('#' + shipRef.playerColor, 3)
         this.nameText.setShadow(1, 1, '#111111', 1, false, true)
         this.vxText = scene.add.text(0, -45, '', textOptions).setOrigin(0, 0.5)

@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import 'phaser'
+import tinygradient from 'tinygradient'
+import tinycolor from 'tinycolor2'
 import gameManager from '../../Services/GameManager'
 import config from './Config/Config'
 import { PlayerStats, PlayerJoins, PlayerLeaves, UpdatePlayersData, AttemptsHistory } from '../../Models/player'
@@ -8,6 +10,9 @@ import './Game.css'
 export default function Game() {
 
   const SUCCESS_RATE_SAMPLE_SIZE = 20
+  const rankingGradient = tinygradient([
+    '#FFFFFF', '#40F03F', '#5DAA9F', '#206DDE',
+    '#9F3AED', '#D44EA7', '#FF8001', '#E6CC80' ])
 
   const [game, setGame] = useState<Phaser.Game>({} as Phaser.Game)
   const [playerStats, setPlayerStats] = useState<PlayerStats[]>([])
@@ -131,26 +136,45 @@ export default function Game() {
     return history.slice(-attemptsCount)
   }
 
+  function getColorByFuelUsedAvg(fuelUsedAvg: number) {
+    // convert a number from 0 to 3000 to a number from 1 to 0
+    // TODO retrieve the '3000' number from the game
+    const value = 1 - (fuelUsedAvg / 3000)
+    return rankingGradient.rgbAt(value).toHexString()
+  }
+
+  function getColorBySuccessRate(rank: number) {
+    return rankingGradient.rgbAt(rank / 100).toHexString()
+  }
+
   const playerStatsList = playerStats.map((s: PlayerStats, i) =>
     <tr>
-      <td><strong style={{textShadow: '2px 2px 2px #' + s.color}}>{s.name}</strong></td>
-      <td><div key={i + s.attempts} className="pop">
-        {s.attempts}
+      <td><div key={i + s.name} className="pop">
+        <mark style={{backgroundColor: '#' + s.color, color: tinycolor(s.color).getBrightness() >= 128 ? '#111' : '#eee'}}>{s.name}</mark>
       </div></td>
-      <td><div key={i + (s.landed ? 'landed' : 'not-landed') } className="pop">
-        {s.landed ? '✔️(' + s.firstLandingAttemptCount + ')' : '❌'}
-      </div></td>
+
       <td><div key={i + (s.rank ? s.rank.toString() : 'unranked')} className="pop">
-        {s.rank ? (s.rank === 1 ? `${s.rank}er` : `${s.rank}ème`) : '-'}
+        {s.rank ? '#' + s.rank : '-'}
       </div></td>
-      <td><div key={i + (s.usedFuelBest ? s.usedFuelBest.toString() : 'no-usedFuelBest')} className="pop">
+
+      <td><div key={i + s.attempts} className="pop">
+        {s.attempts} {s.landed ? '(' + s.firstLandingAttemptCount + ')' : '❌'}
+      </div></td>
+
+      {/* <td><div key={i + (s.usedFuelBest ? s.usedFuelBest.toString() : 'no-usedFuelBest')} className="pop">
         {s.usedFuelBest ? s.usedFuelBest : '-'}
-      </div></td>
+      </div></td> */}
+
       <td><div key={i + (s.usedFuelAvg ? s.usedFuelAvg.toString() : 'no-usedFuelAvg')} className="pop">
-        {s.usedFuelAvg ? s.usedFuelAvg : '-'}
+        <mark style={{backgroundColor: getColorByFuelUsedAvg(s.usedFuelAvg || 3000)}}>
+          {s.usedFuelAvg ? s.usedFuelAvg : '-'}
+        </mark>
       </div></td>
+
       <td><div key={i + (s.successRate ? s.successRate.toString() : 'no-successRate')} className="pop">
-        {s.successRate ? s.successRate + '%' : '-'}
+        <mark style={{backgroundColor: getColorBySuccessRate(s.successRate || 0)}}>
+          {s.successRate ? s.successRate + '%' : '-'}
+        </mark>
       </div></td>
     </tr>
   )
@@ -167,12 +191,11 @@ export default function Game() {
           <thead>
             <tr>
               <th>🧑‍🚀</th>
-              <th>🚀</th>
-              <th>🎉</th>
               <th>🥇</th>
-              <th>🛢️🔝</th>
-              <th>🛢️♻️</th>
-              <th>📈％</th>
+              <th>🚀</th>
+              {/* <th>🛢️🔝</th> */}
+              <th>🛢️</th>
+              <th>📈</th>
             </tr>
           </thead>
           <tbody>

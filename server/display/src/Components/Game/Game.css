@@ -38,7 +38,8 @@ td {
 }
 
 thead th {
-    background-color: #55608f;
+    /* background-color: #55608f; */
+    font-size: 30px;
 }
 
 tbody tr:hover {
@@ -74,4 +75,9 @@ tbody td:hover:before {
 .pop {
     font-weight: bold;
     animation: pop-kf 0.5s ease-out;
+}
+
+mark {
+    padding: 2px 5px;
+    border-radius: 5px;
 }
