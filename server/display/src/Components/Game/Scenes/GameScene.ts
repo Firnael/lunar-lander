@@ -15,8 +15,8 @@ import { PlayerJoins, PlayerLeaves, PlayerUpdates } from '../../../Models/player
 
 export class GameScene extends Phaser.Scene {
 	private CANVAS!: Phaser.Game["canvas"]
-	private GRAVITY = 50
-
+	private TOGGLE_DEBUG!: Phaser.Input.Keyboard.Key
+	
 	private ships: Ship[] = []
 	private shipsCollisionGroup!: Phaser.GameObjects.Group
 
@@ -49,14 +49,19 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	create(): void {
-		// Init event listeners (use from outside Phaser to communicate with React)
-		this.initEventListeners()
-
-		// DEBUG - teleport first player ship and give it a bump
+		// --- DEBUG <
+		// teleport first player ship to mouse cursor and give it a bump
 		this.input.on('pointerdown', (pointer: any) => {
 			this.ships[0]?.setPosition(pointer.x, pointer.y);
 			this.ships[0]?.setVelocityX(200);
 		});
+		// toggle 'debug' mode on a key press
+		this.physics.world.drawDebug = false;
+  		this.TOGGLE_DEBUG = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+		// --- DEBUG >
+
+		// Init event listeners (use from outside Phaser to communicate with React)
+		this.initEventListeners()
 
 		// Create the data heartbeat
 		this.dataHeartBeat = this.time.addEvent({
@@ -68,9 +73,6 @@ export class GameScene extends Phaser.Scene {
 
 		// Retrieve canvas width and height
 		this.CANVAS = this.sys.game.canvas;
-
-		// Set world gravity
-		this.physics.world.gravity.y = this.GRAVITY;
 
 		// Set background image
 		const backgroundImage = this.add.image(0, 0, 'background').setOrigin(0, 0)
@@ -101,6 +103,17 @@ export class GameScene extends Phaser.Scene {
 			// keep ships on screen
 			if (ship.x > this.CANVAS.width) ship.x = 0
 			if (ship.x < 0) ship.x = this.CANVAS.width
+		}
+
+		// --- DEBUG
+		if (Phaser.Input.Keyboard.JustDown(this.TOGGLE_DEBUG)) {
+			if (this.physics.world.drawDebug) {
+				this.physics.world.drawDebug = false;
+				this.physics.world.debugGraphic.clear();
+			}
+			else {
+				this.physics.world.drawDebug = true;
+			}
 		}
 	}
 
