@@ -64,7 +64,7 @@ export class Ship extends Physics.Arcade.Sprite {
         this.playerColor = color
 
         // apply outline with plugin
-        const outlinePlugin = scene.plugins.get('rexoutlinepipelineplugin') as any; // avoid f***ing type error
+        const outlinePlugin = scene.plugins.get('rexOutlinePipeline') as any
         outlinePlugin.add(this, {
             thickness: 2,
             outlineColor: parseInt(color, 16)

@@ -42,12 +42,12 @@ const handleConnection = (socket: io.Socket) => {
     clients.set(socket.id, client)
 
     // store 'display' client socket ID for further exchanges
-    if (client.uuid === '0000') {
+    if (client.uuid === '00000000') {
         displaySocketID = socket.id
         // send clients list to display (it may be oblivious of clients if you refreshed the page)
         const playerList: any[] = []
         clients.forEach((v, k) => {
-            if(v.uuid !== '0000') { // do not create lander for display
+            if(v.uuid !== '00000000') { // do not create lander for display
                 playerList.push({ name: v.name, uuid: v.uuid })
             }
         });

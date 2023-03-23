@@ -19,6 +19,7 @@
     "express": "^4.18.1",
     "nodemon": "^2.0.16",
     "phaser": "^3.55.2",
+    "phaser3-rex-plugins": "^1.1.83",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-router-dom": "^6.3.0",

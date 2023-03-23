@@ -12,7 +12,7 @@ const service = {
 
     start: function (endpoint: string, playerName: string, playerEmoji: string, playerColor: string) {
         clientName = playerName.substring(0, 12)
-        clientUuid = randomUUID(),
+        clientUuid = randomUUID().split('-')[0],
         clientEmoji = /\p{Extended_Pictographic}/ug.test(playerEmoji) ? playerEmoji : '💩'
         clientColor = playerColor.match(/[0-9A-Fa-f]{6}/g) ? playerColor : Math.floor(Math.random()*16777215).toString(16);
 

@@ -46,9 +46,6 @@ export class GameScene extends Phaser.Scene {
 		// particules
 		this.load.image('smoke_particule', smoke_particule_sprite_url)
 		this.load.image('fire_particule', fire_particule_sprite_url)
-		// outline plugin
-		// https://rexrainbow.github.io/phaser3-rex-notes/docs/site/shader-outline/
-		this.load.plugin('rexoutlinepipelineplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexoutlinepipelineplugin.min.js', true);
 	}
 
 	create(): void {

@@ -14,7 +14,7 @@ const service = {
         socket = io(SERVER_URL, {
             query: {
                 clientName: 'display',
-                clientUuid: '0000',
+                clientUuid: '00000000',
                 clientEmoji: '🤖',
                 clientColor: 'FFFFFF'
             },
