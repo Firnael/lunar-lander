@@ -147,14 +147,27 @@ export default function Game() {
     return rankingGradient.rgbAt(rank / 100).toHexString()
   }
 
+  function getRankColorByRank(rank: number) {
+    switch (rank) {
+      case 1: return 'gold'; break;
+      case 2: return 'silver'; break;
+      case 3: return 'bronze'; break;
+      default: return 'none';
+    }
+  }
+
   const playerStatsList = playerStats.map((s: PlayerStats, i) =>
     <tr>
       <td><div key={i + s.name} className="pop">
-        <mark style={{backgroundColor: '#' + s.color, color: tinycolor(s.color).getBrightness() >= 128 ? '#111' : '#eee'}}>{s.name}</mark>
+        <mark style={{backgroundColor: '#' + s.color, color: tinycolor(s.color).getBrightness() >= 128 ? '#111' : '#eee'}}>
+          {s.name}
+        </mark>
       </div></td>
 
       <td><div key={i + (s.rank ? s.rank.toString() : 'unranked')} className="pop">
-        {s.rank ? '#' + s.rank : '-'}
+        <mark className={ getRankColorByRank(s.rank) }>
+          {s.rank ? '#' + s.rank : '-'}
+        </mark>
       </div></td>
 
       <td><div key={i + s.attempts} className="pop">

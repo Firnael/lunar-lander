@@ -77,7 +77,23 @@ tbody td:hover:before {
     animation: pop-kf 0.5s ease-out;
 }
 
+/* Badges (using 'mark' html tag) */
 mark {
     padding: 2px 5px;
     border-radius: 5px;
 }
+mark.gold {
+    background-color: #C9B037;
+}
+mark.silver {
+    background-color: #B4B4B4;
+}
+mark.bronze {
+    background-color: #AD8A56;
+}
+mark.none {
+    background-color: rgba(0, 0, 0, 0);
+    color: white;
+    border: dashed;
+}
+
