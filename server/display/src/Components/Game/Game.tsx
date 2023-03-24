@@ -147,7 +147,7 @@ export default function Game() {
     return rankingGradient.rgbAt(rank / 100).toHexString()
   }
 
-  function getRankColorByRank(rank: number) {
+  function getRankColorByRank(rank: number | undefined) {
     switch (rank) {
       case 1: return 'gold'; break;
       case 2: return 'silver'; break;

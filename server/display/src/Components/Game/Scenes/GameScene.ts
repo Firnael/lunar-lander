@@ -12,13 +12,18 @@ import smoke_particule_sprite_url from '../Assets/images/smoke_particule.png'
 import fire_particule_sprite_url from '../Assets/images/fire_particule.png'
 import { Ship } from '../Models/Ship'
 import { PlayerJoins, PlayerLeaves, PlayerUpdates } from '../../../Models/player'
+import { ShipCollisionMode } from '../Enums/admin'
 
 export class GameScene extends Phaser.Scene {
 	private CANVAS!: Phaser.Game["canvas"]
 	private TOGGLE_DEBUG!: Phaser.Input.Keyboard.Key
+	private CHANGE_SHIP_COLLISION_MODE!: Phaser.Input.Keyboard.Key
+
+	private shipCollisionMode: ShipCollisionMode = ShipCollisionMode.BUMP
 	
 	private ships: Ship[] = []
 	private shipsCollisionGroup!: Phaser.GameObjects.Group
+	private shipToShipColliders: Phaser.Physics.Arcade.Collider[] = []
 
 	private groundGroup!: Phaser.GameObjects.Group
 
@@ -49,7 +54,10 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	create(): void {
-		// --- DEBUG <
+		// Retrieve canvas width and height
+		this.CANVAS = this.sys.game.canvas;
+
+		// --- DEBUG
 		// teleport first player ship to mouse cursor and give it a bump
 		this.input.on('pointerdown', (pointer: any) => {
 			this.ships[0]?.setPosition(pointer.x, pointer.y);
@@ -58,7 +66,10 @@ export class GameScene extends Phaser.Scene {
 		// toggle 'debug' mode on a key press
 		this.physics.world.drawDebug = false;
   		this.TOGGLE_DEBUG = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-		// --- DEBUG >
+		// --- DEBUG
+
+		// Admin features key binding
+		this.CHANGE_SHIP_COLLISION_MODE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C);
 
 		// Init event listeners (use from outside Phaser to communicate with React)
 		this.initEventListeners()
@@ -71,9 +82,6 @@ export class GameScene extends Phaser.Scene {
 			loop: true
 		});
 
-		// Retrieve canvas width and height
-		this.CANVAS = this.sys.game.canvas;
-
 		// Set background image
 		const backgroundImage = this.add.image(0, 0, 'background').setOrigin(0, 0)
 		const scaleX = this.cameras.main.width / backgroundImage.width
@@ -82,15 +90,7 @@ export class GameScene extends Phaser.Scene {
 		backgroundImage.setScale(scale).setScrollFactor(0)
 
 		// Create some ground for the ship to land on
-		this.groundGroup = this.add.group()
-		for (let x = 0; x < this.CANVAS.width; x += 60) {
-			// Add the ground blocks to the bottom of canvas, enable physics on each, make them immovable
-			const groundBlock = this.physics.add.sprite(x, 0, 'ground').setOrigin(0, 0)
-			groundBlock.setPosition(x, this.CANVAS.height - groundBlock.height)
-			groundBlock.body.setImmovable(true)
-			groundBlock.body.setAllowGravity(false)
-			this.groundGroup.add(groundBlock)
-		}
+		this.createGround()
 
 		// Create the ships collision group
 		this.shipsCollisionGroup = this.add.group()
@@ -105,6 +105,20 @@ export class GameScene extends Phaser.Scene {
 			if (ship.x < 0) ship.x = this.CANVAS.width
 		}
 
+		// -- ADMIN
+		if (Phaser.Input.Keyboard.JustDown(this.CHANGE_SHIP_COLLISION_MODE)) {
+			let newMode: ShipCollisionMode;
+			switch (this.shipCollisionMode) {
+				case ShipCollisionMode.NONE: newMode = ShipCollisionMode.BUMP; break;
+				case ShipCollisionMode.BUMP: newMode = ShipCollisionMode.EXPLOSIVE; break;
+				case ShipCollisionMode.EXPLOSIVE: newMode = ShipCollisionMode.NONE; break;
+				default: newMode = ShipCollisionMode.NONE;
+			}
+			console.log(`New collision mode : ${newMode}`);
+			this.shipCollisionMode = newMode;
+			this.setShipsCollisionMode();
+		}
+
 		// --- DEBUG
 		if (Phaser.Input.Keyboard.JustDown(this.TOGGLE_DEBUG)) {
 			if (this.physics.world.drawDebug) {
@@ -117,6 +131,18 @@ export class GameScene extends Phaser.Scene {
 		}
 	}
 
+	private createGround() {
+		this.groundGroup = this.add.group()
+		for (let x = 0; x < this.CANVAS.width; x += 60) {
+			// Add the ground blocks to the bottom of canvas, enable physics on each, make them immovable
+			const groundBlock = this.physics.add.sprite(x, 0, 'ground').setOrigin(0, 0)
+			groundBlock.setPosition(x, this.CANVAS.height - groundBlock.height)
+			groundBlock.body.setImmovable(true)
+			groundBlock.body.setAllowGravity(false)
+			this.groundGroup.add(groundBlock)
+		}
+	}
+
 	private createShip(data: PlayerJoins, x = 0, y = 0) {
 		// Add the ship to the stage
 		const ship: Ship = new Ship(this, x, y, 'ship', data.name, data.uuid, data.emoji, data.color, data.name === 'Croclardon')
@@ -126,16 +152,18 @@ export class GameScene extends Phaser.Scene {
 		this.physics.add.collider(ship, this.groundGroup, (s, g) => {
 			(s as Ship).hitTheGround()
 		})
-		// Enable collisions betweend ships
-		this.physics.add.collider(ship, this.shipsCollisionGroup, (s1, s2) => {
-			(s1 as Ship).explode(true);
-			(s2 as Ship).explode(true);
-		});
 		// Enable collisions between ship parts and ground
 		this.physics.add.collider(ship.parts, this.groundGroup)
 		// Add to ship array
 		this.ships.push(ship)
-		//this.shipsCollisionGroup.add(ship)
+		this.shipsCollisionGroup.add(ship)
+		// Enable collisions betweend ships
+		this.setShipsCollisionMode();
+	}
+
+	private updateShip(data: PlayerUpdates) {
+		const index = this.ships.findIndex(s => s.playerName === data.name)
+		this.ships[index].changeActions(data.actions)
 	}
 
 	private destroyShip(data: PlayerLeaves) {
@@ -145,9 +173,40 @@ export class GameScene extends Phaser.Scene {
 		this.ships.splice(index, 1)
 	}
 
-	private updateShip(data: PlayerUpdates) {
-		const index = this.ships.findIndex(s => s.playerName === data.name)
-		this.ships[index].changeActions(data.actions)
+	/**
+	 * Change collisions between ships based on current ship collision mode
+	 */
+	private setShipsCollisionMode() {
+		console.log('current collision mode : ' + this.shipCollisionMode);
+		console.log(this.shipToShipColliders);
+		this.shipToShipColliders.forEach(c => this.physics.world.removeCollider(c));
+
+		switch (this.shipCollisionMode) {
+			case ShipCollisionMode.NONE:
+			default: {
+				this.shipToShipColliders = [];
+			}
+			break;
+			case ShipCollisionMode.BUMP: {
+				this.shipToShipColliders = [];
+				this.shipsCollisionGroup.getChildren().forEach((s) => {
+					const shipToShipCollider = this.physics.add.collider(s, this.shipsCollisionGroup);
+					this.shipToShipColliders.push(shipToShipCollider);
+				});
+			}
+			break;
+			case ShipCollisionMode.EXPLOSIVE: {
+				this.shipToShipColliders = [];
+				this.shipsCollisionGroup.getChildren().forEach((s) => {
+					const shipToShipCollider = this.physics.add.collider(s, this.shipsCollisionGroup, (s1, s2) => {
+						(s1 as Ship).explode(true);
+						(s2 as Ship).explode(true);
+					});
+					this.shipToShipColliders.push(shipToShipCollider);
+				});
+			}
+			break;
+		}
 	}
 
 	private initEventListeners(): void {

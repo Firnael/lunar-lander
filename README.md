@@ -119,6 +119,10 @@ if (rotateRand < 0.33) {
 }
 ```
 
+## Clients alternatifs
+
+- 🐍 [Python](https://github.com/jiel/intrepyx) by [@jiel](https://github.com/jiel)  
+
 ## Happy landing !
 
 ![poster.png](poster.png)
