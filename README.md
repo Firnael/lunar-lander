@@ -123,6 +123,10 @@ if (rotateRand < 0.33) {
 
 - 🐍 [Python](https://github.com/jiel/intrepyx) by [@jiel](https://github.com/jiel)  
 
+## Bugs 🐛
+
+- Y'en a plus ! (pour l'instant...)
+
 ## Happy landing !
 
 ![poster.png](poster.png)

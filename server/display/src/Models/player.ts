@@ -35,8 +35,14 @@ export interface Player {
     actions?: PlayerActions
 }
 
+/**
+ * Used at two separate places (this is bad) :
+ * - by the 'Player' type to store player's lander state
+ * - by the 'SimulationData' type to send game's landers state to server
+ */
 export interface LanderData {
     name?: string
+    uuid?: string
     vx: number
     vy: number
     angle: number
@@ -83,6 +89,11 @@ export interface PlayerUpdates {
  * Comes from the 'display' where the simulation takes place.
  * Update data server-side and send them to all clients
  */
-export interface UpdatePlayersData {
+export interface SimulationData {
     landersData: LanderData[]
+}
+
+export interface ShipLanded {
+    name: string
+    usedFuel: number
 }

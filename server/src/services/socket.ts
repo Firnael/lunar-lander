@@ -2,6 +2,9 @@ import io from "socket.io"
 import http from 'http'
 import Client from "../models/client"
 
+// The 'display' client UUID is always the same
+const DISPLAY_UUID = '00000000'
+
 // the SocketIO Server instance
 let server: io.Server
 // the 'display' client socket ID
@@ -41,19 +44,24 @@ const handleConnection = (socket: io.Socket) => {
     console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Player <${client.name}> ${client.emoji} (UUID: ${client.uuid}) connected ⚡`)
     clients.set(socket.id, client)
 
-    // store 'display' client socket ID for further exchanges
-    if (client.uuid === '00000000') {
+    // The 'display' is connected, store its socket ID for further exchanges
+    if (client.uuid === DISPLAY_UUID) {
         displaySocketID = socket.id
-        // send clients list to display (it may be oblivious of clients if you refreshed the page)
+        // send clients list to display (it may be unaware of clients if you refreshed the page)
         const playerList: any[] = []
         clients.forEach((v, k) => {
-            if(v.uuid !== '00000000') { // do not create lander for display
-                playerList.push({ name: v.name, uuid: v.uuid })
+            if(v.uuid !== DISPLAY_UUID) { // never create a lander for the display
+                playerList.push({ name: v.name, uuid: v.uuid, emoji: v.emoji, color: v.color })
             }
         });
+        console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Sending 'playerList' to display 📝 (${playerList.map(p => p.name)})`)
         server.to(displaySocketID).emit('playerList', playerList)
     } else {
-        server.emit('playerJoins', { name: client.name, uuid: client.uuid, emoji: client.emoji, color: client.color })
+        // another player joined, notify the 'display' (if it's connected)
+        if (displaySocketID) {
+            console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Sending 'playerJoins' to display ➕ (${client.name})`)
+            server.to(displaySocketID).emit('playerJoins', { name: client.name, uuid: client.uuid, emoji: client.emoji, color: client.color })
+        }
     }
 }
 
@@ -75,13 +83,13 @@ const handleGameEvents = (socket: io.Socket) => {
             return
         }
 
-        console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Received player actions from <${client.name}>, sending to display`, data)
+        //console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Received player actions from <${client.name}>, sending to display`, data)
         server.to(displaySocketID).emit('playerUpdates', { name: client.name, uuid: client.uuid, actions: data })
     })
 
     // Réception des données venant du 'display', broadcast à tous les clients
-    socket.on('landersData', (data: any) => {
-        console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Received lander's data from display, broadcasting to players`)
+    socket.on('simulationData', (data: any) => {
+        //console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Received simulation data from display, broadcasting to players`)
         server.emit('landersData', data)
     })
 }

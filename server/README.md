@@ -50,6 +50,8 @@ Le `color gradient` est créé au lancement de la page, et est utilisé différe
 
 #### Possibles évolutions
 
-- Doit-on récompenser un vaisseau qui
+- Doit-on récompenser un vaisseau qui :
   - se pose plus droit que les autres (a-t-on vraiment la possibilité d'optimiser ça ?)
   - se pose plus vite que les autres ? (fortement lié au fuel consommé, mais il existe une marge pour que le skill s'exprime)
+- Lancer Phaser en HEADLESS côté serveur
+  - c'est possible quoi qu'un peu tryhard : https://medium.com/@16patsle/running-phaser-3-on-the-server-4c0d09ffd5e6

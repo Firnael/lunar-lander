@@ -71,9 +71,6 @@ export class GameScene extends Phaser.Scene {
 		// Admin features key binding
 		this.CHANGE_SHIP_COLLISION_MODE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C);
 
-		// Init event listeners (use from outside Phaser to communicate with React)
-		this.initEventListeners()
-
 		// Create the data heartbeat
 		this.dataHeartBeat = this.time.addEvent({
 			callback: this.sendShipsDataToServer,
@@ -94,6 +91,9 @@ export class GameScene extends Phaser.Scene {
 
 		// Create the ships collision group
 		this.shipsCollisionGroup = this.add.group()
+
+		// Init event listeners (use from outside Phaser to communicate with React)
+		this.initEventListeners()
 	}
 
 	update(): void {
@@ -114,9 +114,9 @@ export class GameScene extends Phaser.Scene {
 				case ShipCollisionMode.EXPLOSIVE: newMode = ShipCollisionMode.NONE; break;
 				default: newMode = ShipCollisionMode.NONE;
 			}
-			console.log(`New collision mode : ${newMode}`);
 			this.shipCollisionMode = newMode;
-			this.setShipsCollisionMode();
+			console.log('[Phaser] Setting collision mode to', this.shipCollisionMode);
+			this.updateShipsColliders();
 		}
 
 		// --- DEBUG
@@ -144,7 +144,8 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	private createShip(data: PlayerJoins, x = 0, y = 0) {
-		// Add the ship to the stage
+		console.log(`[Phaser] Create ship`, data);
+		// Add the ship to the scene
 		const ship: Ship = new Ship(this, x, y, 'ship', data.name, data.uuid, data.emoji, data.color, data.name === 'Croclardon')
 		// Choose a random starting angle and velocity for the ship
 		ship.reset()
@@ -156,9 +157,10 @@ export class GameScene extends Phaser.Scene {
 		this.physics.add.collider(ship.parts, this.groundGroup)
 		// Add to ship array
 		this.ships.push(ship)
+		// Add to ship collision group
 		this.shipsCollisionGroup.add(ship)
 		// Enable collisions betweend ships
-		this.setShipsCollisionMode();
+		this.updateShipsColliders();
 	}
 
 	private updateShip(data: PlayerUpdates) {
@@ -175,10 +177,11 @@ export class GameScene extends Phaser.Scene {
 
 	/**
 	 * Change collisions between ships based on current ship collision mode
+	 * - NONE : ships don't collide at all
+	 * - BUMP : ships bump into each others on collision, it's harmless
+	 * - EXPLODE : ships explode on collision !
 	 */
-	private setShipsCollisionMode() {
-		console.log('current collision mode : ' + this.shipCollisionMode);
-		console.log(this.shipToShipColliders);
+	private updateShipsColliders() {
 		this.shipToShipColliders.forEach(c => this.physics.world.removeCollider(c));
 
 		switch (this.shipCollisionMode) {
@@ -213,12 +216,15 @@ export class GameScene extends Phaser.Scene {
 		this.game.events.on('CREATE_LANDER', (data: PlayerJoins) => this.createShip(data), this)
 		this.game.events.on('DESTROY_LANDER', (data: PlayerLeaves) => this.destroyShip(data), this)
 		this.game.events.on('UPDATE_LANDER', (data: PlayerUpdates) => this.updateShip(data), this)
+		// notify webapp the game is ready to handle events
+		this.game.events.emit('GAME_READY', {});
 	}
 
 	private sendShipsDataToServer(): void {
 		const data = this.ships.map(s => {
 			return {
 				name: s.playerName,
+				uuid: s.playerUuid,
 				vx: s.body.velocity.x,
 				vy: s.body.velocity.y,
 				angle: s.angle,
@@ -226,7 +232,9 @@ export class GameScene extends Phaser.Scene {
 				usedFuel: s.usedFuel,
 				status: s.status
 			}
-		})
-		this.game.events.emit('LANDERS_DATA', { landersData: data })
+		});
+		if (data.length >= 0) {
+			this.game.events.emit('SIMULATION_DATA', { landersData: data });
+		}
 	}
 }

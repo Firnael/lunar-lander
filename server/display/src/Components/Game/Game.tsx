@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react'
 import 'phaser'
 import tinygradient from 'tinygradient'
 import tinycolor from 'tinycolor2'
-import gameManager from '../../Services/GameManager'
+import SocketService from '../../Services/SocketService'
 import config from './Config/Config'
-import { PlayerStats, PlayerJoins, PlayerLeaves, UpdatePlayersData, AttemptsHistory } from '../../Models/player'
+import { PlayerStats, PlayerJoins, PlayerLeaves, SimulationData, AttemptsHistory, ShipLanded } from '../../Models/player'
 import './Game.css'
 
 export default function Game() {
@@ -22,26 +22,30 @@ export default function Game() {
     // create game
     const game: Phaser.Game = new Phaser.Game(config)
     setGame(game)
+
+    game.events.on('GAME_READY', () => {
+       // handle game events
+      game.events.on('SIMULATION_DATA', (data: SimulationData) => SocketService.handleSimulationData(data))
+      
+      // handle creation and destruction of ships in the game when player connect / disconnect
+      game.events.on('CREATE_LANDER', (data: PlayerJoins) => handleCreateLander(data))
+      game.events.on('DESTROY_LANDER', (data: any) => handleDestroyLander(data))
+      // handle scores updates when ships reach the ground, either way
+      game.events.on('SHIP_LANDED', (data: ShipLanded) => handleShipLanded(data))
+      game.events.on('SHIP_EXPLODED', (data: any) => handleShipExploded(data))
+
+      // connect to communication server
+      SocketService.start(game)
+    });
+
     // retrieve local ips
-    gameManager.fetchLocalIps().then(res => res.json()).then(ips => {
+    SocketService.fetchLocalIps().then(res => res.json()).then(ips => {
       setLocalIps(ips)
     })
-
-    // handle game events
-    game.events.on('LANDERS_DATA', (data: UpdatePlayersData) => gameManager.updatePlayersData(data))
-    // handle creation and destruction of ships in the game when player connect / disconnect
-    game.events.on('CREATE_LANDER', (data: PlayerJoins) => handleCreateLander(data))
-    game.events.on('DESTROY_LANDER', (data: any) => handleDestroyLander(data))
-    // handle scores updates when ships reach the ground, either way
-    game.events.on('SHIP_LANDED', (data: any) => handleShipLanded(data))
-    game.events.on('SHIP_EXPLODED', (data: any) => handleShipExploded(data))
-
-    // connect to game server
-    gameManager.start(game)
   }, [])
 
   function handleCreateLander(data: PlayerJoins) {
-    console.log('CREATE_LANDER : ', data)
+    console.log('[UI] Add player to leaderboard :', data)
     
     setPlayerStats((stats: PlayerStats[]) => {
       const index = stats.findIndex((s: PlayerStats) => s.name === data.name);
@@ -65,12 +69,12 @@ export default function Game() {
   }
 
   function handleShipLanded(data: any) {
-    console.log('SHIP_LANDED :', data)
+    console.log(`[UI] Player's ship landed :`, data);
     updatePlayerStats(data, true)
   }
 
   function handleShipExploded(data: any) {
-    console.log('SHIP_EXPLODED :', data)
+    console.log(`[UI] Player's ship exploded :`, data)
     updatePlayerStats(data, false)
   }
 
