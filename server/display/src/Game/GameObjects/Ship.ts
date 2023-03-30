@@ -3,7 +3,7 @@ import { Explosion } from './Explosion';
 import { Flag } from './Flag';
 import { Indicator } from './Indicator';
 import { Hud } from './Hud';
-import { PlayerActions, LanderRotation, LanderStatus } from '../../../Models/player';
+import { PlayerActions, LanderRotation, LanderStatus, LanderDangerStatus } from '../../Models/player';
 
 export class Ship extends Physics.Arcade.Sprite {
 
@@ -38,6 +38,7 @@ export class Ship extends Physics.Arcade.Sprite {
     public usedFuel: number
     public altitude: number
     public status: LanderStatus
+    public dangerStatus: LanderDangerStatus;
     public actions: PlayerActions
     public parts: Phaser.GameObjects.Group
 
@@ -78,6 +79,7 @@ export class Ship extends Physics.Arcade.Sprite {
         }
 
         this.status = LanderStatus.ALIVE
+        this.dangerStatus = LanderDangerStatus.SAFE
         this.usedFuel = 0
         this.isInvincible = invincible || false
         this.velocityHistory = []
@@ -207,6 +209,7 @@ export class Ship extends Physics.Arcade.Sprite {
 
     reset(): void {
         this.status = LanderStatus.SPAWNED
+        this.dangerStatus = LanderDangerStatus.SAFE
         // Reset usedFuel
         this.usedFuel = 0
         // hide flag
@@ -301,12 +304,14 @@ export class Ship extends Physics.Arcade.Sprite {
         const vx = (Math.abs(this.velocityHistory[0].x) + Math.abs(this.velocityHistory[1].x)) / 2
         const vy = (Math.abs(this.velocityHistory[0].y) + Math.abs(this.velocityHistory[1].y)) / 2
 
-        if (vx > this.LANDING_MAX_SPEED.x|| vy > this.LANDING_MAX_SPEED.y) {
+        if (vx > this.LANDING_MAX_SPEED.x || vy > this.LANDING_MAX_SPEED.y) {
             // console.log(`Too fast to land : 
             //     x (${vx}) > this.LANDING_MAX_SPEED.x (${this.LANDING_MAX_SPEED.x})
             //     y (${vy}) > this.LANDING_MAX_SPEED.y (${this.LANDING_MAX_SPEED.y})`);
+            this.dangerStatus = this.dangerStatus | LanderDangerStatus.TOO_FAST
             return true
         }
+        this.dangerStatus = this.dangerStatus & LanderDangerStatus.TOO_FAST;
         return false
     }
 
@@ -316,8 +321,10 @@ export class Ship extends Physics.Arcade.Sprite {
         }
 
         if (Math.abs(this.angle) > this.LANDING_MAX_ANGLE) {
+            this.dangerStatus = this.dangerStatus | LanderDangerStatus.BAD_ANGLE;
             return true
         }
+        this.dangerStatus = this.dangerStatus & LanderDangerStatus.BAD_ANGLE;
         return false
     }
 

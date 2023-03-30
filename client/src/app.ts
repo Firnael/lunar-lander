@@ -15,38 +15,7 @@ const PLAYER_COLOR = process.env.PLAYER_COLOR || 'FFFFFF';
             rotate: LanderRotation.NONE
         }
 
-        // Annule la vélocité en X
-        if (Math.abs(data.vx) > 35) {
-            console.log('ANNULE')
-            if (data.vx > 0) { // il va à droite
-                if (data.angle < -20) {
-                    actions.thrust = true
-                }
-                else {
-                    actions.rotate = LanderRotation.COUNTERCLOCKWISE;
-                }
-            } else { // il va à gauche
-                if (data.angle > 20) {
-                    actions.thrust = true
-                } else {
-                    actions.rotate = LanderRotation.CLOCKWISE;
-                }
-            }
-        } else {
-            // Redresse le vaisseau
-            if (data.angle > 10) { // tourné vers la droite
-                console.log('GAUCHE')
-                actions.rotate = LanderRotation.COUNTERCLOCKWISE;
-            } else if (data.angle < -10) { // tourné vers la gauche
-                console.log('DROITE')
-                actions.rotate = LanderRotation.CLOCKWISE;
-            }
-
-            // Allume le réacteur si on va se crash
-            if (data.altitude <= 300 && data.vy > 30) {
-                actions.thrust = true
-            }
-        }
+        // TODO :)
 
         return actions
     })

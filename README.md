@@ -37,7 +37,7 @@ Chaque client peut customiser son vaisseau avec un nom, un [emoji](https://emoji
 ```javascript
 const PLAYER_NAME = process.env.PLAYER_NAME || 'NO_NAME';
 const PLAYER_EMOJI = process.env.PLAYER_EMOJI || '💩';
-const PLAYER_EMOJI = process.env.PLAYER_COLOR || 'FFFFFF';
+const PLAYER_COLOR = process.env.PLAYER_COLOR || 'FFFFFF';
 ```
 
 ## Comment jouer
@@ -89,6 +89,10 @@ const actions = {
   - 1 : ALIVE, votre vaisseau est en cours de vol, tout va bien (pour le moment)
   - 2 : LANDED, votre vaisseau à atterri 🎉 ! Il réapparaîtra dans quelques secondes
   - 3 : DEAD, votre vaisseau à explosé 😱 ! Il réapparaîtra dans quelques secondes.
+- `dangerStatus` : l'état de danger actuel de votre vaisseau :
+  - 0 : SAFE, votre vaisseau est en sécurité (pour le moment)
+  - 1 : BAD_ANGLE, l'angle d'inclinaison de votre vaisseau avec le sol est trop grand pour atterrir !
+  - 2 : TOO_FAST, votre vaisseau va trop vite pour atterrir !
 
 ## Test de charge 
 
@@ -126,6 +130,14 @@ if (rotateRand < 0.33) {
 ## Bugs 🐛
 
 - Y'en a plus ! (pour l'instant...)
+
+## Suggestions pour la suite 
+
+### Game Modes
+
+- Rescue mission: Players have to land their lander near a stranded astronaut and then transport them safely back to the landing zone. The astronaut could have a limited oxygen supply, and the player would have to make quick decisions to rescue them before their oxygen runs out.
+- Obstacle Course Mode - The moon's surface is littered with obstacles that the players have to navigate around while landing their lander. The obstacles could be craters, boulders, or even enemy spacecraft.
+- Survival Mode - Players have to survive as long as possible on the moon's surface, which is constantly bombarded with meteorites. Players have to avoid the meteorites while conserving fuel and making periodic adjustments to their lander's position to stay alive.
 
 ## Happy landing !
 

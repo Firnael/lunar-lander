@@ -14,7 +14,7 @@ export class Indicator extends Phaser.GameObjects.Sprite {
         this.altitudeText = scene.add.text(0, 12, '', textOptions)
         this.altitudeText.setVisible(false)
         this.nameText = scene.add.text(0, 28, name, textOptions)
-        this.nameText.setStroke('#' + color, 3)
+        this.nameText.setBackgroundColor('#' + color);
         this.nameText.setShadow(1, 1, '#111111', 1, false, true)
         this.nameText.setVisible(false)
 
