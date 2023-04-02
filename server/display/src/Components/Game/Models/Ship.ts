@@ -177,8 +177,8 @@ export class Ship extends Physics.Arcade.Sprite {
             if (this.actions.thrust) {
                 this.usedFuel+=2 // main engine fuel cost is greater
                 // Calculate acceleration vector based on this.angle and this.ACCELERATION
-                this.setAccelerationX(Math.cos(this.rotation - 90) * this.ACCELERATION)
-                this.setAccelerationY(Math.sin(this.rotation - 90) * this.ACCELERATION)
+                this.setAccelerationX(Math.sin(this.rotation) * this.ACCELERATION)
+                this.setAccelerationY(Math.sin(this.rotation - Math.PI/2) * this.ACCELERATION)
                 // Start main engine !
                 this.mainEngine.start()
             } else {
