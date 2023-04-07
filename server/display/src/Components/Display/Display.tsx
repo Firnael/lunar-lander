@@ -3,11 +3,14 @@ import 'phaser'
 import tinygradient from 'tinygradient'
 import tinycolor from 'tinycolor2'
 import SocketService from '../../Services/SocketService'
-import config from './Config/Config'
+import HttpService from '../../Services/HttpService'
+import config from '../../Game/Config/Config'
+import { PreloadScene } from '../../Game/Scenes/PreloadScene'
+import { GameScene } from '../../Game/Scenes/GameScene'
 import { PlayerStats, PlayerJoins, PlayerLeaves, SimulationData, AttemptsHistory, ShipLanded } from '../../Models/player'
-import './Game.css'
+import './Display.css'
 
-export default function Game() {
+export default function Display() {
 
   const SUCCESS_RATE_SAMPLE_SIZE = 20
   const rankingGradient = tinygradient([
@@ -20,6 +23,7 @@ export default function Game() {
 
   useEffect(() => {
     // create game
+    config.scene = [PreloadScene, GameScene];
     const game: Phaser.Game = new Phaser.Game(config)
     setGame(game)
 
@@ -35,17 +39,23 @@ export default function Game() {
       game.events.on('SHIP_EXPLODED', (data: any) => handleShipExploded(data))
 
       // connect to communication server
-      SocketService.start(game)
+      const clientConfig = {
+        clientName: 'display',
+        clientUuid: '00000000',
+        clientEmoji: '🤖',
+        clientColor: 'FFFFFF'
+      };
+      SocketService.start(HttpService.getServerUrl(), game, clientConfig);
     });
 
     // retrieve local ips
-    SocketService.fetchLocalIps().then(res => res.json()).then(ips => {
+    HttpService.fetchLocalIps().then(res => res.json()).then(ips => {
       setLocalIps(ips)
     })
   }, [])
 
   function handleCreateLander(data: PlayerJoins) {
-    console.log('[UI] Add player to leaderboard :', data)
+    console.log('[UI.Display] Add player to leaderboard :', data)
     
     setPlayerStats((stats: PlayerStats[]) => {
       const index = stats.findIndex((s: PlayerStats) => s.name === data.name);
@@ -64,17 +74,17 @@ export default function Game() {
   }
 
   function handleDestroyLander(data: PlayerLeaves) {
-    console.log('DESTROY_LANDER :', data)
+    console.log('[UI.Display] PlayerLeaves :', data);
     //setPlayers(players.filter((p: any) => p.name !== data.name))
   }
 
   function handleShipLanded(data: any) {
-    console.log(`[UI] Player's ship landed :`, data);
+    console.log(`[UI.Display] Player's ship landed :`, data);
     updatePlayerStats(data, true)
   }
 
   function handleShipExploded(data: any) {
-    console.log(`[UI] Player's ship exploded :`, data)
+    console.log(`[UI.Display] Player's ship exploded :`, data)
     updatePlayerStats(data, false)
   }
 

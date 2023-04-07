@@ -26,6 +26,13 @@ export enum LanderStatus {
     DEAD     // 3
 }
 
+export enum LanderDangerStatus {
+    SAFE = 0,           // 0
+    BAD_ANGLE = 1 << 0, // 0001
+    TOO_FAST = 1 << 1   // 0010
+    // ... could be more dangers in the future, we'll keep bitshifting then
+}
+
 export interface Player {
     name: string
     uuid: string
@@ -49,6 +56,7 @@ export interface LanderData {
     altitude: number
     usedFuel: number
     status: LanderStatus
+    dangerStatus: LanderDangerStatus
 }
 
 export interface PlayerActions {

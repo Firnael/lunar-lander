@@ -1,17 +1,6 @@
 import 'phaser'
-import explosion_spritesheet_url from '../Assets/images/explosion.png'
-import ship_parts_spritesheet_url from '../Assets/images/ship_parts.png'
-import ship_sprite_url from '../Assets/images/ship.png'
-import background_sprite_url from '../Assets/images/background.png'
-import ground_sprite_url from '../Assets/images/ground.png'
-import indicator_sprite_url from '../Assets/images/indicator.png'
-import flag_sprite_url from '../Assets/images/flag.png'
-import hud_line_sprite_url from '../Assets/images/hud_line.png'
-import danger_sign_sprite_url from '../Assets/images/danger_sign.png'
-import smoke_particule_sprite_url from '../Assets/images/smoke_particule.png'
-import fire_particule_sprite_url from '../Assets/images/fire_particule.png'
-import { Ship } from '../Models/Ship'
-import { PlayerJoins, PlayerLeaves, PlayerUpdates } from '../../../Models/player'
+import { Ship } from '../GameObjects/Ship'
+import { PlayerJoins, PlayerLeaves, PlayerUpdates } from '../../Models/player'
 import { ShipCollisionMode } from '../Enums/admin'
 
 export class GameScene extends Phaser.Scene {
@@ -37,20 +26,7 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	preload(): void {
-		// spritesheets
-		this.load.spritesheet('explosion', explosion_spritesheet_url, { frameWidth: 128, frameHeight: 128 })
-		this.load.spritesheet('shipParts', ship_parts_spritesheet_url, { frameWidth: 25, frameHeight: 16 })
-		// images
-		this.load.image('ship', ship_sprite_url)
-		this.load.image('background', background_sprite_url)
-		this.load.image('ground', ground_sprite_url)
-		this.load.image('indicator', indicator_sprite_url)
-		this.load.image('flag', flag_sprite_url)
-		this.load.image('hudLine', hud_line_sprite_url)
-		this.load.image('dangerSign', danger_sign_sprite_url)
-		// particules
-		this.load.image('smoke_particule', smoke_particule_sprite_url)
-		this.load.image('fire_particule', fire_particule_sprite_url)
+		console.log(this.scene.key);
 	}
 
 	create(): void {
@@ -115,7 +91,7 @@ export class GameScene extends Phaser.Scene {
 				default: newMode = ShipCollisionMode.NONE;
 			}
 			this.shipCollisionMode = newMode;
-			console.log('[Phaser] Setting collision mode to', this.shipCollisionMode);
+			console.log('[Phaser.Display] Setting collision mode to', this.shipCollisionMode);
 			this.updateShipsColliders();
 		}
 
@@ -144,7 +120,7 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	private createShip(data: PlayerJoins, x = 0, y = 0) {
-		console.log(`[Phaser] Create ship`, data);
+		console.log(`[Phaser.Display] Create ship`, data);
 		// Add the ship to the scene
 		const ship: Ship = new Ship(this, x, y, 'ship', data.name, data.uuid, data.emoji, data.color, data.name === 'Croclardon')
 		// Choose a random starting angle and velocity for the ship
@@ -230,7 +206,8 @@ export class GameScene extends Phaser.Scene {
 				angle: s.angle,
 				altitude: s.altitude,
 				usedFuel: s.usedFuel,
-				status: s.status
+				status: s.status,
+				dangerStatus: s.dangerStatus
 			}
 		});
 		if (data.length >= 0) {

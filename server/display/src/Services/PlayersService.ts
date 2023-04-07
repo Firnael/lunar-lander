@@ -1,4 +1,4 @@
-import { LanderData, LanderRotation, LanderStatus, Player, PlayerActions } from '../Models/player';
+import { LanderDangerStatus, LanderData, LanderRotation, LanderStatus, Player, PlayerActions } from '../Models/player';
 
 const players: Player[] = [];
 
@@ -15,7 +15,8 @@ const service = {
         angle: 0,
         altitude: 0,
         usedFuel: 0,
-        status: LanderStatus.SPAWNED
+        status: LanderStatus.SPAWNED,
+        dangerStatus: LanderDangerStatus.SAFE
       },
       actions: {
         thrust: false,
@@ -47,7 +48,8 @@ const service = {
       angle: data.angle,
       altitude: data.altitude,
       usedFuel: data.usedFuel,
-      status: data.status
+      status: data.status,
+      dangerStatus: data.dangerStatus
     };
   },
 

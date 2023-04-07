@@ -1,6 +1,6 @@
 {
   "name": "lunar-lander-client",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Lunar Lander (client)",
   "main": "app.ts",
   "private": true,
@@ -30,6 +30,6 @@
   "license": "MIT",
   "homepage": "https://github.com/Firnael/lunar-lander/blob/main/client/README.md",
   "volta": {
-    "node": "18.14.1"
+    "node": "18.15.0"
   }
 }
