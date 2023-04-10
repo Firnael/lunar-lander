@@ -99,10 +99,8 @@ const actions = {
 Voici une solution un peu nulle mais qui fonctionne pour lancer plein de clients en local :
 
 ```bash
-# installer ce package pour lancer N commandes en parallèle 
-npm i -g concurrently
 # lancer ça pour pop 14 clients-pokémons, je suis pas expert en bash laissez moi tranquille
-concurrently "PLAYER_NAME=Bulbizarre PLAYER_COLOR=3CA225 npm run dev" "PLAYER_NAME=Salamèche PLAYER_COLOR=E62224 npm run dev" "PLAYER_NAME=Carapuce PLAYER_COLOR=2581EF npm run dev" "PLAYER_NAME=Chenipan PLAYER_COLOR=92A212 npm run dev" "PLAYER_NAME=Roucool PLAYER_COLOR=81BAF0 npm run dev" "PLAYER_NAME=Rattata PLAYER_COLOR=A0A2A1 npm run dev" "PLAYER_NAME=Abo PLAYER_COLOR=923FCC npm run dev" "PLAYER_NAME=Pikachu PLAYER_COLOR=FAC200 npm run dev" "PLAYER_NAME=Mélofée PLAYER_COLOR=F071EF npm run dev" "PLAYER_NAME=Ramoloss PLAYER_COLOR=EF3E79 npm run dev" "PLAYER_NAME=Machoc PLAYER_COLOR=FF8100 npm run dev" "PLAYER_NAME=Racaillou PLAYER_COLOR=B0AB81 npm run dev" "PLAYER_NAME=Fantominus PLAYER_COLOR=713E70 npm run dev" "PLAYER_NAME=Minidraco PLAYER_COLOR=4F5FE2 npm run dev" "PLAYER_NAME=N1 npm run dev" "PLAYER_NAME=N2 npm run dev" "PLAYER_NAME=N3 npm run dev" "PLAYER_NAME=N4 npm run dev" "PLAYER_NAME=N5 npm run dev" "PLAYER_NAME=N6 npm run dev"
+./run_load_test.sh
 ```
 
 Voici un algo tout pété pour que les vaisseaux volent un peu mais pas trop :
