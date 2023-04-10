@@ -37,7 +37,7 @@ export class GameScene extends Phaser.Scene {
 		// teleport first player ship to mouse cursor and give it a bump
 		this.input.on('pointerdown', (pointer: any) => {
 			this.ships[0]?.setPosition(pointer.x, pointer.y);
-			this.ships[0]?.setVelocityX(200);
+			this.ships[0]?.setVelocityY(100);
 		});
 		// toggle 'debug' mode on a key press
 		this.physics.world.drawDebug = false;
