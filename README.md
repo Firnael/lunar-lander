@@ -125,6 +125,10 @@ if (rotateRand < 0.33) {
 
 - 🐍 [Python](https://github.com/jiel/intrepyx) by [@jiel](https://github.com/jiel)  
 
+## TODOs 🪣
+
+- créer un service de conf au niveau du serveur afin que celle-ci soit centralisée et récupérable facilement par les clients (lors du handshake websocket, ou plus tard via un event ou une requête HTTP).
+
 ## Bugs 🐛
 
 - Y'en a plus ! (pour l'instant...)

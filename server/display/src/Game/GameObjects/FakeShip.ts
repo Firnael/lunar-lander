@@ -2,6 +2,8 @@ import { FakeEngine } from './FakeEngine';
 import { LanderStatus, LanderData, LanderDangerStatus, PlayerActions, LanderRotation } from '../../Models/player';
 
 export class FakeShip extends Phaser.GameObjects.Container {
+    private TWEEN_INTERVAL = 200;
+
     public playerName: string;
     public playerUuid: string;
     public playerEmoji: string;
@@ -12,6 +14,7 @@ export class FakeShip extends Phaser.GameObjects.Container {
     private previousStatus: LanderStatus;
     public vx: number;
     public vy: number;
+    public shipAngle: number;
     public dangerStatus: LanderDangerStatus;
     public actions: PlayerActions;
 
@@ -48,6 +51,7 @@ export class FakeShip extends Phaser.GameObjects.Container {
         this.altitude = 0;
         this.vx = 0;
         this.vy = 0;
+        this.shipAngle = 0;
         this.actions = { thrust: false, rotate: LanderRotation.NONE };
 
         this.fakeShipSprite = new Phaser.GameObjects.Sprite(this.scene, 0, 0, 'fake_ship');
@@ -70,7 +74,7 @@ export class FakeShip extends Phaser.GameObjects.Container {
         this.altitude = data.altitude;
         this.vx = data.vx;
         this.vy = data.vy;
-        this.angle = data.angle;
+        this.shipAngle = data.angle;
         this.altitude = data.altitude;
         this.usedFuel = data.usedFuel;
         this.previousStatus = this.status;
@@ -109,7 +113,6 @@ export class FakeShip extends Phaser.GameObjects.Container {
                 alpha: 0,
                 ease: 'linear',
                 duration: 2000,
-                yoyo: false,
                 loop: 0
             });
             tw.on('complete', () => partSprite.destroy());
@@ -119,7 +122,13 @@ export class FakeShip extends Phaser.GameObjects.Container {
 
     update(): void {
         // update ship parameters
-        this.setAngle(this.angle);
+        // this.setAngle(this.angle);
+        this.scene.tweens.add({
+            targets: this,
+            angle: this.shipAngle,
+            ease: 'linear',
+            duration: this.TWEEN_INTERVAL
+        });
 
         // update engine visibility
         this.enginesContainer.each((e: FakeEngine) => {

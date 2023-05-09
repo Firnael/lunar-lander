@@ -5,11 +5,11 @@ import tinygradient from "tinygradient";
  * Used inside a {@link MonitoringUnit} to display the ship speed in a cool way
  */
 export class Speedometer extends Phaser.GameObjects.Container {
-    
-    private CROSS_COLOR = 0x76ce81;
-    // TODO gérer ça avec des règles
+    // TODO mettre ça en conf
+    private TWEEN_INTERVAL: number = 200;
     private MAX_VELOCITY: number = 300;
 
+    private CROSS_COLOR = 0x76ce81;
     private textOffset: number = 50;
     private size: number = 40; // size of the speedometer cross
     private barSize: number = 6;
@@ -62,17 +62,31 @@ export class Speedometer extends Phaser.GameObjects.Container {
         const nVx = vx / this.MAX_VELOCITY;
         const nVy = vy / this.MAX_VELOCITY;
 
-        // update color and only change width for x bar
+        // update color and only change width for horizontal bar
         const xColor = this.velocityGradient.rgbAt(Math.abs(nVx)).toHex();
         const xBar = this.getByName('xBar') as Phaser.GameObjects.Rectangle;
-        xBar.setSize(nVx * this.size, this.barSize);
         xBar.setFillStyle(parseInt(xColor, 16), 1);
+        this.scene.tweens.add({
+            targets: xBar,
+            width: nVx * this.size,
+            height: this.barSize,
+            ease: 'linear',
+            duration: this.TWEEN_INTERVAL,
+            loop: 0
+        });
 
-        // update color and only change height for y bar
+        // update color and only change height for vertical bar
         const yColor = this.velocityGradient.rgbAt(Math.abs(nVy)).toHex();
         const yBar = this.getByName('yBar') as Phaser.GameObjects.Rectangle;
-        yBar.setSize(this.barSize, nVy * this.size);
         yBar.setFillStyle(parseInt(yColor, 16), 1);
+        this.scene.tweens.add({
+            targets: yBar,
+            width: this.barSize,
+            height: nVy * this.size,
+            ease: 'linear',
+            duration: this.TWEEN_INTERVAL,
+            loop: 0
+        });
 
         // update velocity text
         const vxText = this.getByName('vxText') as Phaser.GameObjects.Text;

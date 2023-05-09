@@ -276,7 +276,6 @@ export class Ship extends Physics.Arcade.Sprite {
                 alpha: 0,
                 ease: 'linear',
                 duration: 3000,
-                yoyo: false,
                 loop: 0
             })
             tw.on('complete', () => partSprite.destroy())

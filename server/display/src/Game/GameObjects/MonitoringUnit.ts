@@ -13,6 +13,8 @@ import { Speedometer } from './Speedometer';
  * - uses RULESET instead of copypasta the CONSTANTS
  */
 export class MonitoringUnit extends Phaser.GameObjects.Container {
+    // TODO mettre en conf
+    private TWEEN_INTERVAL: number = 200;
     private UNIT_SIZE: number = 240;
     private UNIT_BACKGROUND_COLOR: number = 0x001301;
     private UNIT_STROKE_COLOR: number = 0x76ce81;
@@ -123,22 +125,27 @@ export class MonitoringUnit extends Phaser.GameObjects.Container {
 
         // otherwise, display everything and update values
         this.each((c: any) => { c.setVisible(true); });
-        this.playerNameText.setText(`[${this.shipRef!.playerName}]`);
-        this.playerColorRectangle.setFillStyle(parseInt(this.shipRef!.playerColor, 16), 1);
+        this.playerNameText.setText(`[${this.shipRef.playerName}]`);
+        this.playerColorRectangle.setFillStyle(parseInt(this.shipRef.playerColor, 16), 1);
 
         this.speedometer.update(this.shipRef.vx, this.shipRef.vy);
 
         // update ground line visibility and height
         if (this.shipRef.altitude < this.backgroundRectangle.height / 2 - this.shipRef.height / 2) {
             this.groundLine.setVisible(true);
-            this.groundLine.setY(this.shipRef.altitude + this.shipRef.getHeight() / 2);
+            this.scene.tweens.add({
+                targets: this.groundLine,
+                y: this.shipRef.altitude + this.shipRef.getHeight() / 2,
+                ease: 'linear',
+                duration: this.TWEEN_INTERVAL
+            });
         } else {
             this.groundLine.setVisible(false);
         }
 
         // update telemetry elements
         this.statusText.setText('sta:  ' + LanderStatus[this.shipRef.status].substring(0, 5));
-        this.angleText.setText('ang:  ' + this.shipRef.angle.toFixed() + '°');
+        this.angleText.setText('ang:  ' + this.shipRef.angle.toFixed());
         this.altitudeText.setText('alt:  ' + this.shipRef.altitude.toFixed());
         this.fuelUsedText.setText('fuel: ' + this.shipRef.usedFuel);
 

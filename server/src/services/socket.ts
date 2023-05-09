@@ -9,6 +9,7 @@ const MONITORING_UUID_PATTERN = /0000[\w\d]{4}/
 const regex = new RegExp(MONITORING_UUID_PATTERN);
 
 const MONITORING_CLIENTS_ROOM = 'MONITORING_CLIENTS_ROOM';
+// TODO mettre en conf
 const MONITORING_HEART_BEAT_RATE = 200; // in ms
 let monitoringHeartBeat = null;
 
