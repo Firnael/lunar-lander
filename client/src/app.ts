@@ -15,7 +15,50 @@ const PLAYER_COLOR = process.env.PLAYER_COLOR || 'FFFFFF';
             rotate: LanderRotation.NONE
         }
 
-        // TODO :)
+        // Cancel vx 
+        if(Math.abs(data.vx) > 10) {
+            if(data.vx > 0) {
+                // on va a droite, il faut thruster vers la gauche
+                if(data.angle >= -50 && data.angle < -40) {
+                    actions.rotate = LanderRotation.NONE
+                } else if (data.angle < -50) {
+                    actions.rotate = LanderRotation.CLOCKWISE
+                }
+                else if (data.angle > -40) {
+                    actions.rotate = LanderRotation.COUNTERCLOCKWISE
+                }
+            } else { // vx < 0
+                // on va a gauche, il faut thruster vers la droite
+                if(data.angle >= 40 && data.angle < 50) {
+                    actions.rotate = LanderRotation.NONE
+                } else if (data.angle < 40) {
+                    actions.rotate = LanderRotation.CLOCKWISE
+                }
+                else if (data.angle > 50) {
+                    actions.rotate = LanderRotation.COUNTERCLOCKWISE
+                }
+            }
+
+            if (actions.rotate === LanderRotation.NONE) {
+                actions.thrust = true
+            }
+        }
+        // Land
+        else {
+            if(data.vy > 150) {
+                actions.thrust = true
+            }
+
+            if(data.angle > 5) {
+                actions.rotate = LanderRotation.COUNTERCLOCKWISE
+            } else if (data.angle < -5) {
+                actions.rotate = LanderRotation.CLOCKWISE
+            }
+
+            if(data.vy > 30 && data.altitude < 200) {
+                actions.thrust = true
+            }
+        }
 
         return actions
     })

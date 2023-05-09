@@ -40,15 +40,12 @@ const service = {
     },
 
     handleLander: function (callback: (data: LanderData) => LanderAction) {
-        socket.on("landersData", payload => {
-            console.log('Lander data from simulator: ', payload)
-            const playerIndex = payload.findIndex((d: any) => d.name === clientName)
-            const landerData = payload[playerIndex]
-
+        socket.on("landerData", (payload: LanderData) => {
+            console.log('Your lander data arrived from the moon: ', payload);
             // if simulator crashes and restarts, this may be undefined
-            if (landerData) {
-                const actions: LanderAction = callback(landerData)
-                socket.emit('playerActions', actions)
+            if (payload) {
+                const actions: LanderAction = callback(payload);
+                socket.emit('playerActions', actions);
             }
         })
     }

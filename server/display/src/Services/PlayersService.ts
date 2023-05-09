@@ -1,6 +1,6 @@
 import { LanderDangerStatus, LanderData, LanderRotation, LanderStatus, Player, PlayerActions } from '../Models/player';
 
-const players: Player[] = [];
+const players: Map<string, Player> = new Map();
 
 const service = {
   createPlayer: function (name: string, uuid: string, emoji: string, color: string) {
@@ -23,43 +23,48 @@ const service = {
         rotate: LanderRotation.NONE
       }
     };
-    players.push(player);
+    players.set(uuid, player);
   },
 
   deletePlayer: function (uuid: string) {
-    const index = getPlayerIndexByUuid(uuid);
-    players.splice(index, 1);
+    players.delete(uuid);
   },
 
   playerExists: function (uuid: string) {
-    return getPlayerIndexByUuid(uuid) >= 0;
+    return players.has(uuid);
   },
 
   updatePlayerActions: function (uuid: string, actions: PlayerActions) {
-    const index = getPlayerIndexByUuid(uuid);
-    players[index].actions = actions;
+    const player = players.get(uuid);
+    if (player) {
+      player.actions = actions;
+      players.set(uuid, player);
+    } else {
+      console.warn(`Could not update actions, player with UUID "${uuid}" not found`);
+    }
   },
 
-  updatePlayerLander: function (data: LanderData) {
-    const index = getPlayerIndexByUuid(data.uuid!); // this is bad
-    players[index].lander = {
-      vx: data.vx,
-      vy: data.vy,
-      angle: data.angle,
-      altitude: data.altitude,
-      usedFuel: data.usedFuel,
-      status: data.status,
-      dangerStatus: data.dangerStatus
-    };
+  updatePlayerLander: function (uuid: string, data: LanderData) {
+    const player = players.get(uuid);
+    if (player) {
+      player.lander = {
+        vx: data.vx,
+        vy: data.vy,
+        angle: data.angle,
+        altitude: data.altitude,
+        usedFuel: data.usedFuel,
+        status: data.status,
+        dangerStatus: data.dangerStatus
+      };
+      players.set(uuid, player);
+    } else {
+      console.warn(`Could not update actions, player with UUID "${uuid}" not found`);
+    }
   },
 
   getPlayersCount: function () {
-    return players.length;
+    return players.size;
   }
 };
-
-function getPlayerIndexByUuid(uuid: string) {
-  return players.findIndex((p) => p.uuid === uuid);
-}
 
 export default service;

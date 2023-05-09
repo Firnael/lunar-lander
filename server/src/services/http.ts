@@ -37,6 +37,10 @@ const start = () => {
     }
 };
 
+const stop = () => {
+    server.close();
+}
+
 const retrieveLocalIps = (): Map<string, string[]> => {
     const nets = networkInterfaces();
     const results: any = {};
@@ -59,4 +63,4 @@ const retrieveLocalIps = (): Map<string, string[]> => {
     return results;
 };
 
-export { start, server };
+export { start, stop, server };

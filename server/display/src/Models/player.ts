@@ -98,7 +98,7 @@ export interface PlayerUpdates {
  * Update data server-side and send them to all clients
  */
 export interface SimulationData {
-    landersData: LanderData[]
+    landersData: Map<string, LanderData>
 }
 
 export interface ShipLanded {

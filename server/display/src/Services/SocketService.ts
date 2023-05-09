@@ -34,7 +34,6 @@ const service = {
                 if(PlayersService.playerExists(d.uuid) === false) {
                     PlayersService.createPlayer(d.name, d.uuid, d.emoji, d.color)
                     game.events.emit('CREATE_LANDER', d)
-                    game.events.emit('CREATE_LANDER_2', d)
                 }
             })
         })
@@ -63,8 +62,9 @@ const service = {
         })
 
         // send lander's data to "mission-control-center" scene 
-        socket.on("landersData", (payload: LanderData[]) => {
-            game.events.emit('LANDERS_DATA', payload)
+        socket.on("landersData", (payload: any) => {
+            const shipsMap = new Map(payload);
+            game.events.emit('LANDERS_DATA', [...shipsMap.values()])
         })
     },
 
@@ -77,11 +77,14 @@ const service = {
             // console.log('Waiting for players to connect')
             return;
         }
-        payload.landersData.forEach((d: LanderData) => {
-            PlayersService.updatePlayerLander(d);
-        })
+
+        for (const [k, v] of payload.landersData.entries()) {
+            PlayersService.updatePlayerLander(k, v);
+        }
+
         // send lander's data to server (to be broadcasted to players)
-        socket.emit('simulationData', payload.landersData);
+        // we need to convert the map to an array because serializing a Map === {}
+        socket.emit('simulationData', Array.from(payload.landersData));
     }
 }
 

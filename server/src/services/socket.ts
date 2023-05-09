@@ -1,11 +1,16 @@
 import io from "socket.io"
 import http from 'http'
 import Client from "../models/client"
+import dataService from '../services/data';
 
 // The 'display' client UUID is always the same
 const DISPLAY_UUID = '00000000'
 const MONITORING_UUID_PATTERN = /0000[\w\d]{4}/
 const regex = new RegExp(MONITORING_UUID_PATTERN);
+
+const MONITORING_CLIENTS_ROOM = 'MONITORING_CLIENTS_ROOM';
+const MONITORING_HEART_BEAT_RATE = 200; // in ms
+let monitoringHeartBeat = null;
 
 // the SocketIO Server instance
 let server: io.Server
@@ -14,10 +19,11 @@ let displaySocketID: string
 // the 'monitoring' clients socket IDs
 const monitoringSockets: any = {}
 // a list of every connected clients
-let clients: Map<string, Client> = new Map()
+const clients: Map<string, Client> = new Map()
 
 const service = {
     start: function (httpServer: http.Server) {
+        dataService.init();
         server = new io.Server(httpServer, {
             cors: {
                 origin: "*",
@@ -27,6 +33,11 @@ const service = {
         console.log('WS server up and running')
 
         defineListeners()
+        monitoringHeartBeat = startMonitoringHeartBeat();
+    },
+
+    stop: function () {
+        server.close();
     }
 }
 
@@ -53,7 +64,9 @@ const handleConnection = (socket: io.Socket) => {
         if (client.uuid === DISPLAY_UUID) {
             displaySocketID = socket.id
         } else {
+            // this is a monitoring client, store its socket and connect it to the dedicated room
             monitoringSockets[client.uuid] = socket.id;
+            socket.join(MONITORING_CLIENTS_ROOM);
         }
         
         // send clients list to display (it may be unaware of clients if you refreshed the page)
@@ -78,6 +91,7 @@ const handleDisconnect = (socket: io.Socket) => {
         const client = clients.get(socket.id)!
         if (client.uuid in monitoringSockets) {
             console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Monitoring client <${client.name}> (UUID: ${client.uuid}) disconnected 🔌`)
+            socket.leave(MONITORING_CLIENTS_ROOM);
         } else {
             console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Player <${client.name}> (UUID: ${client.uuid}) disconnected 🔌`)
             server.emit('playerLeaves', { name: client.name, uuid: client.uuid })
@@ -100,10 +114,23 @@ const handleGameEvents = (socket: io.Socket) => {
     })
 
     // Réception des données venant du 'display', broadcast à tous les clients
-    socket.on('simulationData', (data: any) => {
-        //console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Received simulation data from display, broadcasting to players`)
-        server.emit('landersData', data)
+    // data c'est une Map<> qui a été converti en array, on doit la convertir dans l'autre sens 
+    socket.on('simulationData', (dataAsArray: any) => {
+        const dataAsMap: Map<string, Object> = new Map(dataAsArray);
+        dataService.setLandersData(dataAsMap);
+        clients.forEach((v: Client, k: string) => {
+            if (v.uuid !== DISPLAY_UUID) {
+                server.to(k).emit('landerData', dataAsMap.get(v.uuid));
+            } 
+        });
     })
+}
+
+const startMonitoringHeartBeat = () => {
+    return setInterval(() => {
+        const landersData = dataService.getLandersData();
+        server.to(MONITORING_CLIENTS_ROOM).emit('landersData', Array.from(landersData));
+    }, MONITORING_HEART_BEAT_RATE);
 }
 
 export default service

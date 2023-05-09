@@ -197,8 +197,8 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	private sendShipsDataToServer(): void {
-		const data = this.ships.map(s => {
-			return {
+		const data = new Map(this.ships.map(s => {
+			return [s.playerUuid, {
 				name: s.playerName,
 				uuid: s.playerUuid,
 				vx: s.body.velocity.x,
@@ -208,9 +208,10 @@ export class GameScene extends Phaser.Scene {
 				usedFuel: s.usedFuel,
 				status: s.status,
 				dangerStatus: s.dangerStatus
-			}
-		});
-		if (data.length >= 0) {
+			}];
+		}));
+
+		if (data.size >= 0) {
 			this.game.events.emit('SIMULATION_DATA', { landersData: data });
 		}
 	}
