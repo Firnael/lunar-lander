@@ -1,19 +1,27 @@
 import { useState, useEffect } from 'react'
-import 'phaser'
-import config from '../../Game/Config/Config'
+import HttpService from '../../Services/HttpService'
+import { CustomGame } from '../../Game/Types/CustomGame'
+import config from '../../Game/Config/CustomConfig'
 import { PreloadScene } from '../../Game/Scenes/PreloadScene'
 import { TrainingScene } from '../../Game/Scenes/TrainingScene';
 import './Training.css'
 
 export default function Training() {
 
-  const [game, setGame] = useState<Phaser.Game>({} as Phaser.Game)
+  const [game, setGame] = useState<CustomGame>({} as CustomGame);
+  const [serverConfig, setServerConfig] = useState<any>();
 
   useEffect(() => {
-    // create game
-    config.scene = [PreloadScene, TrainingScene];
-    const game: Phaser.Game = new Phaser.Game(config)
-    setGame(game)
+    HttpService.fetchConfig().then(res => res.json()).then(serverConfig => {
+      setServerConfig(serverConfig);
+      config.serverConfig = serverConfig;
+      config.scene = [PreloadScene, TrainingScene];
+
+      // create game
+      const game: CustomGame = new CustomGame(config);
+      setGame(game);
+
+    });
   }, []);
 
   return (

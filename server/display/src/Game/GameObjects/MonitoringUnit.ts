@@ -5,16 +5,12 @@ import { ResizeButton } from './ResizeButton';
 import { Speedometer } from './Speedometer';
 
 /**
- * MonitoginUnit  
  * Used inside a {@link MonitoringGrid} to display the ship state.
- * 
- * TODO :
- * - add more line (with a low alpha, or dotted if possible) to display height
- * - uses RULESET instead of copypasta the CONSTANTS
  */
 export class MonitoringUnit extends Phaser.GameObjects.Container {
-    // TODO mettre en conf
-    private TWEEN_INTERVAL: number = 200;
+    // From server config
+    private TWEEN_INTERVAL: number;
+
     private UNIT_SIZE: number = 240;
     private UNIT_BACKGROUND_COLOR: number = 0x001301;
     private UNIT_STROKE_COLOR: number = 0x76ce81;
@@ -44,6 +40,9 @@ export class MonitoringUnit extends Phaser.GameObjects.Container {
         this.scene = scene;
         this.x = x;
         this.y = y;
+
+        // set from server config
+        this.TWEEN_INTERVAL = this.scene.registry.get('MONITORING_HEART_BEAT_RATE');
 
         // create background rectangle
         this.backgroundRectangle = this.scene.add.rectangle(0, 0, this.UNIT_SIZE, this.UNIT_SIZE, this.UNIT_BACKGROUND_COLOR)

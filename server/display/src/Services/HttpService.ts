@@ -9,6 +9,10 @@ const service = {
 
     fetchLocalIps: async function () {
         return window.fetch(this.getServerUrl() + '/ips');
+    },
+
+    fetchConfig: async function () {
+        return window.fetch(this.getServerUrl() + '/config');
     }
 };
 

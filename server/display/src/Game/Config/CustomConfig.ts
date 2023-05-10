@@ -1,8 +1,8 @@
-import 'phaser';
 import OutlinePipelinePlugin from 'phaser3-rex-plugins/plugins/outlinepipeline-plugin.js';
 import HorrifiPipelinePlugin from 'phaser3-rex-plugins/plugins/horrifipipeline-plugin.js';
+import { CustomConfig } from '../Types/CustomConfig';
 
-const config: Phaser.Types.Core.GameConfig = {
+const config: CustomConfig = {
   title: 'Lunar Lander',
   url: 'https://github.com/Firnael/lunar-lander',
   version: '1.2.0',
@@ -16,6 +16,7 @@ const config: Phaser.Types.Core.GameConfig = {
   scene: [
     // add scene dynamically here
   ],
+  serverConfig: {},
   input: {
     keyboard: true
   },

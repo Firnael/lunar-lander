@@ -25,7 +25,7 @@ export class TrainingScene extends Phaser.Scene {
         backgroundImage.setScale(scale).setScrollFactor(0);
 
         // Create ship
-        this.ship = new Ship(this, 200, 600, 'ship', 'TRAINING', '12345678', '🪆', '#FECB00');
+        this.ship = new Ship(this, 600, 600, 'ship', 'TRAINING', '12345678', '🪆', '#FECB00');
 
         // Create key-binding
         this.mainEngineKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);

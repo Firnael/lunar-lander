@@ -127,11 +127,13 @@ if (rotateRand < 0.33) {
 
 ## TODOs 🪣
 
-- créer un service de conf au niveau du serveur afin que celle-ci soit centralisée et récupérable facilement par les clients (lors du handshake websocket, ou plus tard via un event ou une requête HTTP).
+- améliorer l'écran de monitoring
+  - les pictos de danger sont moches, juste changer la couleur des valeurs trop hautes (genre en rouge) et mettre le picto 'WARNING'
+  - ajouter + de lignes horizontales et verticales (low alpha, ou dotted si pas torp chiant) pour avoir une meilleur impression de mouvement
 
 ## Bugs 🐛
 
-- Y'en a plus ! (pour l'instant...)
+- Fix le warning react de la page du jeu (le truc de "key" prop, on doit créer une liste sans key)
 
 ## Suggestions pour la suite 
 

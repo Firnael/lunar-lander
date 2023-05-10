@@ -4,6 +4,7 @@ import { createServer } from 'http';
 import path from 'path';
 import cors from 'cors';
 import { NetworkInterfaceInfo, networkInterfaces } from 'os';
+import config from '../services/config';
 
 const port = 4000;
 const app = express();
@@ -12,18 +13,21 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+// Local IPs router
+app.get('/ips', (req, res) => {
+    const localIps = retrieveLocalIps();
+    res.send(localIps);
+});
+
+app.get('/config', (req, res) => {
+    res.send(config);
+});
+
 app.use(express.static(path.join(__dirname, '../../display', 'dist')));
 
 // Route towards React router if path is not found on Express server
 app.use((req, res, next) => {
     res.sendFile(path.join(__dirname, '../../display', 'dist', 'index.html'));
-});
-
-// Local IPs router
-app.get('/ips', (req, res) => {
-    const localIps = retrieveLocalIps();
-    console.log(localIps);
-    res.send(localIps);
 });
 
 const server = createServer(app);

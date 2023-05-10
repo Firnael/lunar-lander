@@ -5,8 +5,9 @@ import tinygradient from "tinygradient";
  * Used inside a {@link MonitoringUnit} to display the ship speed in a cool way
  */
 export class Speedometer extends Phaser.GameObjects.Container {
-    // TODO mettre ça en conf
-    private TWEEN_INTERVAL: number = 200;
+    // From server config
+    private TWEEN_INTERVAL: number;
+    // TODO CONFIG
     private MAX_VELOCITY: number = 300;
 
     private CROSS_COLOR = 0x76ce81;
@@ -22,6 +23,9 @@ export class Speedometer extends Phaser.GameObjects.Container {
         this.scene = scene;
         this.x = x;
         this.y = y;
+
+        // set from server config
+        this.TWEEN_INTERVAL = this.scene.registry.get('MONITORING_HEART_BEAT_RATE');
 
         // create lines
         const xLine = this.scene.add.line(0, 0, - this.size, 0, this.size, 0, this.CROSS_COLOR, 1)

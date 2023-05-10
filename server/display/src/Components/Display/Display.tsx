@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
-import 'phaser'
 import tinygradient from 'tinygradient'
 import tinycolor from 'tinycolor2'
 import SocketService from '../../Services/SocketService'
 import HttpService from '../../Services/HttpService'
-import config from '../../Game/Config/Config'
+import { CustomGame } from '../../Game/Types/CustomGame'
+import config from '../../Game/Config/CustomConfig'
 import { PreloadScene } from '../../Game/Scenes/PreloadScene'
 import { GameScene } from '../../Game/Scenes/GameScene'
 import { PlayerStats, PlayerJoins, PlayerLeaves, SimulationData, AttemptsHistory, ShipLanded } from '../../Models/player'
@@ -17,36 +17,43 @@ export default function Display() {
     '#FFFFFF', '#40F03F', '#5DAA9F', '#206DDE',
     '#9F3AED', '#D44EA7', '#FF8001', '#E6CC80' ])
 
-  const [game, setGame] = useState<Phaser.Game>({} as Phaser.Game)
+  const [game, setGame] = useState<CustomGame>({} as CustomGame)
   const [playerStats, setPlayerStats] = useState<PlayerStats[]>([])
   const [localIps, setLocalIps] = useState<any>()
+  const [serverConfig, setServerConfig] = useState<any>()
 
   useEffect(() => {
-    // create game
-    config.scene = [PreloadScene, GameScene];
-    const game: Phaser.Game = new Phaser.Game(config)
-    setGame(game)
+    // retrieve config (cannot start game without this)
+    HttpService.fetchConfig().then(res => res.json()).then(serverConfig => {
+      setServerConfig(serverConfig);
+      config.serverConfig = serverConfig;
+      config.scene = [PreloadScene, GameScene];
 
-    game.events.on('GAME_READY', () => {
-       // handle game events
-      game.events.on('SIMULATION_DATA', (data: SimulationData) => SocketService.handleSimulationData(data))
-      
-      // handle creation and destruction of ships in the game when player connect / disconnect
-      game.events.on('CREATE_LANDER', (data: PlayerJoins) => handleCreateLander(data))
-      game.events.on('DESTROY_LANDER', (data: any) => handleDestroyLander(data))
-      // handle scores updates when ships reach the ground, either way
-      game.events.on('SHIP_LANDED', (data: ShipLanded) => handleShipLanded(data))
-      game.events.on('SHIP_EXPLODED', (data: any) => handleShipExploded(data))
+      // create game
+      const game: CustomGame = new CustomGame(config);
+      setGame(game);
 
-      // connect to communication server
-      const clientConfig = {
-        clientName: 'display',
-        clientUuid: '00000000',
-        clientEmoji: '🤖',
-        clientColor: 'FFFFFF'
-      };
-      SocketService.start(HttpService.getServerUrl(), game, clientConfig);
-    });
+      game.events.on('GAME_READY', () => {
+        // handle game events
+        game.events.on('SIMULATION_DATA', (data: SimulationData) => SocketService.handleSimulationData(data))
+        
+        // handle creation and destruction of ships in the game when player connect / disconnect
+        game.events.on('CREATE_LANDER', (data: PlayerJoins) => handleCreateLander(data))
+        game.events.on('DESTROY_LANDER', (data: any) => handleDestroyLander(data))
+        // handle scores updates when ships reach the ground, either way
+        game.events.on('SHIP_LANDED', (data: ShipLanded) => handleShipLanded(data))
+        game.events.on('SHIP_EXPLODED', (data: any) => handleShipExploded(data))
+
+        // connect to communication server
+        const clientConfig = {
+          clientName: 'display',
+          clientUuid: '00000000',
+          clientEmoji: '🤖',
+          clientColor: 'FFFFFF'
+        };
+        SocketService.start(HttpService.getServerUrl(), game, clientConfig);
+      });
+    })
 
     // retrieve local ips
     HttpService.fetchLocalIps().then(res => res.json()).then(ips => {

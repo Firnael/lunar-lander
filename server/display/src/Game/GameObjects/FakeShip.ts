@@ -2,7 +2,8 @@ import { FakeEngine } from './FakeEngine';
 import { LanderStatus, LanderData, LanderDangerStatus, PlayerActions, LanderRotation } from '../../Models/player';
 
 export class FakeShip extends Phaser.GameObjects.Container {
-    private TWEEN_INTERVAL = 200;
+    // From server config
+    private TWEEN_INTERVAL: number;
 
     public playerName: string;
     public playerUuid: string;
@@ -38,6 +39,9 @@ export class FakeShip extends Phaser.GameObjects.Container {
         this.scene = scene;
         this.x = x;
         this.y = y;
+
+        // set from server config
+        this.TWEEN_INTERVAL = this.scene.registry.get('MONITORING_HEART_BEAT_RATE');
 
         // player preferencies
         this.playerName = name;

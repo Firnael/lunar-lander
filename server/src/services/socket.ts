@@ -2,6 +2,7 @@ import io from "socket.io"
 import http from 'http'
 import Client from "../models/client"
 import dataService from '../services/data';
+import config from '../services/config';
 
 // The 'display' client UUID is always the same
 const DISPLAY_UUID = '00000000'
@@ -9,9 +10,6 @@ const MONITORING_UUID_PATTERN = /0000[\w\d]{4}/
 const regex = new RegExp(MONITORING_UUID_PATTERN);
 
 const MONITORING_CLIENTS_ROOM = 'MONITORING_CLIENTS_ROOM';
-// TODO mettre en conf
-const MONITORING_HEART_BEAT_RATE = 200; // in ms
-let monitoringHeartBeat = null;
 
 // the SocketIO Server instance
 let server: io.Server
@@ -34,7 +32,7 @@ const service = {
         console.log('WS server up and running')
 
         defineListeners()
-        monitoringHeartBeat = startMonitoringHeartBeat();
+        startMonitoringHeartBeat();
     },
 
     stop: function () {
@@ -131,7 +129,7 @@ const startMonitoringHeartBeat = () => {
     return setInterval(() => {
         const landersData = dataService.getLandersData();
         server.to(MONITORING_CLIENTS_ROOM).emit('landersData', Array.from(landersData));
-    }, MONITORING_HEART_BEAT_RATE);
+    }, config.MONITORING_HEART_BEAT_RATE);
 }
 
 export default service
