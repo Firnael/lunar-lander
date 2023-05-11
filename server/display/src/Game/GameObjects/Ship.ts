@@ -162,20 +162,22 @@ export class Ship extends Physics.Arcade.Sprite {
                     this.usedFuel++
                     this.setAngularAcceleration(-this.ANGULAR_ACCELERATION)
                     this.setAngularVelocity(-this.ROTATION_SPEED)
-                    this.leftEngine.start()
+                    this.leftEngine.start();
+                    this.rightEngine.stop();
                     break;
                 case LanderRotation.CLOCKWISE:
                     // rotate right
                     this.usedFuel++
                     this.setAngularAcceleration(this.ANGULAR_ACCELERATION)
                     this.setAngularVelocity(this.ROTATION_SPEED)
-                    this.rightEngine.start()
+                    this.rightEngine.start();
+                    this.leftEngine.stop();
                     break;
                 default:
                     // stop rotation
-                    this.setAngularAcceleration(0)
-                    this.leftEngine.stop()
-                    this.rightEngine.stop()
+                    this.setAngularAcceleration(0);
+                    this.rightEngine.stop();
+                    this.leftEngine.stop();
             }
 
             if (this.actions.thrust) {
