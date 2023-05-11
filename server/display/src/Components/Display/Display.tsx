@@ -158,9 +158,8 @@ export default function Display() {
   }
 
   function getColorByFuelUsedAvg(fuelUsedAvg: number) {
-    // convert a number from 0 to 3000 to a number from 1 to 0
-    // TODO retrieve the '3000' number from the game
-    const value = 1 - (fuelUsedAvg / 3000)
+    // convert a number from 0 to FUEL_TANK_SIZE to a number from 1 to 0
+    const value = 1 - (fuelUsedAvg / serverConfig['FUEL_TANK_SIZE'])
     return rankingGradient.rgbAt(value).toHexString()
   }
 
@@ -200,7 +199,7 @@ export default function Display() {
       </div></td> */}
 
       <td><div key={i + (s.usedFuelAvg ? s.usedFuelAvg.toString() : 'no-usedFuelAvg')} className="pop">
-        <mark style={{backgroundColor: getColorByFuelUsedAvg(s.usedFuelAvg || 3000)}}>
+        <mark style={{backgroundColor: getColorByFuelUsedAvg(s.usedFuelAvg || serverConfig['FUEL_TANK_SIZE'])}}>
           {s.usedFuelAvg ? s.usedFuelAvg : '-'}
         </mark>
       </div></td>

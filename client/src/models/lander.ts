@@ -1,18 +1,18 @@
 /** Représente les informations de votre lander provenant du serveur */
 export interface LanderData {
-    vx: number
-    vy: number
-    angle: number
-    altitude: number
-    usedFuel: number
-    status: string
-    dangerStatus: string
+    vx: number;       // vélocité en X, en px/s (- gauche, + droite)
+    vy: number;       // vélocité en Y, en px/s (- haut, + bas)
+    angle: number;    // angle par rapport au sol, en radian (vaut 0 lorsque le vaisseau est parfaitement droit)
+    altitude: number; // distance par rapport au sol, en px
+    usedFuel: number; // quantité de combustible utilisé, unité arbitraire
+    status: string;   // état actuel (vivant, atteri, explosé, vient de respawn)
+    dangerStatus: string; // situation de danger potentielle (trop rapide, mauvais angle, ou tout va bien)
 }
 
 /** Représente les informations que vous devez communiquer au serveur pour piloter votre lander */
 export interface LanderAction {
-    thrust: boolean
-    rotate: LanderRotation,
+    thrust: boolean;
+    rotate: LanderRotation;
 }
 
 /** Représente les différents états de rotation possible du lander */

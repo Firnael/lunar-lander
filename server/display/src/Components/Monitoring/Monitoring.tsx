@@ -6,6 +6,7 @@ import config from '../../Game/Config/CustomConfig'
 import { PreloadScene } from '../../Game/Scenes/PreloadScene'
 import { MonitoringScene } from '../../Game/Scenes/MonitoringScene';
 import { PlayerJoins, PlayerLeaves, ShipLanded } from '../../Models/player'
+import { createRandomId } from '../../Helpers/Functions'
 import './Monitoring.css'
 
 export default function Monitoring() {
@@ -59,18 +60,6 @@ export default function Monitoring() {
 
   function handleShipExploded(data: any) {
     console.log(`[UI.Monitoring] Player's ship exploded :`, data)
-  }
-
-  function createRandomId(length: number) {
-    let result = '';
-    const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    const charactersLength = characters.length;
-    let counter = 0;
-    while (counter < length) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-      counter += 1;
-    }
-    return result;
   }
 
   return (

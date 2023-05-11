@@ -4,17 +4,18 @@
 
 ## Configuration
 
-Pour modifier les limites auxquelles le vaisseau ne résiste pas à l'atterissage, modifier ces valeurs dans `Ship.ts` : 
+Pour modifier les limites auxquelles le vaisseau ne résiste pas à l'atterissage, modifier ces valeurs dans `.env` : 
 
 ```
-private LANDING_MAX_SPEED = new Phaser.Math.Vector2(40, 40)
-private LANDING_MAX_ANGLE = 15
+LANDING_MAX_VELOCITY_X = 40
+LANDING_MAX_VELOCITY_Y = 40
+LANDING_MAX_ANGLE = 15
 ```
 
-Le vaisseau a un limite de carburant qui peut également être modifiée (sans carburant, le vaisseau dérive) :
+Le vaisseau a une limite de carburant qui peut également être modifiée (sans carburant, le vaisseau dérive) :
 
 ```
-private FUEL_TANK_SIZE = 3000
+FUEL_TANK_SIZE = 3000
 ```
 
 ## Game design

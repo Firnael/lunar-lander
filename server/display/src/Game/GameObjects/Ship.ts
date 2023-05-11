@@ -6,19 +6,20 @@ import { Hud } from './Hud';
 import { PlayerActions, LanderRotation, LanderStatus, LanderDangerStatus } from '../../Models/player';
 
 export class Ship extends Physics.Arcade.Sprite {
-
-    private INITIAL_ANGLE = 0 // pointing up
-    private ROTATION_SPEED = 100
+    // From server config
+    private FUEL_TANK_SIZE: number;
+    private SHIP_ACCELERATION: number;
+    private SHIP_MAX_VELOCITY: number;
+    private LANDING_MAX_ANGLE: number;
+    private LANDING_MAX_VELOCITY: Phaser.Math.Vector2;
+    
     private ANGULAR_ACCELERATION = 10
-    private ACCELERATION = 300
-    private MAX_SPEED = 300
-    private SPACE_DRAG = 0
-    private GROUND_DRAG = 0.05
-    private BOUNCE = 0.5
-    private EXPLOSION_SPEED = new Phaser.Math.Vector2(40, 40)
-    private LANDING_MAX_SPEED = new Phaser.Math.Vector2(5, 5)
-    private LANDING_MAX_ANGLE = 15
-    private FUEL_TANK_SIZE = 3000
+    private ROTATION_SPEED = 100
+    private INITIAL_ANGLE = 0 // pointing up
+    private DRAG = 0 // no drag in space
+    private BOUNCE = 0 // no bounce (maybe later)
+    private FLYING_PARTS_FADE_DURATION = 3000;
+    private RESET_CALLBACK_DELAY = 3000;
 
     private canvasWidth: number
     private canvasHeight: number
@@ -46,6 +47,17 @@ export class Ship extends Physics.Arcade.Sprite {
 
     constructor(scene: Phaser.Scene, x: number, y: number, texture: string, name: string, uuid: string, emoji: string, color: string, invincible?: boolean) {
         super(scene, x, y, texture)
+
+        // set from server config
+        this.FUEL_TANK_SIZE = scene.registry.get('FUEL_TANK_SIZE');
+        this.SHIP_MAX_VELOCITY = scene.registry.get('SHIP_MAX_VELOCITY');
+        this.SHIP_ACCELERATION = scene.registry.get('SHIP_ACCELERATION');
+        this.LANDING_MAX_ANGLE = scene.registry.get('LANDING_MAX_ANGLE');
+        this.LANDING_MAX_VELOCITY = new Phaser.Math.Vector2(
+            scene.registry.get('LANDING_MAX_VELOCITY_X'),
+            scene.registry.get('LANDING_MAX_VELOCITY_Y')
+        );
+
         scene.add.existing(this)
         scene.physics.add.existing(this)
 
@@ -56,8 +68,8 @@ export class Ship extends Physics.Arcade.Sprite {
         this.setName('ship')
         this.setOrigin(0.5, 0.5)
         this.angle = this.INITIAL_ANGLE
-        this.setMaxVelocity(this.MAX_SPEED, this.MAX_SPEED)
-        this.setDrag(this.SPACE_DRAG, this.SPACE_DRAG)
+        this.setMaxVelocity(this.SHIP_MAX_VELOCITY, this.SHIP_MAX_VELOCITY)
+        this.setDrag(this.DRAG, this.DRAG)
         this.setBounce(this.BOUNCE, this.BOUNCE)
 
         // player preferencies
@@ -182,9 +194,9 @@ export class Ship extends Physics.Arcade.Sprite {
 
             if (this.actions.thrust) {
                 this.usedFuel+=2 // main engine fuel cost is greater
-                // Calculate acceleration vector based on this.angle and this.ACCELERATION
-                this.setAccelerationX(Math.sin(this.rotation) * this.ACCELERATION)
-                this.setAccelerationY(Math.sin(this.rotation - Math.PI/2) * this.ACCELERATION)
+                // Calculate acceleration vector based on this.angle and this.SHIP_ACCELERATION
+                this.setAccelerationX(Math.sin(this.rotation) * this.SHIP_ACCELERATION)
+                this.setAccelerationY(Math.sin(this.rotation - Math.PI/2) * this.SHIP_ACCELERATION)
                 // Start main engine !
                 this.mainEngine.start()
             } else {
@@ -203,15 +215,12 @@ export class Ship extends Physics.Arcade.Sprite {
         }
 
         if (this.isTooFastToLand() || this.isBadAngleToLand()) {
-            // The ship hit the ground too hard, or with too great angle with the ground, blow it up and start over
-            return this.explode(true)
+            // The ship hit the ground too hard,
+            // or with too great angle with the ground,
+            // blow it up and start over
+            this.explode(true)
         } else {
-            // we apply some sort of a drag manualy to avoid changing the body drag
-            this.body.velocity.x -= (Math.sign(this.body.velocity.x) * this.GROUND_DRAG);
-            if (this.isSlowEnough()) {
-                // we've landed !
-                return this.land()
-            }
+            this.land()
         }
     }
 
@@ -277,7 +286,7 @@ export class Ship extends Physics.Arcade.Sprite {
                 targets: partSprite,
                 alpha: 0,
                 ease: 'linear',
-                duration: 3000,
+                duration: this.FLYING_PARTS_FADE_DURATION,
                 loop: 0
             })
             tw.on('complete', () => partSprite.destroy())
@@ -285,7 +294,7 @@ export class Ship extends Physics.Arcade.Sprite {
         }
 
         if (respawn) {
-            this.setResetCallback(3000)
+            this.setResetCallback(this.RESET_CALLBACK_DELAY)
         }
         this.scene.game.events.emit('SHIP_EXPLODED', { name: this.playerName, usedFuel: this.FUEL_TANK_SIZE })
     }
@@ -307,11 +316,16 @@ export class Ship extends Physics.Arcade.Sprite {
             return false
         }
 
+        // cannot compute velocity if no history
+        if (this.velocityHistory.length < 2) {
+            return false;
+        }
+
         // medium speed for last 2 frames must be below threshold
         const vx = (Math.abs(this.velocityHistory[0].x) + Math.abs(this.velocityHistory[1].x)) / 2
         const vy = (Math.abs(this.velocityHistory[0].y) + Math.abs(this.velocityHistory[1].y)) / 2
 
-        if (vx > this.EXPLOSION_SPEED.x || vy > this.EXPLOSION_SPEED.y) {
+        if (vx > this.LANDING_MAX_VELOCITY.x || vy > this.LANDING_MAX_VELOCITY.y) {
             // console.log(`Too fast to land : 
             //     x (${vx}) > this.EXPLOSION_SPEED.x (${this.EXPLOSION_SPEED.x})
             //     y (${vy}) > this.EXPLOSION_SPEED.y (${this.EXPLOSION_SPEED.y})`);
@@ -335,11 +349,6 @@ export class Ship extends Physics.Arcade.Sprite {
         return false
     }
     
-    isSlowEnough(): boolean {
-        return Math.abs(this.body.velocity.x) < this.LANDING_MAX_SPEED.x
-            && Math.abs(this.body.velocity.y) < this.LANDING_MAX_SPEED.y;
-    }
-
     isInDangerZone(): boolean {
         if (this.y > this.canvasHeight - 200) {
             return this.isTooFastToLand() || this.isBadAngleToLand()
@@ -388,6 +397,6 @@ export class Ship extends Physics.Arcade.Sprite {
         this.scene.game.events.emit('SHIP_LANDED', { name: this.playerName, usedFuel: this.usedFuel })
 
         // reset ship in 3 seconds
-        this.setResetCallback(3000);
+        this.setResetCallback(this.RESET_CALLBACK_DELAY);
     }
 }
