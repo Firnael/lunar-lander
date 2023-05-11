@@ -12,6 +12,7 @@ const config = parseEnv(process.env, {
     // game
     SHIP_MAX_VELOCITY: z.number().int().positive(),
     SHIP_ACCELERATION: z.number().int().positive(),
+    SHIP_ANGULAR_ACCELERATION: z.number().int().positive(),
     LANDING_MAX_ANGLE: z.number().int().positive().max(180),
     LANDING_MAX_VELOCITY_X: z.number().int().positive(),
     LANDING_MAX_VELOCITY_Y: z.number().int().positive(),

@@ -2,6 +2,7 @@
 export interface LanderData {
     vx: number;       // vélocité en X, en px/s (- gauche, + droite)
     vy: number;       // vélocité en Y, en px/s (- haut, + bas)
+    va: number;       // vélocité angulaire, en radian/s (+ clockwise, - counterclockwise)
     angle: number;    // angle par rapport au sol, en radian (vaut 0 lorsque le vaisseau est parfaitement droit)
     altitude: number; // distance par rapport au sol, en px
     usedFuel: number; // quantité de combustible utilisé, unité arbitraire

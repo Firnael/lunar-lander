@@ -198,11 +198,13 @@ export class GameScene extends Phaser.Scene {
 
 	private sendShipsDataToServer(): void {
 		const data = new Map(this.ships.map(s => {
+			const body = s.body as Phaser.Physics.Arcade.Body;
 			return [s.playerUuid, {
 				name: s.playerName,
 				uuid: s.playerUuid,
-				vx: s.body.velocity.x,
-				vy: s.body.velocity.y,
+				vx: body.velocity.x,
+				vy: body.velocity.y,
+				va: body.angularVelocity,
 				angle: s.angle,
 				altitude: s.altitude,
 				usedFuel: s.usedFuel,

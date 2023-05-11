@@ -12,6 +12,7 @@ const service = {
       lander: {
         vx: 0,
         vy: 0,
+        va: 0,
         angle: 0,
         altitude: 0,
         usedFuel: 0,
@@ -50,6 +51,7 @@ const service = {
       player.lander = {
         vx: data.vx,
         vy: data.vy,
+        va: data.va,
         angle: data.angle,
         altitude: data.altitude,
         usedFuel: data.usedFuel,

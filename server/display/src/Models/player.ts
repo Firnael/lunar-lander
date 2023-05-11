@@ -52,6 +52,7 @@ export interface LanderData {
     uuid?: string
     vx: number
     vy: number
+    va: number
     angle: number
     altitude: number
     usedFuel: number

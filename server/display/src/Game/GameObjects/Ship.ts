@@ -9,12 +9,11 @@ export class Ship extends Physics.Arcade.Sprite {
     // From server config
     private FUEL_TANK_SIZE: number;
     private SHIP_ACCELERATION: number;
+    private SHIP_ANGULAR_ACCELERATION: number;
     private SHIP_MAX_VELOCITY: number;
     private LANDING_MAX_ANGLE: number;
     private LANDING_MAX_VELOCITY: Phaser.Math.Vector2;
     
-    private ANGULAR_ACCELERATION = 10
-    private ROTATION_SPEED = 100
     private INITIAL_ANGLE = 0 // pointing up
     private DRAG = 0 // no drag in space
     private BOUNCE = 0 // no bounce (maybe later)
@@ -52,6 +51,7 @@ export class Ship extends Physics.Arcade.Sprite {
         this.FUEL_TANK_SIZE = scene.registry.get('FUEL_TANK_SIZE');
         this.SHIP_MAX_VELOCITY = scene.registry.get('SHIP_MAX_VELOCITY');
         this.SHIP_ACCELERATION = scene.registry.get('SHIP_ACCELERATION');
+        this.SHIP_ANGULAR_ACCELERATION = scene.registry.get('SHIP_ANGULAR_ACCELERATION');
         this.LANDING_MAX_ANGLE = scene.registry.get('LANDING_MAX_ANGLE');
         this.LANDING_MAX_VELOCITY = new Phaser.Math.Vector2(
             scene.registry.get('LANDING_MAX_VELOCITY_X'),
@@ -172,16 +172,14 @@ export class Ship extends Physics.Arcade.Sprite {
                 case LanderRotation.COUNTERCLOCKWISE:
                     // rotate left
                     this.usedFuel++
-                    this.setAngularAcceleration(-this.ANGULAR_ACCELERATION)
-                    this.setAngularVelocity(-this.ROTATION_SPEED)
+                    this.setAngularAcceleration(-this.SHIP_ANGULAR_ACCELERATION)
                     this.leftEngine.start();
                     this.rightEngine.stop();
                     break;
                 case LanderRotation.CLOCKWISE:
                     // rotate right
                     this.usedFuel++
-                    this.setAngularAcceleration(this.ANGULAR_ACCELERATION)
-                    this.setAngularVelocity(this.ROTATION_SPEED)
+                    this.setAngularAcceleration(this.SHIP_ANGULAR_ACCELERATION)
                     this.rightEngine.start();
                     this.leftEngine.stop();
                     break;
