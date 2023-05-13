@@ -7,12 +7,14 @@ import { PlayerActions, LanderRotation, LanderStatus, LanderDangerStatus } from 
 
 export class Ship extends Physics.Arcade.Sprite {
     // From server config
-    private FUEL_TANK_SIZE: number;
-    private SHIP_ACCELERATION: number;
-    private SHIP_ANGULAR_ACCELERATION: number;
     private SHIP_MAX_VELOCITY: number;
+    private SHIP_ACCELERATION: number;
+    private USE_ANGULAR_ACCELERATION: boolean;
+    private SHIP_ANGULAR_ACCELERATION: number;
+    private SHIP_ANGULAR_VELOCITY: number;
     private LANDING_MAX_ANGLE: number;
     private LANDING_MAX_VELOCITY: Phaser.Math.Vector2;
+    private FUEL_TANK_SIZE: number;
     
     private INITIAL_ANGLE = 0 // pointing up
     private DRAG = 0 // no drag in space
@@ -51,12 +53,16 @@ export class Ship extends Physics.Arcade.Sprite {
         this.FUEL_TANK_SIZE = scene.registry.get('FUEL_TANK_SIZE');
         this.SHIP_MAX_VELOCITY = scene.registry.get('SHIP_MAX_VELOCITY');
         this.SHIP_ACCELERATION = scene.registry.get('SHIP_ACCELERATION');
+        this.USE_ANGULAR_ACCELERATION = scene.registry.get('USE_ANGULAR_ACCELERATION');
         this.SHIP_ANGULAR_ACCELERATION = scene.registry.get('SHIP_ANGULAR_ACCELERATION');
+        this.SHIP_ANGULAR_VELOCITY = scene.registry.get('SHIP_ANGULAR_VELOCITY');
         this.LANDING_MAX_ANGLE = scene.registry.get('LANDING_MAX_ANGLE');
         this.LANDING_MAX_VELOCITY = new Phaser.Math.Vector2(
             scene.registry.get('LANDING_MAX_VELOCITY_X'),
             scene.registry.get('LANDING_MAX_VELOCITY_Y')
         );
+
+        console.log(this.SHIP_ANGULAR_VELOCITY);
 
         scene.add.existing(this)
         scene.physics.add.existing(this)
@@ -172,20 +178,32 @@ export class Ship extends Physics.Arcade.Sprite {
                 case LanderRotation.COUNTERCLOCKWISE:
                     // rotate left
                     this.usedFuel++
-                    this.setAngularAcceleration(-this.SHIP_ANGULAR_ACCELERATION)
+                    if (this.USE_ANGULAR_ACCELERATION) {
+                        this.setAngularAcceleration(-this.SHIP_ANGULAR_ACCELERATION);
+                    } else {
+                        this.setAngularVelocity(-this.SHIP_ANGULAR_VELOCITY);
+                    }
                     this.leftEngine.start();
                     this.rightEngine.stop();
                     break;
                 case LanderRotation.CLOCKWISE:
                     // rotate right
                     this.usedFuel++
-                    this.setAngularAcceleration(this.SHIP_ANGULAR_ACCELERATION)
+                    if (this.USE_ANGULAR_ACCELERATION) {
+                        this.setAngularAcceleration(this.SHIP_ANGULAR_ACCELERATION);
+                    } else {
+                        this.setAngularVelocity(this.SHIP_ANGULAR_VELOCITY);
+                    }
                     this.rightEngine.start();
                     this.leftEngine.stop();
                     break;
                 default:
                     // stop rotation
-                    this.setAngularAcceleration(0);
+                    if (this.USE_ANGULAR_ACCELERATION) {
+                        this.setAngularAcceleration(0);
+                    } else {
+                        this.setAngularVelocity(0);
+                    }
                     this.rightEngine.stop();
                     this.leftEngine.stop();
             }
@@ -236,13 +254,11 @@ export class Ship extends Physics.Arcade.Sprite {
 
         // Move the ship back to the top of the stage, at a random X position
         this.setPosition(Phaser.Math.Between(40, this.canvasWidth - 40), 32)
-        this.setAcceleration(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-200, 200))
-        this.setAngularAcceleration(Phaser.Math.Between(-100, 100))
 
         // Select a random starting angle and velocity
         this.setAngle(Phaser.Math.Between(-180, 180))
-        this.setVelocity(Phaser.Math.Between(-150, 150), 0)
-        this.setAngularVelocity(Phaser.Math.Between(-100, 100))
+        this.setVelocity(Phaser.Math.Between(-300, 300), 0)
+        this.setAngularVelocity(Phaser.Math.Between(-300, 300))
 
         // ship becomes alive / landable again after a small time offset
         this.scene.time.addEvent({

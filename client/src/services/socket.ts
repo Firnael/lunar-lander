@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto"
 import { io, Socket } from "socket.io-client"
-import { LanderData, LanderAction } from "../models/lander"
+import { LanderData } from "../models/lander"
+import { PlayerActions } from "../models/player"
 
 let socket: Socket
 let clientUuid: string
@@ -39,12 +40,12 @@ const service = {
         })
     },
 
-    handleLander: function (callback: (data: LanderData) => LanderAction) {
+    handleLander: function (callback: (data: LanderData) => PlayerActions) {
         socket.on("landerData", (payload: LanderData) => {
             console.log('Your lander data arrived from the moon: ', payload);
             // if simulator crashes and restarts, this may be undefined
             if (payload) {
-                const actions: LanderAction = callback(payload);
+                const actions: PlayerActions = callback(payload);
                 socket.emit('playerActions', actions);
             }
         })

@@ -7,8 +7,7 @@ import tinygradient from "tinygradient";
 export class Speedometer extends Phaser.GameObjects.Container {
     // From server config
     private TWEEN_INTERVAL: number;
-    // TODO CONFIG
-    private MAX_VELOCITY: number = 300;
+    private SHIP_MAX_VELOCITY: number;
 
     private CROSS_COLOR = 0x76ce81;
     private textOffset: number = 50;
@@ -26,6 +25,7 @@ export class Speedometer extends Phaser.GameObjects.Container {
 
         // set from server config
         this.TWEEN_INTERVAL = this.scene.registry.get('MONITORING_HEART_BEAT_RATE');
+        this.SHIP_MAX_VELOCITY = this.scene.registry.get('SHIP_MAX_VELOCITY');
 
         // create lines
         const xLine = this.scene.add.line(0, 0, - this.size, 0, this.size, 0, this.CROSS_COLOR, 1)
@@ -63,8 +63,8 @@ export class Speedometer extends Phaser.GameObjects.Container {
 
     update(vx: number, vy: number): void {
         // normalize value velocity values (between 0 and 1)
-        const nVx = vx / this.MAX_VELOCITY;
-        const nVy = vy / this.MAX_VELOCITY;
+        const nVx = vx / this.SHIP_MAX_VELOCITY;
+        const nVy = vy / this.SHIP_MAX_VELOCITY;
 
         // update color and only change width for horizontal bar
         const xColor = this.velocityGradient.rgbAt(Math.abs(nVx)).toHex();

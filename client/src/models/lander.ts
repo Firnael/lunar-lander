@@ -10,12 +10,6 @@ export interface LanderData {
     dangerStatus: string; // situation de danger potentielle (trop rapide, mauvais angle, ou tout va bien)
 }
 
-/** Représente les informations que vous devez communiquer au serveur pour piloter votre lander */
-export interface LanderAction {
-    thrust: boolean;
-    rotate: LanderRotation;
-}
-
 /** Représente les différents états de rotation possible du lander */
 export enum LanderRotation {
     CLOCKWISE,

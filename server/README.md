@@ -7,15 +7,15 @@
 Pour modifier les limites auxquelles le vaisseau ne résiste pas à l'atterissage, modifier ces valeurs dans `.env` : 
 
 ```
-LANDING_MAX_VELOCITY_X = 40
-LANDING_MAX_VELOCITY_Y = 40
-LANDING_MAX_ANGLE = 15
+LANDING_MAX_VELOCITY_X=40
+LANDING_MAX_VELOCITY_Y=40
+LANDING_MAX_ANGLE=15
 ```
 
 Le vaisseau a une limite de carburant qui peut également être modifiée (sans carburant, le vaisseau dérive) :
 
 ```
-FUEL_TANK_SIZE = 3000
+FUEL_TANK_SIZE=3000
 ```
 
 ## Game design
@@ -24,7 +24,7 @@ FUEL_TANK_SIZE = 3000
 
 Quantité de carburant utilisé : 
 - la valeur de 'usedFuel' lorsque le vaisseau arrive à atterrir
-- 3000 lorsque le vaisseau se crash
+- la constante FUEL_TANK_SIZE lorsque le vaisseau se crash
 
 ### Ranking
 

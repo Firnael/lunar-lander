@@ -74,12 +74,15 @@ const actions = {
   - `-90` si le vaisseau pointe vers la gauche
   - `90` si le vaisseau pointe vers la droite
   - `+/-180` si le vaisseau pointe vers le bas
-- `vx` : vitesse horizontale
+- `vx` : vélocité horizontale
   - est **positive** lorsque le vaisseau se déplace vers la **droite**
   - est **négative** lorsque le vaisseau se déplace vers la **gauche**
-- `vy` : vitesse verticale
+- `vy` : vélocité verticale
   - est **positive** lorsque le vaisseau se déplace vers le **bas**
   - est **négative** lorsque le vaisseau se déplace vers le **haut**
+- `va` : vélocité angulaire
+  - est **positive** lorsque le vaisseau est en rotation vers la **droite**
+  - est **négative** lorsque le vaisseau est en rotation vers la **gauche**
 - `altitude` : distance entre le vaisseau et le sol
 - `usedFuel` : la quantité de carburant utilisé lors de cette tentative
   - allumer un moteur auxiliaire (de rotation) consomme 1 de carburant par frame

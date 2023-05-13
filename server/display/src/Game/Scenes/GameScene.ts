@@ -51,7 +51,7 @@ export class GameScene extends Phaser.Scene {
 		this.dataHeartBeat = this.time.addEvent({
 			callback: this.sendShipsDataToServer,
 			callbackScope: this,
-			delay: 50, // in ms
+			delay: this.registry.get('SIMULATION_DATA_HEART_BEAT_RATE'),
 			loop: true
 		});
 
