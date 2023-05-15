@@ -1,9 +1,13 @@
 import explosion_spritesheet_url from '../Assets/images/explosion.png';
 import ship_parts_spritesheet_url from '../Assets/images/ship_parts.png';
 import ship_sprite_url from '../Assets/images/ship.png';
+import training_ship_sprite_url from '../Assets/images/training_ship.png';
 import fake_ship_sprite_url from '../Assets/images/fake_ship.png';
 import background_sprite_url from '../Assets/images/background.png';
 import training_background_sprite_url from '../Assets/images/training_background.png';
+import training_background_dark_sprite_url from '../Assets/images/training_background_dark.png';
+import training_block_sprite_url from '../Assets/images/training_block.png';
+import training_blocks_spritesheet_url from '../Assets/images/training_blocks_spritesheet.png';
 import monitor_background_sprite_url from '../Assets/images/monitor_background.png';
 import ground_sprite_url from '../Assets/images/ground.png';
 import indicator_sprite_url from '../Assets/images/indicator.png';
@@ -34,9 +38,14 @@ export class PreloadScene extends Phaser.Scene {
         this.load.spritesheet('shipParts', ship_parts_spritesheet_url, { frameWidth: 25, frameHeight: 16 });
         // images
         this.load.image('ship', ship_sprite_url);
+        this.load.image('trainingShip', training_ship_sprite_url);
         this.load.image('fake_ship', fake_ship_sprite_url);
         this.load.image('background', background_sprite_url);
         this.load.image('trainingBackground', training_background_sprite_url);
+        this.load.image('trainingBackgroundDark', training_background_dark_sprite_url);
+        this.load.image('trainingBlock', training_block_sprite_url);
+        this.load.spritesheet('trainingBlocks', training_blocks_spritesheet_url, {
+            frameWidth: 59, frameHeight: 59 });
         this.load.image('monitorBackground', monitor_background_sprite_url);
         this.load.image('ground', ground_sprite_url);
         this.load.image('indicator', indicator_sprite_url);

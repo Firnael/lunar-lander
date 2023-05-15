@@ -14,6 +14,7 @@ export class GameScene extends Phaser.Scene {
 	private shipsCollisionGroup!: Phaser.GameObjects.Group
 	private shipToShipColliders: Phaser.Physics.Arcade.Collider[] = []
 
+	private groundBlockHeight!: number;
 	private groundGroup!: Phaser.GameObjects.Group
 
 	/** Server heartbeat timer */
@@ -112,17 +113,22 @@ export class GameScene extends Phaser.Scene {
 		for (let x = 0; x < this.CANVAS.width; x += 60) {
 			// Add the ground blocks to the bottom of canvas, enable physics on each, make them immovable
 			const groundBlock = this.physics.add.sprite(x, 0, 'ground').setOrigin(0, 0)
-			groundBlock.setPosition(x, this.CANVAS.height - groundBlock.height)
+			this.groundBlockHeight = groundBlock.displayHeight;
+			groundBlock.setPosition(x, this.CANVAS.height - this.groundBlockHeight)
 			groundBlock.body.setImmovable(true)
 			groundBlock.body.setAllowGravity(false)
 			this.groundGroup.add(groundBlock)
 		}
+
 	}
 
 	private createShip(data: PlayerJoins, x = 0, y = 0) {
 		console.log(`[Phaser.Display] Create ship`, data);
 		// Add the ship to the scene
-		const ship: Ship = new Ship(this, x, y, 'ship', data.name, data.uuid, data.emoji, data.color, data.name === 'Croclardon')
+		const ship: Ship = new Ship(
+			this, x, y, 'ship', this.groundBlockHeight,
+			data.name, data.uuid, data.emoji, data.color, data.name === 'Croclardon'
+		);
 		// Choose a random starting angle and velocity for the ship
 		ship.reset()
 		// Enable and handle collisions between ship and ground

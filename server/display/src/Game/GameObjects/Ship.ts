@@ -21,9 +21,11 @@ export class Ship extends Physics.Arcade.Sprite {
     private BOUNCE = 0 // no bounce (maybe later)
     private FLYING_PARTS_FADE_DURATION = 3000;
     private RESET_CALLBACK_DELAY = 3000;
+    private ENGINES_PARTICULES_OFFSET = 5;
 
     private canvasWidth: number
     private canvasHeight: number
+    private groundSpriteHeight: number;
     private isInvincible: boolean
     private indicator: Indicator
     private flag: Flag
@@ -46,7 +48,7 @@ export class Ship extends Physics.Arcade.Sprite {
     public actions: PlayerActions
     public parts: Phaser.GameObjects.Group
 
-    constructor(scene: Phaser.Scene, x: number, y: number, texture: string, name: string, uuid: string, emoji: string, color: string, invincible?: boolean) {
+    constructor(scene: Phaser.Scene, x: number, y: number, texture: string, groundSpriteHeight: number, name: string, uuid: string, emoji: string, color: string, invincible?: boolean) {
         super(scene, x, y, texture)
 
         // set from server config
@@ -62,14 +64,13 @@ export class Ship extends Physics.Arcade.Sprite {
             scene.registry.get('LANDING_MAX_VELOCITY_Y')
         );
 
-        console.log(this.SHIP_ANGULAR_VELOCITY);
-
         scene.add.existing(this)
         scene.physics.add.existing(this)
 
         const { width, height } = this.scene.sys.canvas
         this.canvasWidth = width
         this.canvasHeight = height
+        this.groundSpriteHeight = groundSpriteHeight;
 
         this.setName('ship')
         this.setOrigin(0.5, 0.5)
@@ -105,7 +106,7 @@ export class Ship extends Physics.Arcade.Sprite {
         this.velocityHistory = []
         this.altitude = 0
 
-        this.hud = new Hud(scene, 0, 0, 'hudLine', this.FUEL_TANK_SIZE, this)
+        this.hud = new Hud(scene, 0, 0, this.FUEL_TANK_SIZE, this)
 
         // setup indicator
         this.indicator = new Indicator(scene, 0, 0, 'indicator', name, color)
@@ -119,19 +120,19 @@ export class Ship extends Physics.Arcade.Sprite {
 
         const enginesParticulesOptions: Phaser.Types.GameObjects.Particles.ParticleEmitterConfig = {
             speed: 75,
-            lifespan: 300,
+            lifespan: { min: 100, max: 300 },
             frequency: 1,
             scale: { start: 1.5, end: 0.2 },
+            angle: { min: 80, max: 100 },
             alpha: 0.5,
-            angle: 90,
             blendMode: Phaser.BlendModes.ADD,
         }
         this.leftEngine = smokeParticles.createEmitter(enginesParticulesOptions)
-        this.leftEngine.setPosition(14, 15)
+        this.leftEngine.setPosition(this.width / 2, this.height / 2 + this.ENGINES_PARTICULES_OFFSET)
         this.rightEngine = smokeParticles.createEmitter(enginesParticulesOptions)
-        this.rightEngine.setPosition(-14, 15)
+        this.rightEngine.setPosition(-this.width / 2, this.height / 2 + this.ENGINES_PARTICULES_OFFSET)
         this.mainEngine = fireParticles.createEmitter(enginesParticulesOptions)
-        this.mainEngine.setPosition(0, 15)
+        this.mainEngine.setPosition(0, this.height / 2 + this.ENGINES_PARTICULES_OFFSET)
         this.mainEngine.setTint([0xff0000, 0xff6600, 0xffff00]) // fire tints !
         this.mainEngine.setSpeed(100)
         this.mainEngine.setScale({ start: 2.5, end: 0.2 })
@@ -152,7 +153,8 @@ export class Ship extends Physics.Arcade.Sprite {
         }
 
         // update altitude information
-        this.altitude = this.canvasHeight - this.y - this.height - 24 // 24 is the ground sprite height...
+        // we use 'displayHeight' to take scaling into account then divide it by 2 because we set origin to 0.5 
+        this.altitude = this.canvasHeight - this.y - this.displayHeight / 2 - this.groundSpriteHeight;
 
         // update HUD
         this.hud.update()
@@ -249,7 +251,7 @@ export class Ship extends Physics.Arcade.Sprite {
         this.flag.setVisible(false)
         // hide ship & hud until ship becomes landable again
         this.setVisible(false)
-        this.hud.setContainerVisible(false)
+        this.hud.setVisible(false)
         this.enginesContainer.setVisible(false)
 
         // Move the ship back to the top of the stage, at a random X position
@@ -269,7 +271,7 @@ export class Ship extends Physics.Arcade.Sprite {
                     this.body.enable = true
                     // display ship and hud
                     this.setVisible(true)
-                    this.hud.setContainerVisible(true)
+                    this.hud.setVisible(true)
                     this.enginesContainer.setVisible(true)
                 }
             },
@@ -282,7 +284,7 @@ export class Ship extends Physics.Arcade.Sprite {
     explode(respawn: boolean): void {
         this.status = LanderStatus.DEAD
         this.setVisible(false)
-        this.hud.setContainerVisible(false)
+        this.hud.setVisible(false)
         this.enginesContainer.setVisible(false)
         // disable collisions
         this.body.enable = false;
@@ -412,5 +414,12 @@ export class Ship extends Physics.Arcade.Sprite {
 
         // reset ship in 3 seconds
         this.setResetCallback(this.RESET_CALLBACK_DELAY);
+    }
+
+    setScale(x: number, y?: number): this {
+        super.setScale(x, y);
+        this.enginesContainer.setScale(x, y);
+        this.hud.setScale(x, y);
+        return this;
     }
 }
