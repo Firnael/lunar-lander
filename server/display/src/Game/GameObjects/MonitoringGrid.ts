@@ -1,3 +1,4 @@
+import { LanderData, PlayerJoins, PlayerLeaves, PlayerUpdates } from "../../Models/player";
 import { MonitoringUnit } from "./MonitoringUnit";
 
 /**
@@ -32,7 +33,7 @@ export class MonitoringGrid extends Phaser.GameObjects.Container {
 
     /**
      * Try to find an available unit for the player's ship :
-     * - if a unit already exists with this player data, re-use it
+     * - if a unit already exists with this player data, reconnect to it
      * - if not, try to find an empty one
      * - if there is none, return nothing
      * @param playerName explicit
@@ -41,12 +42,12 @@ export class MonitoringGrid extends Phaser.GameObjects.Container {
     getAvailableUnit(playerName: string): MonitoringUnit | undefined {
         let unit;
         for (const u of this.getUnits()) {
-            // if it exists, use the same unit for this player
-            if (u.shipRef && u.shipRef.playerName === playerName) {
+            // if possible, use the same unit this player used previously
+            if (u.isIdle && u.monitoringShipData.playerName === playerName) {
                 return u;
             }
-            // if it doesn't, take the first empty unit
-            else if (!u.shipRef && !unit) {
+            // if not, take the first turned off unit
+            else if (!u.isTurnedOn && !unit) {
                 unit = u;
             }
             
@@ -58,4 +59,34 @@ export class MonitoringGrid extends Phaser.GameObjects.Container {
         return this.list.filter(u => u.name.startsWith('monitoring-unit-')) as MonitoringUnit[];
     }
 
+    turnOnUnit(data: PlayerJoins) {
+        // Find an 'empty' monitorUnit
+        const unit = this.getAvailableUnit(data.name);
+        if (!unit) {
+            console.error('No available unit to monitor ship');
+            return;
+        }
+        if (unit.isIdle) {
+            unit.reconnect(data.uuid, data.emoji, data.color);
+        } else {
+            unit.turnOn(data.name, data.uuid, data.emoji, data.color);
+        }
+    }
+
+    setShipsParameters(data: LanderData[]) {
+        data.forEach(d => {
+            const unit = this.getUnits().find((u) => u.monitoringShipData.playerName === d.name);
+            unit?.setShipParameters(d);
+        })
+    }
+
+    setShipActions(data: PlayerUpdates) {
+        const unit = this.getUnits().find((u) => u.monitoringShipData.playerName === data.name);
+        unit?.setShipActions(data.actions);
+    }
+
+    disconnectUnit(data: PlayerLeaves) {
+        const unit = this.getUnits().find((u) => u.monitoringShipData.playerName === data.name);
+        unit?.disconnect();
+    }
 }

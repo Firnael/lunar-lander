@@ -1,11 +1,9 @@
 import 'phaser';
-import { FakeShip } from '../GameObjects/FakeShip';
 import { MonitoringGrid } from '../GameObjects/MonitoringGrid';
 import { LanderData, PlayerJoins, PlayerLeaves, PlayerUpdates } from '../../Models/player';
 import monitoring_cursor_url from '../Assets/images/monitoring_cursor.png';
 
 export class MonitoringScene extends Phaser.Scene {
-    private ships: FakeShip[] = [];
     private monitoringGrid!: MonitoringGrid;
 
     constructor() {
@@ -66,54 +64,16 @@ export class MonitoringScene extends Phaser.Scene {
     }
 
     update(): void {
-        for (const ship of this.ships) {
-            ship.update();
-        }
         this.monitoringGrid.update();
     }
 
     private initEventListeners(): void {
-        this.game.events.on('CREATE_LANDER', (data: PlayerJoins) => this.createShip(data), this);
-        this.game.events.on('DESTROY_LANDER', (data: PlayerLeaves) => this.destroyShip(data), this);
-        this.game.events.on('UPDATE_LANDER', (data: PlayerUpdates) => this.setShipActions(data), this);
-        this.game.events.on('LANDERS_DATA', (data: LanderData[]) => this.setShipsParameters(data), this);
+        this.game.events.on('CREATE_LANDER', (data: PlayerJoins) => this.monitoringGrid.turnOnUnit(data), this);
+        this.game.events.on('UPDATE_LANDER', (data: PlayerUpdates) => this.monitoringGrid.setShipActions(data), this);
+        this.game.events.on('PLAYER_LEFT', (data: PlayerLeaves) => this.monitoringGrid.disconnectUnit(data), this);
+        this.game.events.on('LANDERS_DATA', (data: LanderData[]) => this.monitoringGrid.setShipsParameters(data), this);
         // notify webapp the game is ready to handle events
         this.game.events.emit('GAME_READY', {});
     }
-
-    // TODO refact ce truc pour pas gérer de ship dans la scene, ce uniquement sont des élements des monitoring units enfait
-    private createShip(data: PlayerJoins, x = 0, y = 0) {
-        console.log(`[Phaser.Monitoring] Create 'fake' ship`, data);
-        
-        // Find an 'empty' monitorUnit
-        const unit = this.monitoringGrid.getAvailableUnit(data.name);
-        if (!unit) {
-            console.error('No available unit to monitor ship');
-            return;
-        }
-
-        // Add the ship to the scene
-        const ship: FakeShip = new FakeShip(this, 0, 0, data.name, data.uuid, data.emoji, data.color);
-        unit.setShipRef(ship);
-        this.ships.push(ship);
-    }
-
-    private destroyShip(data: PlayerLeaves) {
-        const index = this.ships.findIndex((s) => s.playerName === data.name);
-        this.ships[index].explode();
-        this.ships[index].destroy();
-        this.ships.splice(index, 1);
-    }
-
-    private setShipsParameters(data: LanderData[]) {
-        this.ships.forEach((s) => {
-            const index = data.findIndex((d) => d.name === s.playerName);
-            s.setParameters(data[index]);
-        });
-    }
-
-    private setShipActions(data: PlayerUpdates) {
-        const index = this.ships.findIndex((s) => s.playerName === data.name);
-        this.ships[index].setActions(data.actions);
-    }
+   
 }

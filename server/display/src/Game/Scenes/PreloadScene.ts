@@ -12,12 +12,12 @@ import monitor_background_sprite_url from '../Assets/images/monitor_background.p
 import ground_sprite_url from '../Assets/images/ground.png';
 import indicator_sprite_url from '../Assets/images/indicator.png';
 import flag_sprite_url from '../Assets/images/flag.png';
-import hud_line_sprite_url from '../Assets/images/hud_line.png';
 import danger_sign_sprite_url from '../Assets/images/danger_sign.png';
 import danger_velocity_sprite_url from '../Assets/images/danger_velocity.png';
 import danger_angle_sprite_url from '../Assets/images/danger_angle.png';
 import smoke_particule_sprite_url from '../Assets/images/smoke_particule.png';
 import fire_particule_sprite_url from '../Assets/images/fire_particule.png';
+import acceleration_particule_sprite_url from '../Assets/images/acceleration_particule.png';
 import fake_main_engine_sprite_url from '../Assets/images/fake_main_engine.png';
 import fake_aux_engine_sprite_url from '../Assets/images/fake_aux_engine.png';
 import grow_window_button_sprite_url from '../Assets/images/grow_window_button.png';
@@ -50,7 +50,6 @@ export class PreloadScene extends Phaser.Scene {
         this.load.image('ground', ground_sprite_url);
         this.load.image('indicator', indicator_sprite_url);
         this.load.image('flag', flag_sprite_url);
-        this.load.image('hudLine', hud_line_sprite_url);
         this.load.image('dangerSign', danger_sign_sprite_url);
         this.load.image('dangerVelocity', danger_velocity_sprite_url);
         this.load.image('dangerAngle', danger_angle_sprite_url);
@@ -62,6 +61,7 @@ export class PreloadScene extends Phaser.Scene {
         // particules
         this.load.image('smoke_particule', smoke_particule_sprite_url);
         this.load.image('fire_particule', fire_particule_sprite_url);
+        this.load.image('acceleration_particule', acceleration_particule_sprite_url);
     }
 
     create(): void {

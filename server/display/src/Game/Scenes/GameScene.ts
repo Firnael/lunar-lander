@@ -38,6 +38,7 @@ export class GameScene extends Phaser.Scene {
 		// teleport first player ship to mouse cursor and give it a bump
 		this.input.on('pointerdown', (pointer: any) => {
 			this.ships[0]?.setPosition(pointer.x, pointer.y);
+			this.ships[0]?.setVelocityX(100);
 			this.ships[0]?.setVelocityY(100);
 		});
 		// toggle 'debug' mode on a key press
@@ -196,7 +197,7 @@ export class GameScene extends Phaser.Scene {
 
 	private initEventListeners(): void {
 		this.game.events.on('CREATE_LANDER', (data: PlayerJoins) => this.createShip(data), this)
-		this.game.events.on('DESTROY_LANDER', (data: PlayerLeaves) => this.destroyShip(data), this)
+		this.game.events.on('PLAYER_LEFT', (data: PlayerLeaves) => this.destroyShip(data), this)
 		this.game.events.on('UPDATE_LANDER', (data: PlayerUpdates) => this.updateShip(data), this)
 		// notify webapp the game is ready to handle events
 		this.game.events.emit('GAME_READY', {});

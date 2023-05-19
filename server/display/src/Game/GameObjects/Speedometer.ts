@@ -10,11 +10,17 @@ export class Speedometer extends Phaser.GameObjects.Container {
     private SHIP_MAX_VELOCITY: number;
 
     private CROSS_COLOR = 0x76ce81;
-    private textOffset: number = 50;
+    private TEXT_OPTIONS = { font: '14px Greenscr', color: '#dddddd' };
+    private TEXT_OFFSET: number = 50;
     private size: number = 40; // size of the speedometer cross
     private barSize: number = 6;
+    private MAX_VELOCITY_FOR_DISPLAY: number = 300;
 
     private velocityGradient: tinygradient.Instance;
+
+    // Objects references
+    private vxText: Phaser.GameObjects.Text;
+    private vyText: Phaser.GameObjects.Text;
     
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene);
@@ -40,22 +46,16 @@ export class Speedometer extends Phaser.GameObjects.Container {
             .setDepth(2).setOrigin(0.5, 0).setName('yBar');
 
         // create velocity text
-        const textOptions = { font: '14px Greenscr', color: '#dddddd' };
-        const vxText = this.scene.add.text(0, this.textOffset , '', textOptions)
-            .setOrigin(0.5, 0.5).setName('vxText');
-        const vyText = this.scene.add.text(0, this.textOffset + 16, '', textOptions)
-            .setOrigin(0.5, 0.5).setName('vyText');
+        this.vxText = this.scene.add.text(0, this.TEXT_OFFSET , '', this.TEXT_OPTIONS)
+            .setOrigin(0.5, 0.5);
+        this.vyText = this.scene.add.text(0, this.TEXT_OFFSET + 16, '', this.TEXT_OPTIONS)
+            .setOrigin(0.5, 0.5);
 
         // create gradient for bars (shouldn't I be doing something with my life ???)
         this.velocityGradient = tinygradient([ '#00ff00', '#FFFF00', '#ffa500', '#ff0000' ]); // green - yellow - orange - red 
 
         // add objects to container
-        this.add(xLine);
-        this.add(yLine);
-        this.add(xBar);
-        this.add(yBar);
-        this.add(vxText);
-        this.add(vyText);
+        this.add([xLine, yLine, xBar, yBar, this.vxText, this.vyText]);
 
         // add container to the scene
         this.scene.add.existing(this);
@@ -63,8 +63,8 @@ export class Speedometer extends Phaser.GameObjects.Container {
 
     update(vx: number, vy: number): void {
         // normalize value velocity values (between 0 and 1)
-        const nVx = vx / this.SHIP_MAX_VELOCITY;
-        const nVy = vy / this.SHIP_MAX_VELOCITY;
+        const nVx = vx / (this.SHIP_MAX_VELOCITY > this.MAX_VELOCITY_FOR_DISPLAY ? this.MAX_VELOCITY_FOR_DISPLAY : this.SHIP_MAX_VELOCITY);
+        const nVy = vy / (this.SHIP_MAX_VELOCITY > this.MAX_VELOCITY_FOR_DISPLAY ? this.MAX_VELOCITY_FOR_DISPLAY : this.SHIP_MAX_VELOCITY);
 
         // update color and only change width for horizontal bar
         const xColor = this.velocityGradient.rgbAt(Math.abs(nVx)).toHex();
@@ -93,9 +93,15 @@ export class Speedometer extends Phaser.GameObjects.Container {
         });
 
         // update velocity text
-        const vxText = this.getByName('vxText') as Phaser.GameObjects.Text;
-        vxText.setText('vx: ' + vx.toFixed());
-        const vyText = this.getByName('vyText') as Phaser.GameObjects.Text;
-        vyText.setText('vy: ' + vy.toFixed());
+        this.vxText.setText('vx: ' + vx.toFixed());
+        this.vyText.setText('vy: ' + vy.toFixed());
+    }
+
+    setVxTextColor(color: string) {
+        this.vxText.setColor(color);
+    }
+
+    setVyTextColor(color: string) {
+        this.vyText.setColor(color);
     }
 }

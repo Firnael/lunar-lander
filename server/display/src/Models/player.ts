@@ -1,3 +1,4 @@
+// TODO ranger tout ce bordel
 /** Used by the webapp to rank players  */
 export interface PlayerStats {
     name: string            // the player name
@@ -23,13 +24,14 @@ export enum LanderStatus {
     SPAWNED, // 0
     ALIVE,   // 1
     LANDED,  // 2
-    DEAD     // 3
+    CRASHED     // 3
 }
 
 export enum LanderDangerStatus {
-    SAFE = 0,           // 0
-    BAD_ANGLE = 1 << 0, // 0001
-    TOO_FAST = 1 << 1   // 0010
+    SAFE = 0,            // 0    = 0
+    BAD_ANGLE = 1 << 0,  // 0001 = 1
+    TOO_FAST_X = 1 << 1, // 0010 = 2
+    TOO_FAST_Y = 1 << 2  // 0100 = 4
     // ... could be more dangers in the future, we'll keep bitshifting then
 }
 

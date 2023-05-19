@@ -1,13 +1,14 @@
 import { LanderRotation, PlayerActions } from "../../Models/player";
+import { FakeEngineType } from "../Types/FakeEngineType";
 
 /**
  * Used by a {@link FakeShip} to display it's engines state.
  */
 export class FakeEngine extends Phaser.GameObjects.Sprite {
 
-    private engineType: string;
+    private engineType: FakeEngineType;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, texture: string, engineType: string) {
+    constructor(scene: Phaser.Scene, x: number, y: number, texture: string, engineType: FakeEngineType) {
         super(scene, x, y, texture);
         scene.add.existing(this);
 
@@ -15,26 +16,18 @@ export class FakeEngine extends Phaser.GameObjects.Sprite {
     }
 
     update(actions: PlayerActions): void {
-        if (this.engineType === 'main') {
-            if (actions.thrust) {
-                this.setVisible(true);
-            } else {
-                this.setVisible(false);
-            }
-        } else if (this.engineType === 'left') {
-            if (actions.rotate === LanderRotation.CLOCKWISE) {
-                this.setVisible(true);
-            } else {
-                this.setVisible(false);
-            }
-        } else if (this.engineType === 'right') {
-            if (actions.rotate === LanderRotation.COUNTERCLOCKWISE) {
-                this.setVisible(true);
-            } else {
-                this.setVisible(false);
-            }
-        } else {
-            console.error('Unknown engine type');
+        switch (this.engineType) {
+            case FakeEngineType.MAIN:
+                this.setVisible(actions.thrust);
+                break;
+            case FakeEngineType.LEFT:
+                this.setVisible(actions.rotate === LanderRotation.CLOCKWISE);
+                break;
+            case FakeEngineType.RIGHT:
+                this.setVisible(actions.rotate === LanderRotation.COUNTERCLOCKWISE);
+                break;
+            default:
+                console.error('Unknown engine type');
         }
     }
 }

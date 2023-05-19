@@ -20,6 +20,7 @@ const config = parseEnv(process.env, {
     LANDING_MAX_VELOCITY_X: z.number().int().positive(),
     LANDING_MAX_VELOCITY_Y: z.number().int().positive(),
     FUEL_TANK_SIZE: z.number().int().positive(),
+    DANGER_ZONE_HEIGHT: z.number().int().positive(),
 });
 
 export default config;

@@ -39,7 +39,7 @@ export default function Display() {
         
         // handle creation and destruction of ships in the game when player connect / disconnect
         game.events.on('CREATE_LANDER', (data: PlayerJoins) => handleCreateLander(data))
-        game.events.on('DESTROY_LANDER', (data: any) => handleDestroyLander(data))
+        game.events.on('PLAYER_LEFT', (data: any) => handlePlayerLeft(data))
         // handle scores updates when ships reach the ground, either way
         game.events.on('SHIP_LANDED', (data: ShipLanded) => handleShipLanded(data))
         game.events.on('SHIP_EXPLODED', (data: any) => handleShipExploded(data))
@@ -80,7 +80,7 @@ export default function Display() {
     })
   }
 
-  function handleDestroyLander(data: PlayerLeaves) {
+  function handlePlayerLeft(data: PlayerLeaves) {
     console.log('[UI.Display] PlayerLeaves :', data);
     //setPlayers(players.filter((p: any) => p.name !== data.name))
   }

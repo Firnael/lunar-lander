@@ -47,7 +47,7 @@ const service = {
         socket.on("playerLeaves", (payload: PlayerLeaves) => {
             console.log('[Socket 🌐] Player left', payload.name)
             PlayersService.deletePlayer(payload.uuid)
-            game.events.emit('DESTROY_LANDER', payload)
+            game.events.emit('PLAYER_LEFT', payload)
         })
 
         socket.on("playerUpdates", (payload: PlayerUpdates) => {

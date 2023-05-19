@@ -91,11 +91,12 @@ const actions = {
   - 0 : SPAWNED, votre vaisseau vient d'apparaître (ou de réapparaître) et est invulnérable quelques secondes
   - 1 : ALIVE, votre vaisseau est en cours de vol, tout va bien (pour le moment)
   - 2 : LANDED, votre vaisseau à atterri 🎉 ! Il réapparaîtra dans quelques secondes
-  - 3 : DEAD, votre vaisseau à explosé 😱 ! Il réapparaîtra dans quelques secondes.
+  - 3 : CRASHED, votre vaisseau à explosé 😱 ! Il réapparaîtra dans quelques secondes.
 - `dangerStatus` : l'état de danger actuel de votre vaisseau :
   - 0 : SAFE, votre vaisseau est en sécurité (pour le moment)
   - 1 : BAD_ANGLE, l'angle d'inclinaison de votre vaisseau avec le sol est trop grand pour atterrir !
-  - 2 : TOO_FAST, votre vaisseau va trop vite pour atterrir !
+  - 2 : TOO_FAST_X, votre vaisseau va trop vite horizontalement pour atterrir !
+  - 4 : TOO_FAST_Y, votre vaisseau va trop vite verticalement pour atterrir !
 
 ## Test de charge 
 

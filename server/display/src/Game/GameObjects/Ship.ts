@@ -15,6 +15,7 @@ export class Ship extends Physics.Arcade.Sprite {
     private LANDING_MAX_ANGLE: number;
     private LANDING_MAX_VELOCITY: Phaser.Math.Vector2;
     private FUEL_TANK_SIZE: number;
+    private DANGER_ZONE_HEIGHT: number;
     
     private INITIAL_ANGLE = 0 // pointing up
     private DRAG = 0 // no drag in space
@@ -63,6 +64,7 @@ export class Ship extends Physics.Arcade.Sprite {
             scene.registry.get('LANDING_MAX_VELOCITY_X'),
             scene.registry.get('LANDING_MAX_VELOCITY_Y')
         );
+        this.DANGER_ZONE_HEIGHT = scene.registry.get('DANGER_ZONE_HEIGHT');
 
         scene.add.existing(this)
         scene.physics.add.existing(this)
@@ -145,6 +147,10 @@ export class Ship extends Physics.Arcade.Sprite {
         if (this.status !== LanderStatus.ALIVE) {
             return
         }
+
+        // update danger flags
+        this.flagTooFastToLand();
+        this.flagBadAngleToLand();
 
         // update velocity history
         this.velocityHistory.push(new Phaser.Math.Vector2(this.body.velocity.x, this.body.velocity.y))
@@ -232,13 +238,13 @@ export class Ship extends Physics.Arcade.Sprite {
             return
         }
 
-        if (this.isTooFastToLand() || this.isBadAngleToLand()) {
+        if (this.isSafe()) {
+            this.land();
+        } else {
             // The ship hit the ground too hard,
             // or with too great angle with the ground,
             // blow it up and start over
-            this.explode(true)
-        } else {
-            this.land()
+            this.explode(true);
         }
     }
 
@@ -282,7 +288,7 @@ export class Ship extends Physics.Arcade.Sprite {
     }
 
     explode(respawn: boolean): void {
-        this.status = LanderStatus.DEAD
+        this.status = LanderStatus.CRASHED
         this.setVisible(false)
         this.hud.setVisible(false)
         this.enginesContainer.setVisible(false)
@@ -327,49 +333,58 @@ export class Ship extends Physics.Arcade.Sprite {
         super.destroy()
     }
 
-    isTooFastToLand(): boolean {
+    flagTooFastToLand(): void {
         if (this.isInvincible) {
-            return false
+            this.dangerStatus = 0;
+            return;
         }
 
         // cannot compute velocity if no history
         if (this.velocityHistory.length < 2) {
-            return false;
+            return;
         }
 
         // medium speed for last 2 frames must be below threshold
         const vx = (Math.abs(this.velocityHistory[0].x) + Math.abs(this.velocityHistory[1].x)) / 2
         const vy = (Math.abs(this.velocityHistory[0].y) + Math.abs(this.velocityHistory[1].y)) / 2
 
-        if (vx > this.LANDING_MAX_VELOCITY.x || vy > this.LANDING_MAX_VELOCITY.y) {
-            // console.log(`Too fast to land : 
-            //     x (${vx}) > this.EXPLOSION_SPEED.x (${this.EXPLOSION_SPEED.x})
-            //     y (${vy}) > this.EXPLOSION_SPEED.y (${this.EXPLOSION_SPEED.y})`);
-            this.dangerStatus = this.dangerStatus | LanderDangerStatus.TOO_FAST
-            return true
+        // flag vx
+        if (vx > this.LANDING_MAX_VELOCITY.x) {
+            this.dangerStatus |= LanderDangerStatus.TOO_FAST_X;
+        } else {
+            this.dangerStatus &= ~LanderDangerStatus.TOO_FAST_X;
         }
-        this.dangerStatus = this.dangerStatus & LanderDangerStatus.TOO_FAST;
-        return false
+
+        // flag vy
+        if (vy > this.LANDING_MAX_VELOCITY.y) {
+            this.dangerStatus |= LanderDangerStatus.TOO_FAST_Y;
+        } else {
+            this.dangerStatus &= ~LanderDangerStatus.TOO_FAST_Y;
+        }
     }
 
-    isBadAngleToLand(): boolean {
+    flagBadAngleToLand(): boolean {
         if (this.isInvincible) {
             return false
         }
 
         if (Math.abs(this.angle) > this.LANDING_MAX_ANGLE) {
-            this.dangerStatus = this.dangerStatus | LanderDangerStatus.BAD_ANGLE;
-            return true
+            this.dangerStatus |= LanderDangerStatus.BAD_ANGLE;
+            return true;
         }
-        this.dangerStatus = this.dangerStatus & LanderDangerStatus.BAD_ANGLE;
-        return false
+        this.dangerStatus &= ~LanderDangerStatus.BAD_ANGLE;
+        return false;
     }
     
     isInDangerZone(): boolean {
-        if (this.y > this.canvasHeight - 200) {
-            return this.isTooFastToLand() || this.isBadAngleToLand()
+        if (this.y > this.canvasHeight - this.DANGER_ZONE_HEIGHT) {
+            return !this.isSafe();
         }
-        return false
+        return false;
+    }
+
+    isSafe(): boolean {
+        return this.dangerStatus === 0;
     }
 
     setResetCallback(delay: number): void {
