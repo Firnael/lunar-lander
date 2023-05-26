@@ -149,10 +149,14 @@ if (rotateRand < 0.33) {
 
 ## Références 
 
-- Background de la homepage : https://github.com/Carla-Codes/starry-night-css-animation
-- Font du titre de la homepage : https://www.fontspace.com/retronoid-font-f31918
-- Boutons de la homepage : https://codepen.io/digital_playground/pen/RwaVXOL
-- Image de la lune de la homepage : https://www.reddit.com/r/PixelArt/comments/9ezjyy/a_high_detailed_moon_from_an_old_project/
+- Display
+  - Sprites du sol : https://www.reddit.com/r/PixelArt/comments/8cbnsw/cc_some_moon_rocks_that_im_really_proud_of/
+  - Sprite du lander : https://opengameart.org/content/apollo-moon-landing-sprites
+- Home
+  - Style du background : https://github.com/Carla-Codes/starry-night-css-animation
+  - Police du titre : https://www.fontspace.com/retronoid-font-f31918
+  - Style des boutons : https://codepen.io/digital_playground/pen/RwaVXOL
+  - Image de la lune : https://www.reddit.com/r/PixelArt/comments/9ezjyy/a_high_detailed_moon_from_an_old_project/
 
 ## Happy landing !
 

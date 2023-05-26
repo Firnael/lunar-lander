@@ -6,10 +6,9 @@ import fake_ship_sprite_url from '../Assets/images/fake_ship.png';
 import background_sprite_url from '../Assets/images/background.png';
 import training_background_sprite_url from '../Assets/images/training_background.png';
 import training_background_dark_sprite_url from '../Assets/images/training_background_dark.png';
-import training_block_sprite_url from '../Assets/images/training_block.png';
 import training_blocks_spritesheet_url from '../Assets/images/training_blocks_spritesheet.png';
 import monitor_background_sprite_url from '../Assets/images/monitor_background.png';
-import ground_sprite_url from '../Assets/images/ground.png';
+import moon_ground_sprite_url from '../Assets/images/moon_ground.png';
 import indicator_sprite_url from '../Assets/images/indicator.png';
 import flag_sprite_url from '../Assets/images/flag.png';
 import danger_sign_sprite_url from '../Assets/images/danger_sign.png';
@@ -43,11 +42,9 @@ export class PreloadScene extends Phaser.Scene {
         this.load.image('background', background_sprite_url);
         this.load.image('trainingBackground', training_background_sprite_url);
         this.load.image('trainingBackgroundDark', training_background_dark_sprite_url);
-        this.load.image('trainingBlock', training_block_sprite_url);
-        this.load.spritesheet('trainingBlocks', training_blocks_spritesheet_url, {
-            frameWidth: 59, frameHeight: 59 });
+        this.load.spritesheet('trainingBlocks', training_blocks_spritesheet_url, { frameWidth: 59, frameHeight: 59 });
         this.load.image('monitorBackground', monitor_background_sprite_url);
-        this.load.image('ground', ground_sprite_url);
+        this.load.image('moonGround', moon_ground_sprite_url);
         this.load.image('indicator', indicator_sprite_url);
         this.load.image('flag', flag_sprite_url);
         this.load.image('dangerSign', danger_sign_sprite_url);

@@ -65,7 +65,7 @@ export class GameScene extends Phaser.Scene {
 		backgroundImage.setScale(scale).setScrollFactor(0)
 
 		// Create some ground for the ship to land on
-		this.createGround()
+		this.createGround();
 
 		// Create the ships collision group
 		this.shipsCollisionGroup = this.add.group()
@@ -110,17 +110,21 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	private createGround() {
-		this.groundGroup = this.add.group()
-		for (let x = 0; x < this.CANVAS.width; x += 60) {
+		this.groundGroup = this.add.group();
+		// TODO pas ouf
+		const groundBlock = this.add.sprite(0, 0, 'moonGround');
+		const width = groundBlock.width;
+		groundBlock.destroy();
+
+		for (let x = 0; x < this.CANVAS.width; x += width) {
 			// Add the ground blocks to the bottom of canvas, enable physics on each, make them immovable
-			const groundBlock = this.physics.add.sprite(x, 0, 'ground').setOrigin(0, 0)
+			const groundBlock = this.physics.add.sprite(x, 0, 'moonGround').setOrigin(0, 0)
 			this.groundBlockHeight = groundBlock.displayHeight;
 			groundBlock.setPosition(x, this.CANVAS.height - this.groundBlockHeight)
 			groundBlock.body.setImmovable(true)
 			groundBlock.body.setAllowGravity(false)
 			this.groundGroup.add(groundBlock)
 		}
-
 	}
 
 	private createShip(data: PlayerJoins, x = 0, y = 0) {
