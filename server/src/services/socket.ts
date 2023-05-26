@@ -14,7 +14,7 @@ const MONITORING_CLIENTS_ROOM = 'MONITORING_CLIENTS_ROOM';
 // the SocketIO Server instance
 let server: io.Server
 // the 'display' client socket ID
-let displaySocketID: string
+let displaySocketID: string | undefined;
 // the 'monitoring' clients socket IDs
 const monitoringSockets: any = {}
 // a list of every connected clients
@@ -51,12 +51,19 @@ const defineListeners = () => {
 const handleConnection = (socket: io.Socket) => {
     const clientName = socket.handshake.query['clientName'] as string || 'MISSING_NAME'
     const clientUuid = socket.handshake.query['clientUuid'] as string || 'MISSING_UUID'
-    const clientEmoji = socket.handshake.query['clientEmoji'] as string || '⛔'
+    const clientEmoji = socket.handshake.query['clientEmoji'] as string || '💩'
     const clientColor = socket.handshake.query['clientColor'] as string || '444444'
     const client = new Client(clientName, clientUuid, clientEmoji, clientColor, socket)
 
-    console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Player <${client.name}> ${client.emoji} (UUID: ${client.uuid}) connected ⚡`)
-    clients.set(socket.id, client)
+    if (client.uuid === DISPLAY_UUID && displaySocketID !== undefined) {
+        // a display is already running, abort client connection
+        console.warn(`[Socket 🌐 ${socket.id.substring(0, 5)}] Error : trying to connected a display but there is one already ⛔`)
+        socket.disconnect();
+        return;
+    } else {
+        console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Player <${client.name}> ${client.emoji} (UUID: ${client.uuid}) connected ⚡`);
+        clients.set(socket.id, client);
+    }
 
     // The 'display' or a monitoring client is connected, store its socket ID for further exchanges
     if (regex.test(client.uuid)) {
@@ -91,6 +98,10 @@ const handleDisconnect = (socket: io.Socket) => {
         if (client.uuid in monitoringSockets) {
             console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Monitoring client <${client.name}> (UUID: ${client.uuid}) disconnected 🔌`)
             socket.leave(MONITORING_CLIENTS_ROOM);
+        }
+        else if (client.uuid === DISPLAY_UUID) {
+            console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Display client (UUID: ${client.uuid}) disconnected 🔌`);
+            displaySocketID = undefined;
         } else {
             console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Player <${client.name}> (UUID: ${client.uuid}) disconnected 🔌`)
             server.emit('playerLeaves', { name: client.name, uuid: client.uuid })

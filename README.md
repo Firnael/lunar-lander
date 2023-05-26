@@ -147,6 +147,13 @@ if (rotateRand < 0.33) {
 - Obstacle Course Mode - The moon's surface is littered with obstacles that the players have to navigate around while landing their lander. The obstacles could be craters, boulders, or even enemy spacecraft.
 - Survival Mode - Players have to survive as long as possible on the moon's surface, which is constantly bombarded with meteorites. Players have to avoid the meteorites while conserving fuel and making periodic adjustments to their lander's position to stay alive.
 
+## Références 
+
+- Background de la homepage : https://github.com/Carla-Codes/starry-night-css-animation
+- Font du titre de la homepage : https://www.fontspace.com/retronoid-font-f31918
+- Boutons de la homepage : https://codepen.io/digital_playground/pen/RwaVXOL
+- Image de la lune de la homepage : https://www.reddit.com/r/PixelArt/comments/9ezjyy/a_high_detailed_moon_from_an_old_project/
+
 ## Happy landing !
 
 ![poster.png](poster.png)

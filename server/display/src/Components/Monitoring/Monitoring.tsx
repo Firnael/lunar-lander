@@ -5,9 +5,10 @@ import { CustomGame } from '../../Game/Types/CustomGame'
 import config from '../../Game/Config/CustomConfig'
 import { PreloadScene } from '../../Game/Scenes/PreloadScene'
 import { MonitoringScene } from '../../Game/Scenes/MonitoringScene';
-import { PlayerJoins, PlayerLeaves, ShipLanded } from '../../Models/player'
+import { PlayerJoins, PlayerLeaves } from '../../Models/player'
 import { createRandomId } from '../../Helpers/Functions'
 import './Monitoring.css'
+import '../../Game/Assets/styles/style.css'; // global game css (font-faces, etc.)
 
 export default function Monitoring() {
 

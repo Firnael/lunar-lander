@@ -1,0 +1,216 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@font-face {
+    font-family: Retronoid;
+    src: url('RetronoidItalic.ttf');
+}
+
+.titles-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.title {
+    font-family: Retronoid;
+    font-size: 8rem;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
+    -webkit-text-stroke-width: 4px;
+    -webkit-text-stroke-color: white;
+}
+
+.title.title-top {
+    background-image: linear-gradient(#052364, #254488, #b8dbf6);
+}
+
+.title.title-bottom {
+    background-image: linear-gradient(#d2332b, #EC740A, #fddf1b);
+}
+
+.hide {
+    visibility: hidden;
+}
+
+
+/* Buttons, with shine & hover animations */
+
+.buttons-container {
+    display: flex;
+    flex-direction: row;
+    padding-top: 4rem;
+}
+
+:root {
+    --btn-border: 1px solid rgba(255, 255, 255, 0.2);
+    --btn-bg: transparent;
+    --btn-shadow: 1px 1px 15px 5px rgba(255, 255, 255, 0.5);
+    --btn-text-color: #f4f4f4;
+    --shine-degree: 120deg;
+    --shine-color: rgba(255, 255, 255, 0.2);
+    --shine-effect: linear-gradient(var(--shine-degree),
+            transparent,
+            var(--shine-color),
+            transparent);
+    --shine-transition: all 0.65s ease-in-out;
+}
+
+.btn {
+    position: relative;
+    overflow: hidden;
+    font-family: Retronoid;
+    font-size: 2rem;
+    width: 400px;
+    height: 280px;
+    padding: 1rem 3rem;
+    margin: 3rem;
+    border-radius: 4px;
+    text-shadow: 2px 2px 4px rgba(50, 50, 50, 0.8);
+    text-decoration: none;
+    border: var(--btn-border);
+    color: var(--btn-text-color);
+    background: var(--btn-bg);
+}
+
+.btn:not(:last-child) {
+    margin-bottom: 3rem;
+}
+
+.btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--shine-effect);
+}
+
+.btn.btn-monitoring {
+    background-image: url('monitoring.gif');
+    background-position: center;
+    background-size: contain;
+}
+
+.btn.btn-training {
+    background-image: url('training.gif');
+    background-position: center;
+    background-size: contain;
+}
+
+.btn-hover::before {
+    left: -100%;
+    transition: var(--shine-transition);
+}
+
+.btn-hover:hover {
+    box-shadow: var(--btn-shadow);
+}
+
+.btn-hover:hover::before {
+    left: 100%;
+}
+
+.btn-anim::before {
+    -webkit-animation: shine 5s ease-in-out infinite;
+    animation: shine 5s ease-in-out infinite;
+}
+
+@-webkit-keyframes shine {
+    0% {
+        left: -100%;
+        transition-property: left;
+    }
+
+    11.5044247788%, 100% {
+        left: 100%;
+        transition-property: left;
+    }
+}
+
+@keyframes shine {
+    0% {
+        left: -100%;
+        transition-property: left;
+    }
+
+    11.5044247788%, 100% {
+        left: 100%;
+        transition-property: left;
+    }
+}
+
+
+/* Stars background */
+@keyframes move-twink-back {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: -10000px 5000px;
+    }
+}
+
+@keyframes move-clouds-back {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: 10000px 0;
+    }
+}
+
+.stars, .twinkling, .clouds {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.stars {
+    z-index: -3;
+    background: #000 url('stars.png') repeat top center;
+}
+
+.twinkling {
+    z-index: -2;
+    background: transparent url('twinkling.png') repeat top center;
+    animation: move-twink-back 200s linear infinite;
+}
+
+.clouds {
+    z-index: -1;
+    background: transparent url('clouds.png') repeat top center;
+    opacity: .4;
+    animation: move-clouds-back 200s linear infinite;
+}
+
+/* Animated moon at the bottom */
+.moon-image {
+    position: absolute;
+    width: 60vw;
+    height: 40vh;
+    bottom: -30vh;
+    animation: moveUpDown 3s infinite alternate ease-in-out;
+}
+
+@keyframes moveUpDown {
+    0% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(-5%);
+    }
+}
