@@ -106,9 +106,6 @@ export default function Display() {
       if (success) {
         player.successAttempts++
         
-        // update all time best fuel used info
-        player.usedFuelBest = player.usedFuelBest ? (player.usedFuelBest < data.usedFuel ? player.usedFuelBest : data.usedFuel) : data.usedFuel
-
         // if player never landed before, register timestamp and first successful landing attempt count
         if (!player.landed) {
           player.landed = new Date().getTime()
@@ -194,10 +191,6 @@ export default function Display() {
         {s.attempts} {s.landed ? '(' + s.firstLandingAttemptCount + ')' : '❌'}
       </div></td>
 
-      {/* <td><div key={i + (s.usedFuelBest ? s.usedFuelBest.toString() : 'no-usedFuelBest')} className="pop">
-        {s.usedFuelBest ? s.usedFuelBest : '-'}
-      </div></td> */}
-
       <td><div key={i + (s.usedFuelAvg ? s.usedFuelAvg.toString() : 'no-usedFuelAvg')} className="pop">
         <mark style={{backgroundColor: getColorByFuelUsedAvg(s.usedFuelAvg || serverConfig['FUEL_TANK_SIZE'])}}>
           {s.usedFuelAvg ? s.usedFuelAvg : '-'}
@@ -219,25 +212,31 @@ export default function Display() {
   return (
     <main className="main-container">
       <div id="game" className="game-container" />
-      <div className="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>🧑‍🚀</th>
-              <th>🥇</th>
-              <th>🚀</th>
-              {/* <th>🛢️🔝</th> */}
-              <th>🛢️</th>
-              <th>📈</th>
-            </tr>
-          </thead>
-          <tbody>
-            {playerStatsList}
-          </tbody>
-        </table>
-      </div>
-      <div className="server-info-container">
-        <strong>{renderedLocalIps}</strong>
+      <div className="ui-container">
+        <div className="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>🧑‍🚀</th>
+                <th>🥇</th>
+                <th>🚀</th>
+                <th>🛢️</th>
+                <th>📈</th>
+              </tr>
+            </thead>
+            <tbody>
+              {playerStatsList}
+            </tbody>
+          </table>
+        </div>
+        <div className="server-info-container">
+          <div className="players-count">
+            <strong>{playerStats.length} player{playerStats.length > 1 ? 's' : ''}</strong>
+          </div>
+          <div className="server-ip">
+            <strong>{renderedLocalIps}</strong>
+          </div>
+        </div>
       </div>
     </main>
   )
