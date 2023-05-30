@@ -4,6 +4,9 @@ import { LanderData, PlayerJoins, PlayerLeaves, PlayerUpdates } from '../../Mode
 import monitoring_cursor_url from '../Assets/images/monitoring_cursor.png';
 
 export class MonitoringScene extends Phaser.Scene {
+    private UNIT_SIZE: number = 250;
+    private MINIMAL_ROW_OFFSET: number = 200;
+    
     private monitoringGrid!: MonitoringGrid;
 
     constructor() {
@@ -57,7 +60,9 @@ export class MonitoringScene extends Phaser.Scene {
         .setLineSpacing(6).setOrigin(0.5, 0);
 
         // create grid
-        this.monitoringGrid = new MonitoringGrid(this, 250, 250);
+        const unitsInARow = Math.floor(this.sys.canvas.width / this.UNIT_SIZE);
+        const x = (this.sys.canvas.width - this.UNIT_SIZE * unitsInARow);
+        this.monitoringGrid = new MonitoringGrid(this, x < this.MINIMAL_ROW_OFFSET ? this.MINIMAL_ROW_OFFSET : x, 250, this.UNIT_SIZE);
 
         // Init event listeners (use from outside Phaser to communicate with React)
         this.initEventListeners();

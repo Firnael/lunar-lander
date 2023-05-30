@@ -210,9 +210,9 @@ export default function Display() {
   )
 
   return (
-    <main className="main-container">
-      <div id="game" className="game-container" />
-      <div className="ui-container">
+    <main className="display-main-container">
+      <div id="game" className="display-game-container" />
+      <div className="display-ui-container">
         <div className="table-container">
           <table>
             <thead>
