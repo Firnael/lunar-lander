@@ -23,6 +23,10 @@ export class Ship extends Physics.Arcade.Sprite {
     private FLYING_PARTS_FADE_DURATION = 3000;
     private RESET_CALLBACK_DELAY = 3000;
     private ENGINES_PARTICULES_OFFSET = 5;
+    private MAIN_ENGINE_TINTS = new Map<string, number[]>([
+        ['display', [0xff0000, 0xff6600, 0xffff00]], // orange fire
+        ['training', [0x043F97, 0x1064C1, 0x66BEF9]] // blue fire
+    ]);
 
     private canvasWidth: number
     private canvasHeight: number
@@ -49,7 +53,9 @@ export class Ship extends Physics.Arcade.Sprite {
     public actions: PlayerActions
     public parts: Phaser.GameObjects.Group
 
-    constructor(scene: Phaser.Scene, x: number, y: number, texture: string, groundSpriteHeight: number, name: string, uuid: string, emoji: string, color: string, invincible?: boolean) {
+    constructor(
+        scene: Phaser.Scene, x: number, y: number, texture: string, groundSpriteHeight: number,
+        name: string, uuid: string, emoji: string, color: string, type: string, invincible?: boolean) {
         super(scene, x, y, texture)
 
         // set from server config
@@ -135,7 +141,7 @@ export class Ship extends Physics.Arcade.Sprite {
         this.rightEngine.setPosition(-this.width / 2, this.height / 2 + this.ENGINES_PARTICULES_OFFSET)
         this.mainEngine = fireParticles.createEmitter(enginesParticulesOptions)
         this.mainEngine.setPosition(0, this.height / 2 + this.ENGINES_PARTICULES_OFFSET)
-        this.mainEngine.setTint([0xff0000, 0xff6600, 0xffff00]) // fire tints !
+        this.mainEngine.setTint(this.MAIN_ENGINE_TINTS.get(type) || 0xFF00FF);
         this.mainEngine.setSpeed(100)
         this.mainEngine.setScale({ start: 2.5, end: 0.2 })
 

@@ -77,13 +77,6 @@ export class TrainingScene extends Phaser.Scene {
             // floor
             this.createAndAddBlockToGroup(x, this.CANVAS.height - this.blockFrame.height, 0);
 		}
-        // vertical
-		// for (let y = frame.height; y < this.CANVAS.height - frame.height; y += frame.height) {
-        //     // left wall
-        //     this.createAndAddBlockToGroup(0, y, 2);
-        //     // right wall
-        //     this.createAndAddBlockToGroup(this.CANVAS.width - frame.width, y, 2);
-		// }
 	}
 
     private createAndAddBlockToGroup(x: number, y: number, frameIndex: number) {
@@ -96,7 +89,7 @@ export class TrainingScene extends Phaser.Scene {
     private createShip() {
         this.ship = new Ship(
             this, 0, 0, 'trainingShip', this.blockFrame.height,
-            'TRAINING', '12345678', '🪆', '#FECB00'
+            'TRAINING', '12345678', '🪆', '#FECB00', 'training'
         ).setScale(2);
         this.ship.setPosition(
             this.CANVAS.width / 2 - this.ship.width / 2,
