@@ -62,9 +62,19 @@ export class Speedometer extends Phaser.GameObjects.Container {
     }
 
     update(vx: number, vy: number): void {
+        // update velocity text
+        this.vxText.setText('vx: ' + vx.toFixed());
+        this.vyText.setText('vy: ' + vy.toFixed());
+
         // normalize value velocity values (between 0 and 1)
-        const nVx = vx / (this.SHIP_MAX_VELOCITY > this.MAX_VELOCITY_FOR_DISPLAY ? this.MAX_VELOCITY_FOR_DISPLAY : this.SHIP_MAX_VELOCITY);
-        const nVy = vy / (this.SHIP_MAX_VELOCITY > this.MAX_VELOCITY_FOR_DISPLAY ? this.MAX_VELOCITY_FOR_DISPLAY : this.SHIP_MAX_VELOCITY);
+        let nVx = vx / this.MAX_VELOCITY_FOR_DISPLAY;
+        let nVy = vy / this.MAX_VELOCITY_FOR_DISPLAY;
+        if (Math.abs(nVx) > 1) {
+            nVx = 1 * Math.sign(nVx);
+        }
+        if (Math.abs(nVy) > 1) {
+            nVy = 1 * Math.sign(nVy);
+        }
 
         // update color and only change width for horizontal bar
         const xColor = this.velocityGradient.rgbAt(Math.abs(nVx)).toHex();
@@ -91,10 +101,6 @@ export class Speedometer extends Phaser.GameObjects.Container {
             duration: this.TWEEN_INTERVAL,
             loop: 0
         });
-
-        // update velocity text
-        this.vxText.setText('vx: ' + vx.toFixed());
-        this.vyText.setText('vy: ' + vy.toFixed());
     }
 
     setVxTextColor(color: string) {

@@ -1,5 +1,6 @@
 import io from "socket.io"
 import http from 'http'
+import GraphemeSplitter from 'grapheme-splitter';
 import Client from "../models/client"
 import dataService from '../services/data';
 import config from '../services/config';
@@ -49,10 +50,25 @@ const defineListeners = () => {
 }
 
 const handleConnection = (socket: io.Socket) => {
-    const clientName = socket.handshake.query['clientName'] as string || 'MISSING_NAME'
-    const clientUuid = socket.handshake.query['clientUuid'] as string || 'MISSING_UUID'
-    const clientEmoji = socket.handshake.query['clientEmoji'] as string || '💩'
-    const clientColor = socket.handshake.query['clientColor'] as string || '444444'
+    // uuid
+    const clientUuid = socket.handshake.query['clientUuid'] as string || 'MISSING_UUID';
+    // name
+    let clientName = socket.handshake.query['clientName'] as string || 'MISSING_NAME';
+    clientName = clientName.substring(0, 12);
+    // emoji
+    let clientEmoji = socket.handshake.query['clientEmoji'] as string;
+    if (/\p{Extended_Pictographic}/ug.test(clientEmoji)) {
+        // prevent from sending multiple emojis
+        const splitter = new GraphemeSplitter();
+        const graphemes = splitter.splitGraphemes(clientEmoji);
+        clientEmoji = graphemes[0];
+    } else {
+        clientEmoji = '💩';
+    }
+    // color
+    let clientColor = socket.handshake.query['clientColor'] as string || '444444'
+    clientColor = clientColor.match(/[0-9A-Fa-f]{6}/g) ? clientColor : Math.floor(Math.random()*16777215).toString(16);
+
     const client = new Client(clientName, clientUuid, clientEmoji, clientColor, socket)
 
     if (client.uuid === DISPLAY_UUID && displaySocketID !== undefined) {
@@ -103,7 +119,7 @@ const handleDisconnect = (socket: io.Socket) => {
             console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Display client (UUID: ${client.uuid}) disconnected 🔌`);
             displaySocketID = undefined;
         } else {
-            console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Player <${client.name}> (UUID: ${client.uuid}) disconnected 🔌`)
+            console.log(`[Socket 🌐 ${socket.id.substring(0, 5)}] Player <${client.name}> ${client.emoji} (UUID: ${client.uuid}) disconnected 🔌`)
             server.emit('playerLeaves', { name: client.name, uuid: client.uuid })
         }
         clients.delete(socket.id)
