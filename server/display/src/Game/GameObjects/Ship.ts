@@ -4,6 +4,7 @@ import { Flag } from './Flag';
 import { Indicator } from './Indicator';
 import { Hud } from './Hud';
 import { PlayerActions, LanderRotation, LanderStatus, LanderDangerStatus } from '../../Models/player';
+import { ShipType } from '../Types/ShipType';
 
 export class Ship extends Physics.Arcade.Sprite {
     // From server config
@@ -23,14 +24,15 @@ export class Ship extends Physics.Arcade.Sprite {
     private FLYING_PARTS_FADE_DURATION = 3000;
     private RESET_CALLBACK_DELAY = 3000;
     private ENGINES_PARTICULES_OFFSET = 5;
-    private MAIN_ENGINE_TINTS = new Map<string, number[]>([
-        ['display', [0xff0000, 0xff6600, 0xffff00]], // orange fire
-        ['training', [0x043F97, 0x1064C1, 0x66BEF9]] // blue fire
+    private MAIN_ENGINE_TINTS = new Map<ShipType, number[]>([
+        [ShipType.DISPLAY, [0xff0000, 0xff6600, 0xffff00]], // orange fire
+        [ShipType.TRAINING, [0x043F97, 0x1064C1, 0x66BEF9]] // blue fire
     ]);
 
     private canvasWidth: number
     private canvasHeight: number
     private groundSpriteHeight: number;
+    private shipType: ShipType;
     private isInvincible: boolean
     private indicator: Indicator
     private flag: Flag
@@ -55,7 +57,7 @@ export class Ship extends Physics.Arcade.Sprite {
 
     constructor(
         scene: Phaser.Scene, x: number, y: number, texture: string, groundSpriteHeight: number,
-        name: string, uuid: string, emoji: string, color: string, type: string, invincible?: boolean) {
+        name: string, uuid: string, emoji: string, color: string, shipType: ShipType, invincible?: boolean) {
         super(scene, x, y, texture)
 
         // set from server config
@@ -79,6 +81,7 @@ export class Ship extends Physics.Arcade.Sprite {
         this.canvasWidth = width
         this.canvasHeight = height
         this.groundSpriteHeight = groundSpriteHeight;
+        this.shipType = shipType;
 
         this.setName('ship')
         this.setOrigin(0.5, 0.5)
@@ -141,7 +144,7 @@ export class Ship extends Physics.Arcade.Sprite {
         this.rightEngine.setPosition(-this.width / 2, this.height / 2 + this.ENGINES_PARTICULES_OFFSET)
         this.mainEngine = fireParticles.createEmitter(enginesParticulesOptions)
         this.mainEngine.setPosition(0, this.height / 2 + this.ENGINES_PARTICULES_OFFSET)
-        this.mainEngine.setTint(this.MAIN_ENGINE_TINTS.get(type) || 0xFF00FF);
+        this.mainEngine.setTint(this.MAIN_ENGINE_TINTS.get(this.shipType) || 0xFF00FF);
         this.mainEngine.setSpeed(100)
         this.mainEngine.setScale({ start: 2.5, end: 0.2 })
 
@@ -267,7 +270,11 @@ export class Ship extends Physics.Arcade.Sprite {
         this.enginesContainer.setVisible(false)
 
         // Move the ship back to the top of the stage, at a random X position
-        this.setPosition(Phaser.Math.Between(40, this.canvasWidth - 40), 32)
+        const spawnPosition = new Phaser.Math.Vector2(
+            Phaser.Math.Between(40, this.canvasWidth - 40),
+            this.shipType === ShipType.DISPLAY ? 32 : 100 // training ground has a ceiling, and ship is bigger, so we need to spawn it lower
+        );
+        this.setPosition(spawnPosition.x, spawnPosition.y);
 
         // Select a random starting angle and velocity
         this.setAngle(Phaser.Math.Between(-180, 180))
@@ -302,7 +309,7 @@ export class Ship extends Physics.Arcade.Sprite {
         this.body.enable = false;
 
         // create explosion
-        const explosion = new Explosion(this.scene, this.x, this.y, 'explosion')
+        const explosion = new Explosion(this.scene, this.x, this.y, this.shipType === ShipType.DISPLAY ? 'explosion' : 'blue_explosion');
 
         // send parts flying
         for (let i = 0; i < 4; i++) {

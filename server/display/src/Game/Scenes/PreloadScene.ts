@@ -1,4 +1,5 @@
 import explosion_spritesheet_url from '../Assets/images/explosion.png';
+import blue_explosion_spritesheet_url from '../Assets/images/blue_explosion.png';
 import ship_parts_spritesheet_url from '../Assets/images/ship_parts.png';
 import ship_sprite_url from '../Assets/images/ship.png';
 import training_ship_sprite_url from '../Assets/images/training_ship.png';
@@ -34,6 +35,7 @@ export class PreloadScene extends Phaser.Scene {
 
         // spritesheets
         this.load.spritesheet('explosion', explosion_spritesheet_url, { frameWidth: 128, frameHeight: 128 });
+        this.load.spritesheet('blue_explosion', blue_explosion_spritesheet_url, { frameWidth: 128, frameHeight: 128 });
         this.load.spritesheet('shipParts', ship_parts_spritesheet_url, { frameWidth: 25, frameHeight: 16 });
         // images
         this.load.image('ship', ship_sprite_url);

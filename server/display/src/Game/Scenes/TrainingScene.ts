@@ -1,15 +1,18 @@
 import 'phaser';
 import { LanderRotation } from '../../Models/player';
 import { Ship } from '../GameObjects/Ship';
+import { ShipType } from '../Types/ShipType';
 
 export class TrainingScene extends Phaser.Scene {
     private CANVAS!: HTMLCanvasElement;
     private ship!: Ship;
     private blockFrame!: Phaser.Textures.Frame;
     private blocksGroup!: Phaser.GameObjects.Group
-    private mainEngineKey!: Phaser.Input.Keyboard.Key;
-    private leftAuxEngineKey!: Phaser.Input.Keyboard.Key;
-    private rightAuxEngineKey!: Phaser.Input.Keyboard.Key;
+    private actionsText!: Phaser.GameObjects.Text
+
+    private mainEngineKeys!: Phaser.Input.Keyboard.Key[];
+    private leftAuxEngineKeys!: Phaser.Input.Keyboard.Key[];
+    private rightAuxEngineKeys!: Phaser.Input.Keyboard.Key[];
 
     constructor() {
         super({ key: 'TrainingScene' });
@@ -40,27 +43,44 @@ export class TrainingScene extends Phaser.Scene {
         this.createShip();
         this.enableCollisionsBetweenShipAndBlocks();
 
+        const textOptions = { font: '30px Arial', color: '#dddddd' }
+        this.actionsText = this.add.text(20, 20, `actions: `, textOptions).setOrigin(0, 0);
+
         // Create key-binding
-        this.mainEngineKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
-        this.leftAuxEngineKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
-        this.rightAuxEngineKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+        this.mainEngineKeys = [
+            this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z),
+            this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP)
+        ];
+        this.leftAuxEngineKeys = [
+            this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
+            this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT)
+        ];
+        this.rightAuxEngineKeys = [
+            this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
+            this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT)
+        ];
     }
 
     update(): void {
         // update actions manualy
         let rotate = LanderRotation.NONE;
-        if (this.leftAuxEngineKey.isDown && this.rightAuxEngineKey.isUp) {
+        if (this.leftAuxEngineKeys.some(k => k.isDown) && this.rightAuxEngineKeys.some(k => k.isUp)) {
             rotate = LanderRotation.COUNTERCLOCKWISE;
-        } else if (this.leftAuxEngineKey.isUp && this.rightAuxEngineKey.isDown) {
+        } else if (this.leftAuxEngineKeys.some(k => k.isUp) && this.rightAuxEngineKeys.some(k => k.isDown)) {
             rotate = LanderRotation.CLOCKWISE;
         }
 
         this.ship.actions = {
-            thrust: this.mainEngineKey.isDown,
+            thrust: this.mainEngineKeys.some(k => k.isDown),
             rotate: rotate
         };
 
         this.ship.update();
+        this.actionsText.setText(`
+        actions: 
+          - thrust: ${this.ship.actions.thrust} 
+          - rotate: ${LanderRotation[this.ship.actions.rotate]}
+        `,);
         
         // keep ships on screen
         if (this.ship.x > this.CANVAS.width) this.ship.x = 0;
@@ -73,7 +93,7 @@ export class TrainingScene extends Phaser.Scene {
         // horizontal
 		for (let x = 0; x < this.CANVAS.width; x += this.blockFrame.width) {
             // ceiling
-            this.createAndAddBlockToGroup(x, 0, 3);
+            //this.createAndAddBlockToGroup(x, 0, 3);
             // floor
             this.createAndAddBlockToGroup(x, this.CANVAS.height - this.blockFrame.height, 0);
 		}
@@ -89,12 +109,16 @@ export class TrainingScene extends Phaser.Scene {
     private createShip() {
         this.ship = new Ship(
             this, 0, 0, 'trainingShip', this.blockFrame.height,
-            'TRAINING', '12345678', '🪆', '#FECB00', 'training'
+            'TRAINING', '12345678', '🪆', '#FECB00', ShipType.TRAINING
         ).setScale(2);
         this.ship.setPosition(
             this.CANVAS.width / 2 - this.ship.width / 2,
             this.CANVAS.height / 2 - this.ship.height / 2
         );
+
+        this.physics.add.collider(this.ship, this.blocksGroup, (s, g) => {
+			(s as Ship).hitTheGround();
+		})
     }
 
     private enableCollisionsBetweenShipAndBlocks() {

@@ -2,6 +2,7 @@ import 'phaser'
 import { Ship } from '../GameObjects/Ship'
 import { PlayerJoins, PlayerLeaves, PlayerUpdates } from '../../Models/player'
 import { ShipCollisionMode } from '../Enums/admin'
+import { ShipType } from '../Types/ShipType'
 
 export class GameScene extends Phaser.Scene {
 	private CANVAS!: Phaser.Game["canvas"]
@@ -133,7 +134,7 @@ export class GameScene extends Phaser.Scene {
 		// Add the ship to the scene
 		const ship: Ship = new Ship(
 			this, x, y, 'ship', this.groundBlockHeight,
-			data.name, data.uuid, data.emoji, data.color, 'display', data.name === 'Croclardon'
+			data.name, data.uuid, data.emoji, data.color, ShipType.DISPLAY, data.name === 'Croclardon'
 		);
 		// Choose a random starting angle and velocity for the ship
 		ship.reset()
