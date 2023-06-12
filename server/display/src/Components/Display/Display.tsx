@@ -231,10 +231,10 @@ export default function Display() {
         </div>
         <div className="server-info-container">
           <div className="players-count">
-            <strong>{playerStats.length} player{playerStats.length > 1 ? 's' : ''}</strong>
+            {playerStats.length} player{playerStats.length > 1 ? 's' : ''}
           </div>
           <div className="server-ip">
-            <strong>{renderedLocalIps}</strong>
+            {renderedLocalIps}
           </div>
         </div>
       </div>
