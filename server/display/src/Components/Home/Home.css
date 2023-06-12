@@ -4,23 +4,23 @@
     box-sizing: border-box;
 }
 
-body {
-    height: 100%;
-    overflow: hidden;
-}
-
 @font-face {
     font-family: Retronoid;
     src: url('RetronoidItalic.ttf');
 }
 
-.titles-container {
+.home-main-container {
+    height: 100%;
+    overflow: hidden;
+}
+
+.home-titles-container {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.title {
+.home-title {
     font-family: Retronoid;
     font-size: 8rem;
     background-clip: text;
@@ -31,22 +31,22 @@ body {
     -webkit-text-stroke-color: white;
 }
 
-.title.title-top {
+.home-title.home-title-top {
     background-image: linear-gradient(#052364, #254488, #b8dbf6);
 }
 
-.title.title-bottom {
+.home-title.home-title-bottom {
     background-image: linear-gradient(#d2332b, #EC740A, #fddf1b);
 }
 
-.hide {
+.home-title-hide {
     visibility: hidden;
 }
 
 
 /* Buttons, with shine & hover animations */
 
-.buttons-container {
+.home-buttons-container {
     display: flex;
     flex-direction: row;
     padding-top: 4rem;

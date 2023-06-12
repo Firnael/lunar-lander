@@ -20,17 +20,17 @@ export default function Home() {
             <div className="twinkling"></div>
             <div className="clouds"></div>
 
-            <div className="titles-container">
-                <div className="title title-top">
-                    <span className="hide">.</span>SUPER<span className="hide">.</span>
+            <div className="home-titles-container">
+                <div className="home-title home-title-top">
+                    <span className="home-title-hide">.</span>SUPER<span className="home-title-hide">.</span>
                 </div>
-                <div className="title title-bottom">
-                    <span className="hide">.</span>LUNAR LANDER<span className="hide">.</span>
+                <div className="home-title home-title-bottom">
+                    <span className="home-title-hide">.</span>LUNAR LANDER<span className="home-title-hide">.</span>
                 </div>
 
-                <div className="buttons-container">
+                <div className="home-buttons-container">
                     <a href="/how-to-play" target="_blank" className="btn btn-hover btn-anim btn-howtoplay">
-                        How to play
+                        Guide
                     </a>
                     <a href="/training" target="_blank" className="btn btn-hover btn-anim btn-training">
                         Training
