@@ -30,15 +30,13 @@ export default function Home() {
 
                 <div className="home-buttons-container">
                     <a href="/how-to-play" target="_blank" className="btn btn-hover btn-anim btn-howtoplay">
-                        Guide
+                        <div className="btn-label">Guide</div>
                     </a>
                     <a href="/training" target="_blank" className="btn btn-hover btn-anim btn-training">
-                        Training
+                        <span className="btn-label">Training</span>
                     </a>
                     <a href="/monitoring" target="_blank" className="btn btn-hover btn-anim btn-monitoring">
-                        <br/>
-                        <br/>
-                        Monitoring
+                        <span className="btn-label">Monitoring</span>
                     </a>
                 </div>
 

@@ -4,13 +4,26 @@
     box-sizing: border-box;
 }
 
+:root {
+    --btn-border: 1px solid rgba(255, 255, 255, 0.2);
+    --btn-bg: transparent;
+    --btn-shadow: 1px 1px 15px 5px rgba(255, 255, 255, 0.5);
+    --btn-text-color: #f4f4f4;
+    --shine-degree: 120deg;
+    --shine-color: rgba(255, 255, 255, 0.2);
+    --shine-effect: linear-gradient(var(--shine-degree),
+            transparent,
+            var(--shine-color),
+            transparent);
+    --shine-transition: all 0.65s ease-in-out;
+}
+
 @font-face {
     font-family: Retronoid;
     src: url('RetronoidItalic.ttf');
 }
 
 .home-main-container {
-    height: 100%;
     overflow: hidden;
 }
 
@@ -43,27 +56,12 @@
     visibility: hidden;
 }
 
-
 /* Buttons, with shine & hover animations */
 
 .home-buttons-container {
     display: flex;
     flex-direction: row;
     padding-top: 4rem;
-}
-
-:root {
-    --btn-border: 1px solid rgba(255, 255, 255, 0.2);
-    --btn-bg: transparent;
-    --btn-shadow: 1px 1px 15px 5px rgba(255, 255, 255, 0.5);
-    --btn-text-color: #f4f4f4;
-    --shine-degree: 120deg;
-    --shine-color: rgba(255, 255, 255, 0.2);
-    --shine-effect: linear-gradient(var(--shine-degree),
-            transparent,
-            var(--shine-color),
-            transparent);
-    --shine-transition: all 0.65s ease-in-out;
 }
 
 .btn {
