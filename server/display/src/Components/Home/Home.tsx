@@ -29,13 +29,16 @@ export default function Home() {
                 </div>
 
                 <div className="buttons-container">
+                    <a href="/how-to-play" target="_blank" className="btn btn-hover btn-anim btn-howtoplay">
+                        How to play
+                    </a>
+                    <a href="/training" target="_blank" className="btn btn-hover btn-anim btn-training">
+                        Training
+                    </a>
                     <a href="/monitoring" target="_blank" className="btn btn-hover btn-anim btn-monitoring">
                         <br/>
                         <br/>
                         Monitoring
-                    </a>
-                    <a href="/training" target="_blank" className="btn btn-hover btn-anim btn-training">
-                        Training
                     </a>
                 </div>
 

@@ -4,6 +4,11 @@
     box-sizing: border-box;
 }
 
+body {
+    height: 100%;
+    overflow: hidden;
+}
+
 @font-face {
     font-family: Retronoid;
     src: url('RetronoidItalic.ttf');
@@ -69,13 +74,15 @@
     width: 400px;
     height: 280px;
     padding: 1rem 3rem;
-    margin: 3rem;
+    margin: 1rem;
     border-radius: 4px;
     text-shadow: 2px 2px 4px rgba(50, 50, 50, 0.8);
     text-decoration: none;
     border: var(--btn-border);
     color: var(--btn-text-color);
     background: var(--btn-bg);
+    background-position: center;
+    background-size: contain;
 }
 
 .btn:not(:last-child) {
@@ -91,16 +98,16 @@
     background: var(--shine-effect);
 }
 
+.btn.btn-howtoplay {
+    background-image: url('howtoplay.gif');
+}
+
 .btn.btn-monitoring {
     background-image: url('monitoring.gif');
-    background-position: center;
-    background-size: contain;
 }
 
 .btn.btn-training {
     background-image: url('training.gif');
-    background-position: center;
-    background-size: contain;
 }
 
 .btn-hover::before {
