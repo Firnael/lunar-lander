@@ -259,7 +259,8 @@ export default function HowToPlay() {
                                 <div className="column">
                                 Le serveur de jeu vous envoie les informations de télémétrie relative à votre vaisseau.
                                     <br/>
-                                    La fréquence d'envoie actuelle est réglée sur <strong>{ serverConfig.SIMULATION_DATA_HEART_BEAT_RATE } ms</strong>.
+                                    La fréquence d'envoi est réglée sur <span className="tag is-warning"><strong>{ serverConfig.SIMULATION_DATA_HEART_BEAT_RATE } ms</strong></span>
+                                    <br/>
                                     <br/>
                                     Votre fonction doit retourner un objet <code>actions</code> comme suit :
                                     <br/>
@@ -291,7 +292,7 @@ export default function HowToPlay() {
                                             <br/>
                                             - à <code>COUNTER_CLOCKWISE</code>, le moteur <strong>droit</strong> s'allume et votre vaisseau tourne vers la gauche.
                                             <br/>
-                                            - à <code>NODE</code>, les deux moteurs s'éteignent et votre vaisseau <strong>arrête de tourner</strong>.
+                                            - à <code>NONE</code>, les deux moteurs s'éteignent et votre vaisseau <strong>arrête de tourner</strong>.
                                         </li>
                                     </ul>
                                 </div>
@@ -369,7 +370,10 @@ export default function HowToPlay() {
                                             <br/>
                                             <br/>
                                             ℹ️ Cette dernière information est encodée en <strong>binaire</strong>, et peut donc prendre plusieurs valeurs en même temps.
-                                            Par exemple, si votre vaisseau va trop vite verticalement, et qu'il a un trop grand angle avec le sol, <code>dangerStatus</code> vaudra <code>5</code> (1+4).
+                                            <br/>
+                                            Par exemple, si votre vaisseau va trop vite verticalement, et qu'il a un trop grand angle avec le sol,
+                                            <br/>
+                                            <code>dangerStatus</code> vaudra <code>5</code> (1+4).
                                         </li>
                                     </ul>
                                 </div>
@@ -402,7 +406,7 @@ export default function HowToPlay() {
                             Un pictogramme <span className="tag is-danger">⚠️</span> s'affiche à partir du moment où votre vaisseau est <strong>en danger</strong> :
                             <ul>
                                 <li>s'il ne respecte pas au moins une des conditions d'atterissage</li>
-                                <li>et s'il se trouve à une altitude inférieure à { serverConfig.DANGER_ZONE_HEIGHT }</li>
+                                <li>et s'il se trouve à une altitude inférieure à <span className="tag is-warning"><strong>{ serverConfig.DANGER_ZONE_HEIGHT }</strong></span></li>
                             </ul>
                             <br/>
                             Vous serez alors dans la <a href="https://www.youtube.com/watch?v=siwpn14IE7E&ab_channel=KennyLogginsVEVO">DANGER ZONE !!!</a>
@@ -413,13 +417,13 @@ export default function HowToPlay() {
                                 Votre vaisseau a également une quantité de carburant limitée,
                                 et sans carburant il devient incontrôlable, et part à la dérive !
                                 <br/>
-                                Cette limite est de <span className="tag is-warning">{ serverConfig.FUEL_TANK_SIZE }</span> unités.
+                                Cette limite est de <span className="tag is-warning"><strong>{ serverConfig.FUEL_TANK_SIZE }</strong></span> unités.
                                 <br/>
                                 <br/>
                                 Il est important de souligner que <strong>les différents moteurs ne consomment pas le carburant à la même vitesse</strong> :
                                 <ul>
-                                    <li>allumer le moteur principal (de poussée) consomme <strong>{ 2 } unités</strong> de carburant par frame</li>
-                                    <li>allumer un moteur auxiliaire (de rotation) consomme <strong>{ 1 } unité</strong> de carburant par frame</li>
+                                    <li>allumer le <strong>moteur principal</strong> (de poussée) consomme <span className="tag is-warning"><strong>{ 2 }</strong></span> unités de carburant par frame</li>
+                                    <li>allumer un <strong>moteur auxiliaire</strong> (de rotation) consomme <span className="tag is-warning"><strong>{ 1 }</strong></span> unité de carburant par frame</li>
                                 </ul>
                                 <br/>
                                 ℹ️ <strong>Un vaisseau qui explose perd tout son carburant</strong>, impactant votre classement !
@@ -431,11 +435,11 @@ export default function HowToPlay() {
                 <section id="ranking-section" className={`section ${currentTab !== 'ranking' ? 'is-hidden' : null}`}>
                     <h3 className="title is-3">Classement 🏆</h3>
                     <div className="content">
-                        Réussir à poser son vaisseau, c'est bien, mais le faire de façon systématique, et optimisée, c'est mieux !
-                        <br/>
                         <div className="columns">
                             <div className="column">
                                 <div className="block">
+                                    Réussir à poser son vaisseau, c'est bien, mais le faire de façon systématique, et optimisée, c'est mieux !
+                                    <br/>
                                     Votre classement dépend de deux facteurs ✌️ :
                                     <ul>
                                         <li>
