@@ -5,6 +5,7 @@ import monitoring_cursor_url from '../Assets/images/monitoring_cursor.png';
 
 export class MonitoringScene extends Phaser.Scene {
     private UNIT_SIZE: number = 250;
+    private ICON_MARGIN = new Phaser.Math.Vector2(10, 10);
     private MINIMAL_ROW_OFFSET: number = 200;
     
     private monitoringGrid!: MonitoringGrid;
@@ -60,9 +61,7 @@ export class MonitoringScene extends Phaser.Scene {
         .setLineSpacing(6).setOrigin(0.5, 0);
 
         // create grid
-        const unitsInARow = Math.floor(this.sys.canvas.width / this.UNIT_SIZE);
-        const x = (this.sys.canvas.width - this.UNIT_SIZE * unitsInARow);
-        this.monitoringGrid = new MonitoringGrid(this, x < this.MINIMAL_ROW_OFFSET ? this.MINIMAL_ROW_OFFSET : x, 250, this.UNIT_SIZE);
+        this.monitoringGrid = new MonitoringGrid(this, 250, 250, this.UNIT_SIZE, this.ICON_MARGIN, 4);
 
         // Init event listeners (use from outside Phaser to communicate with React)
         this.initEventListeners();
@@ -73,12 +72,12 @@ export class MonitoringScene extends Phaser.Scene {
     }
 
     private initEventListeners(): void {
-        this.game.events.on('CREATE_LANDER', (data: PlayerJoins) => this.monitoringGrid.turnOnUnit(data), this);
-        this.game.events.on('UPDATE_LANDER', (data: PlayerUpdates) => this.monitoringGrid.setShipActions(data), this);
-        this.game.events.on('PLAYER_LEFT', (data: PlayerLeaves) => this.monitoringGrid.disconnectUnit(data), this);
+        this.game.events.on('CREATE_LANDER', (data: PlayerJoins) => this.monitoringGrid.connectPlayer(data), this);
+        this.game.events.on('PLAYER_LEFT', (data: PlayerLeaves) => this.monitoringGrid.disconnectPlayer(data), this);
+
+        this.game.events.on('UPDATE_LANDER', (data: PlayerUpdates) => this.monitoringGrid.setPlayerActions(data), this);
         this.game.events.on('LANDERS_DATA', (data: LanderData[]) => this.monitoringGrid.setShipsParameters(data), this);
         // notify webapp the game is ready to handle events
         this.game.events.emit('GAME_READY', {});
     }
-   
 }

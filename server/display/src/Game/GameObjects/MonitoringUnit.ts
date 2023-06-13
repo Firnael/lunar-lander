@@ -4,6 +4,7 @@ import { FakeShip } from './FakeShip';
 import { ResizeButton } from './ResizeButton';
 import { Speedometer } from './Speedometer';
 import { MonitoringShipData } from '../Types/MonitoringShipData';
+import { CloseButton } from './CloseButton';
 
 /**
  * Used inside a {@link MonitoringGrid} to display the ship state.
@@ -42,6 +43,7 @@ export class MonitoringUnit extends Phaser.GameObjects.Container {
     private backgroundRectangle: Phaser.GameObjects.Rectangle;
     private playerColorRectangle: Phaser.GameObjects.Rectangle;
     private resizeButton: ResizeButton;
+    private closeButton: CloseButton;
     private groundLine: Phaser.GameObjects.Line;
     private speedometer: Speedometer;
     private playerNameText: Phaser.GameObjects.Text;
@@ -89,7 +91,7 @@ export class MonitoringUnit extends Phaser.GameObjects.Container {
 
         // create player name text
         this.playerNameText = this.scene.add.text(
-            0, -100, '[---]', {
+            0, -96, '[---]', {
             font: '24px Greenscr',
             color: '#' + this.UNIT_STROKE_COLOR.toString(16),
             align: 'center'
@@ -117,8 +119,9 @@ export class MonitoringUnit extends Phaser.GameObjects.Container {
         // create speedometer
         this.speedometer = new Speedometer(scene, -70, 40);
 
-        // create resize button
-        this.resizeButton = new ResizeButton(this.scene, this.UNIT_SIZE / 2 - 2, - this.UNIT_SIZE / 2 + 2);
+        // create resize and close buttons
+        this.resizeButton = new ResizeButton(this.scene, this.UNIT_SIZE / 2 - 2 - CloseButton.SIZE.x, - this.UNIT_SIZE / 2 + 2);
+        this.closeButton = new CloseButton(this.scene, this.UNIT_SIZE / 2 - 2, - this.UNIT_SIZE / 2 + 2);
 
         // add elements to container
         this.add([
@@ -128,7 +131,7 @@ export class MonitoringUnit extends Phaser.GameObjects.Container {
             this.statusText, this.angleText, this.altitudeText, this.fuelUsedText,
             this.dangerSignSprite,
             this.speedometer,
-            this.resizeButton,
+            this.resizeButton, this.closeButton,
             this.fakeShip
         ]);
 
@@ -149,6 +152,10 @@ export class MonitoringUnit extends Phaser.GameObjects.Container {
     }
 
     update(): void {
+        if (!this.scene) {
+            // this object has already been destroyed
+            return;
+        }
         // display nothing if this unit is turned off
         if (!this.isTurnedOn) {
             this.each((c: any) => { c.setVisible(false); });
@@ -176,9 +183,7 @@ export class MonitoringUnit extends Phaser.GameObjects.Container {
         this.playerNameText.setText(`[${this.monitoringShipData.playerName}]`);
         this.playerColorRectangle.setFillStyle(parseInt(this.monitoringShipData.playerColor, 16), 1);
 
-        this.fakeShip.update(this.monitoringShipData.status,
-            this.monitoringShipData.angle, this.monitoringShipData.actions);
-
+        this.fakeShip.update(this.monitoringShipData.status, this.monitoringShipData.angle, this.monitoringShipData.actions);
         this.speedometer.update(this.monitoringShipData.vx, this.monitoringShipData.vy);
 
         // update ground line visibility and height
@@ -296,7 +301,7 @@ export class MonitoringUnit extends Phaser.GameObjects.Container {
         }
     }
 
-    setShipActions(actions: PlayerActions): void {
+    setPlayerActions(actions: PlayerActions): void {
         this.monitoringShipData.actions = actions;
     }
 
@@ -325,5 +330,10 @@ export class MonitoringUnit extends Phaser.GameObjects.Container {
 
     getY(): number {
         return this.y;
+    }
+
+    destroy(fromScene?: boolean | undefined): void {
+        this.each((c: any) => c.destroy());
+        super.destroy(fromScene);
     }
 }

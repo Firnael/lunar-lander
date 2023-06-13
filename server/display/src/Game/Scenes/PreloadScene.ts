@@ -22,6 +22,7 @@ import fake_main_engine_sprite_url from '../Assets/images/fake_main_engine.png';
 import fake_aux_engine_sprite_url from '../Assets/images/fake_aux_engine.png';
 import grow_window_button_sprite_url from '../Assets/images/grow_window_button.png';
 import shrink_window_button_sprite_url from '../Assets/images/shrink_window_button.png';
+import close_window_button_sprite_url from '../Assets/images/close_window_button.png';
 
 export class PreloadScene extends Phaser.Scene {
     constructor() {
@@ -56,6 +57,7 @@ export class PreloadScene extends Phaser.Scene {
         this.load.image('fakeAuxEngine', fake_aux_engine_sprite_url);
         this.load.image('growWindowButton', grow_window_button_sprite_url);
         this.load.image('shrinkWindowButton', shrink_window_button_sprite_url);
+        this.load.image('closeWindowButton', close_window_button_sprite_url);
         
         // particules
         this.load.image('smoke_particule', smoke_particule_sprite_url);
