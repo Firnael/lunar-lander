@@ -1,5 +1,33 @@
+body {
+    height: 100%;
+    margin: 0;
+}
+
 .howtoplay-main-container {
     background-color: white;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.howtoplay-content {
+    flex: 1;
+    padding-bottom: 50px;
+}
+
+.footer {
+    flex-shrink: 0;
+}
+
+#tabs-section {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: white;
+}
+
+#tabs-section.with-shadow {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 pre {
