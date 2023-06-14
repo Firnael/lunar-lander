@@ -1,12 +1,14 @@
 import { CloseButtonClicked, MonitoringIconClicked } from '../../Models/gameEvents';
 import { LanderData, PlayerJoins, PlayerLeaves, PlayerUpdates } from '../../Models/player';
+import { MonitoringScene } from '../Scenes/MonitoringScene';
+import { MonitoringIconsFolder } from './MonitoringIconsFolder';
 import { MonitoringIcon } from './MonitoringIcon';
 import { MonitoringUnit } from './MonitoringUnit';
 
 /**
- * Used inside the {@link MonitoringScene} to create and manage a grid of {@link MonitoringUnit}.
+ * Used inside the {@link MonitoringScene} to simulate a fake old computer screen.
  */
-export class MonitoringGrid extends Phaser.GameObjects.Container {
+export class MonitoringScreen extends Phaser.GameObjects.Container {
     private OVERLAP_OFFSET = new Phaser.Math.Vector2(50, 50);
 
     private unitSize: number;
@@ -20,6 +22,8 @@ export class MonitoringGrid extends Phaser.GameObjects.Container {
 
     private iconMap: Map<string, MonitoringIcon> = new Map();
     private unitMap: Map<string, MonitoringUnit> = new Map();
+
+    private iconsFolder: MonitoringIconsFolder;
 
     constructor(scene: Phaser.Scene, x: number, y: number, unitSize: number, iconMargin: Phaser.Math.Vector2, iconColumns: number) {
         super(scene, x, y);
@@ -35,6 +39,12 @@ export class MonitoringGrid extends Phaser.GameObjects.Container {
         this.iconMargin = iconMargin;
         this.iconColumns = iconColumns;
         this.iconGeneratorInstance = this.iconGenerator(0, 0);
+
+        this.iconsFolder = new MonitoringIconsFolder(this.scene, 0, 0);
+
+        this.add([
+            this.iconsFolder
+        ]);
 
         this.scene.add.existing(this);
 
@@ -72,7 +82,7 @@ export class MonitoringGrid extends Phaser.GameObjects.Container {
         icon.isConnected = true;
 
         this.iconMap.set(data.name, icon);
-        this.add(icon);
+        this.iconsFolder.add(icon);
         return icon;
     }
 

@@ -7,7 +7,7 @@ import { MonitoringShipData } from '../Types/MonitoringShipData';
 import { CloseButton } from './CloseButton';
 
 /**
- * Used inside a {@link MonitoringGrid} to display the ship state.
+ * Used inside a {@link MonitoringScreen} to display the ship state.
  */
 export class MonitoringUnit extends Phaser.GameObjects.Container {
     // From server config

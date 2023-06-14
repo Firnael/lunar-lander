@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { MonitoringIconClicked } from '../../Models/gameEvents';
 
 /**
- * Used inside a {@link MonitoringGrid} to represent a connected player.
+ * Used inside a {@link MonitoringScreen} to represent a connected player.
  */
 export class MonitoringIcon extends Phaser.GameObjects.Container {
     public static readonly SIZE = new Phaser.Math.Vector2(150, 100);
@@ -27,6 +27,7 @@ export class MonitoringIcon extends Phaser.GameObjects.Container {
     private connectionLostText: Phaser.GameObjects.Text;
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
+        console.log(`MonitoringIcon constructor, x: ${x}, y: ${y}`);
         super(scene, x, y);
         this.scene = scene;
         this.x = x;
@@ -41,28 +42,38 @@ export class MonitoringIcon extends Phaser.GameObjects.Container {
 
         // create background rectangle
         this.backgroundRectangle = this.scene.add.rectangle(0, 0, MonitoringIcon.SIZE.x, MonitoringIcon.SIZE.y, this.BACKGROUND_COLOR)
-            .setStrokeStyle(2, this.STROKE_COLOR);
+            .setStrokeStyle(2, this.STROKE_COLOR)
+            .setOrigin(0, 0);
 
         // create player color rectangle
         this.playerColorRectangle = this.scene.add.rectangle(0, 0, MonitoringIcon.SIZE.x, MonitoringIcon.SIZE.y, 0xdddddd)
-            .setAlpha(0.3);
+            .setAlpha(0.3)
+            .setOrigin(0, 0);
 
         // create player name text
         this.playerNameText = this.scene.add.text(
-            0, 0, '[---]', {
-            font: '16px Greenscr',
-            color: '#' + this.STROKE_COLOR.toString(16),
-            align: 'center',
-        }).setOrigin(0.5, 0.5).setShadow(2, 2, 'rgba(0, 0, 0, 0.5)', 2);
+            this.backgroundRectangle.x + this.backgroundRectangle.width / 2,
+            this.backgroundRectangle.y + this.backgroundRectangle.height / 2,
+            '[---]',
+            {
+                font: '16px Greenscr',
+                color: '#' + this.STROKE_COLOR.toString(16),
+                align: 'center',
+            }
+        ).setOrigin(0.5, 0.5).setShadow(2, 2, 'rgba(0, 0, 0, 0.5)', 2);
 
         // create connection lost text
-        this.connectionLostText = this.scene.add.text(0, 40,
-            '[SIGNAL LOST]', {
-            font: '17px Greenscr',
-            color: '#' + this.STROKE_COLOR.toString(16),
-            backgroundColor: '#FF0000',
-            align: 'center',
-        }).setOrigin(0.5, 0.5).setDepth(1);
+        this.connectionLostText = this.scene.add.text(
+            this.backgroundRectangle.x + this.backgroundRectangle.width / 2,
+            this.backgroundRectangle.y + this.backgroundRectangle.height - 10,
+            '[SIGNAL LOST]',
+            {
+                font: '17px Greenscr',
+                color: '#' + this.STROKE_COLOR.toString(16),
+                backgroundColor: '#FF0000',
+                align: 'center',
+            }
+        ).setOrigin(0.5, 0.5).setDepth(1);
 
         // add elements to container
         this.add([
@@ -73,9 +84,8 @@ export class MonitoringIcon extends Phaser.GameObjects.Container {
         ]);
 
         // set interactible (can be clicked to open monitoring unit)
-        this.setSize(MonitoringIcon.SIZE.x, MonitoringIcon.SIZE.y);
-        this.setInteractive();
-        this.on('pointerdown', (pointer: Phaser.Input.Pointer, x: number, y: number) => {
+        this.backgroundRectangle.setInteractive();
+        this.backgroundRectangle.on('pointerdown', (pointer: Phaser.Input.Pointer, x: number, y: number) => {
             if (!this.isConnected) {
                 console.log(`Cannot turn on unit for player <${this.playerName}>, connection is lost`);
             } else {
