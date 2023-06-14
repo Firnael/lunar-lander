@@ -7,6 +7,7 @@ export class MonitoringScene extends Phaser.Scene {
     private STROKE_COLOR: number = 0x76ce81;
     private UNIT_SIZE: number = 250;
     private ICONS_MARGIN = new Phaser.Math.Vector2(0, 0);
+    private SKIP_BOOT_SEQUENCE: boolean = false;
     
     private monitoringScreen!: MonitoringScreen;
     private titleText!: Phaser.GameObjects.Text;
@@ -71,8 +72,13 @@ export class MonitoringScene extends Phaser.Scene {
         // Init event listeners (use from outside Phaser to communicate with React)
         this.initEventListeners();
 
+        if (this.SKIP_BOOT_SEQUENCE) {
+            this.titleText.setVisible(true);
+            this.monitoringScreen.setVisible(true);
+            return;
+        }
+
         // Set type writer text
-        
         this.typeWriterText = this.add.text(250, 250, '', {
             font: '16px Greenscr',
             color: '#' + this.STROKE_COLOR.toString(16),
