@@ -9,15 +9,13 @@ import { MonitoringUnit } from './MonitoringUnit';
  * Used inside the {@link MonitoringScene} to simulate a fake old computer screen.
  */
 export class MonitoringScreen extends Phaser.GameObjects.Container {
-    private OVERLAP_OFFSET = new Phaser.Math.Vector2(50, 50);
+    private UNIT_OVERLAP_OFFSET = new Phaser.Math.Vector2(50, 50);
 
     private unitSize: number;
-    private unitRows: number;
-    private unitColumns: number;
-    private unitGeneratorInstance;
+    private unitGeneratorInstance: IterableIterator<MonitoringUnit>;
 
-    private iconMargin: Phaser.Math.Vector2;
-    private iconColumns: number;
+    private iconColumns = 4;
+    private iconRows = 5;
     private iconGeneratorInstance;
 
     private iconMap: Map<string, MonitoringIcon> = new Map();
@@ -25,19 +23,15 @@ export class MonitoringScreen extends Phaser.GameObjects.Container {
 
     private iconsFolder: MonitoringIconsFolder;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, unitSize: number, iconMargin: Phaser.Math.Vector2, iconColumns: number) {
+    constructor(scene: Phaser.Scene, x: number, y: number, unitSize: number) {
         super(scene, x, y);
         this.scene = scene;
         this.x = x;
         this.y = y;
 
         this.unitSize = unitSize;
-        this.unitRows = Math.floor(this.scene.sys.canvas.height / this.unitSize);
-        this.unitColumns = Math.floor(this.scene.sys.canvas.width / this.unitSize);
-        this.unitGeneratorInstance = this.unitGenerator(0, 0);
+        this.unitGeneratorInstance = this.unitGenerator(this.scene.sys.canvas.width /2, this.unitSize / 2);
 
-        this.iconMargin = iconMargin;
-        this.iconColumns = iconColumns;
         this.iconGeneratorInstance = this.iconGenerator(0, 0);
 
         this.iconsFolder = new MonitoringIconsFolder(this.scene, 0, 0);
@@ -82,7 +76,7 @@ export class MonitoringScreen extends Phaser.GameObjects.Container {
         icon.isConnected = true;
 
         this.iconMap.set(data.name, icon);
-        this.iconsFolder.add(icon);
+        this.iconsFolder.addIcon(icon);
         return icon;
     }
 
@@ -101,7 +95,6 @@ export class MonitoringScreen extends Phaser.GameObjects.Container {
         }
 
         unit = this.unitGeneratorInstance.next().value as MonitoringUnit;
-        unit.setPosition(this.scene.game.input.mousePointer.x, this.scene.game.input.mousePointer.y);
         this.unitMap.set(playerName, unit);
         this.add(unit);
         return unit;
@@ -142,29 +135,24 @@ export class MonitoringScreen extends Phaser.GameObjects.Container {
     private *unitGenerator(ix: number, iy: number): Generator<MonitoringUnit, void> {
         let initialX = ix;
         let initialY = iy;
-
-        let lastUnitRow = 0;
-        let lastUnitColumn = 0;
-        let overlap = 0;
+        let unitCount = 0;
 
         while (true) {
-            const x = initialX + (lastUnitColumn * this.unitSize) + (this.OVERLAP_OFFSET.x * overlap);
-            const y = initialY + (lastUnitRow * this.unitSize) + (this.OVERLAP_OFFSET.y * overlap);
+            const x = initialX + (this.UNIT_OVERLAP_OFFSET.x * unitCount);
+            const y = initialY + (this.UNIT_OVERLAP_OFFSET.y * unitCount);
+
+            // create new column if we are at the end of the screen
+            if (x >= this.scene.sys.canvas.width - this.unitSize * 2) {
+                initialX = ix;
+                initialY += this.UNIT_OVERLAP_OFFSET.y;
+                unitCount = 0;
+            }
+
             const unit = new MonitoringUnit(this.scene, x, y);
             unit.setName(`monitoring-unit-${x}-${y}`);
+            unitCount++;
 
             yield unit;
-
-            // increase values for the next unit
-            lastUnitColumn++;
-            if (lastUnitColumn === this.unitColumns) {
-                lastUnitColumn = 0;
-                lastUnitRow++;
-                if (lastUnitRow === this.unitRows) {
-                    lastUnitRow = 0;
-                    overlap++;
-                }
-            }
         }
     }
 
@@ -181,8 +169,8 @@ export class MonitoringScreen extends Phaser.GameObjects.Container {
         let lastIconRow = 0;
 
         while (true) {
-            const x = initialX + (lastIconColumn * MonitoringIcon.SIZE.x + this.iconMargin.x);
-            const y = initialY + (lastIconRow * MonitoringIcon.SIZE.y + this.iconMargin.y);
+            const x = initialX + (lastIconColumn * MonitoringIcon.SIZE.x);
+            const y = initialY + (lastIconRow * MonitoringIcon.SIZE.y);
             const icon = new MonitoringIcon(this.scene, x, y);
             icon.setName(`monitoring-icon-${x}-${y}`);
 
@@ -193,6 +181,10 @@ export class MonitoringScreen extends Phaser.GameObjects.Container {
             if (lastIconColumn === this.iconColumns) {
                 lastIconColumn = 0;
                 lastIconRow++;
+            }
+
+            if (lastIconRow === this.iconRows) {
+                lastIconRow = 0;
             }
         }
     }

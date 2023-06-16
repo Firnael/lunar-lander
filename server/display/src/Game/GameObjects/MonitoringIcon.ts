@@ -20,6 +20,8 @@ export class MonitoringIcon extends Phaser.GameObjects.Container {
     public playerEmoji: string;
     public playerColor: string;
 
+    public folderPage: number;
+
     // Keep references
     private backgroundRectangle: Phaser.GameObjects.Rectangle;
     private playerColorRectangle: Phaser.GameObjects.Rectangle;
@@ -39,6 +41,7 @@ export class MonitoringIcon extends Phaser.GameObjects.Container {
         this.playerEmoji = '';
         this.playerColor = '';
         this.isConnected = false;
+        this.folderPage = -1;
 
         // create background rectangle
         this.backgroundRectangle = this.scene.add.rectangle(0, 0, MonitoringIcon.SIZE.x, MonitoringIcon.SIZE.y, this.BACKGROUND_COLOR)

@@ -64,10 +64,24 @@
     padding-top: 4rem;
 }
 
+.btn-label {
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.btn-text {
+    font-size: 1rem;
+    color: var(--btn-text-color);
+}
+
 .btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     position: relative;
     overflow: hidden;
-    font-family: Retronoid;
+    font-family: Helvetica;
     font-size: 2rem;
     width: 400px;
     height: 280px;

@@ -6,8 +6,7 @@ import monitoring_cursor_url from '../Assets/images/monitoring_cursor.png';
 export class MonitoringScene extends Phaser.Scene {
     private STROKE_COLOR: number = 0x76ce81;
     private UNIT_SIZE: number = 250;
-    private ICONS_MARGIN = new Phaser.Math.Vector2(0, 0);
-    private SKIP_BOOT_SEQUENCE: boolean = false;
+    private SKIP_BOOT_SEQUENCE: boolean = true;
     
     private monitoringScreen!: MonitoringScreen;
     private titleText!: Phaser.GameObjects.Text;
@@ -66,7 +65,7 @@ export class MonitoringScene extends Phaser.Scene {
         .setLineSpacing(6).setOrigin(0.5, 0).setVisible(false);
 
         // create screen
-        this.monitoringScreen = new MonitoringScreen(this, 250, 250, this.UNIT_SIZE, this.ICONS_MARGIN, 4)
+        this.monitoringScreen = new MonitoringScreen(this, 250, 250, this.UNIT_SIZE)
             .setVisible(false);
 
         // Init event listeners (use from outside Phaser to communicate with React)
