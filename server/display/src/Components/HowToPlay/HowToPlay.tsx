@@ -4,6 +4,8 @@ import Picker from '@emoji-mart/react';
 import data from '@emoji-mart/data'
 import { ConfigContext } from '../../Contexts/ConfigContext';
 import { ServerConfig } from '../../Models/serverConfig';
+import trainingGif from './training.gif';
+import monitoringGif from './monitoring.gif';
 import './HowToPlay.css';
 
 export default function HowToPlay() {
@@ -71,6 +73,12 @@ export default function HowToPlay() {
                             </li>
                             <li className={`${currentTab === 'ranking' ? 'is-active' : null}`}>
                                 <a onClick={ () => setCurrentTab('ranking') }>Classement 🏆</a>
+                            </li>
+                            <li className={`${currentTab === 'training' ? 'is-active' : null}`}>
+                                <a onClick={ () => setCurrentTab('training') }>Training 🧪</a>
+                            </li>
+                            <li className={`${currentTab === 'monitoring' ? 'is-active' : null}`}>
+                                <a onClick={ () => setCurrentTab('monitoring') }>Monitoring 📺</a>
                             </li>
                         </ul>
                     </div>
@@ -466,6 +474,98 @@ export default function HowToPlay() {
                                         <br/>
                                         Si vous améliorez votre algorithme de manière progressive, votre classement devrait s'améliorer au fur et à mesure ! 
                                     </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="training-section" className={`section ${currentTab !== 'training' ? 'is-hidden' : null}`}>
+                    <h3 className="title is-3">Training 🧪</h3>
+                    <div className="content">
+                        <div className="columns">
+                            <div className="column">
+                                <div className="block">
+                                    Vous avez à votre disposition un environnement d'entraînement à l'atterrissage dans les mêmes conditions que sur la Lune !
+                                    <br/>
+                                    Cet outils est accessible <a href="/training" target="_blank">ICI</a>.
+                                    <br/>
+                                    Le vaisseau est pilotable <strong>à la main</strong> directement avec votre clavier ⌨️ :
+                                    <ul>
+                                        <li>
+                                            <code>Z</code> ou <code>⬆</code> : allumer le moteur principal
+                                        </li>
+                                        <li>
+                                            <code>Q</code> ou <code>⬅</code> : allumer le moteur auxiliaire gauche
+                                        </li>
+                                        <li>
+                                            <code>D</code> ou <code>⮕</code> : allumer le moteur auxiliaire droit
+                                        </li>
+                                    </ul>
+                                    <br/>
+                                    ℹ️ Les actions envoyées par le clavier sont affichées à l'écran, ce sont ces mêmes actions qui doivent être envoyées par votre algorithme.
+                                    <br/>
+                                    <br/>
+                                    🚧 Cet outils est encore en cours de développement, des trucs un peu moches peuvent survenir.
+                                </div>
+                            </div>
+                            <div className="column">
+                                <img src={trainingGif} alt="training-gif" />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="monitoring-section" className={`section ${currentTab !== 'monitoring' ? 'is-hidden' : null}`}>
+                    <h3 className="title is-3">Monitoring 📺</h3>
+                    <div className="content">
+                        <div className="columns">
+                            <div className="column">
+                                <div className="block">
+                                    <strong>CROCLARCON INDUSTRIES</strong> met grâcieusement à votre disposition un TERMLINK dernière génération !
+                                    <br/>
+                                    Cet <a href="/monitoring" target="_blank">écran</a> vous permet de suivre en quasi-réel ce qu'il se passe sur la Lune dans le confort de votre siège.
+                                </div>
+                                <div className="block">
+                                    Pour ouvrir une unité de monitoring, il suffit de cliquer sur le bouton comportant le nom du joueur dans la fenêtre <strong>PLAYERS</strong>.
+                                </div>
+                                <div className="block">
+                                    Il est possible d'agrandir / de rétrécir et de fermer ces unités à l'aide des boutons en haut à gauche de chacune d'elles.
+                                </div>
+                                <div className="block">
+                                    La fenêtres <strong>PLAYERS</strong> est paginée, il est possible de naviguer entre les différentes pages avec les flèches de navigation situées en bas.
+                                    <br/>
+                                    Si vous ne trouvez pas votre nom, c'est certainement qu'il est sur une autre page.
+                                </div>
+                            </div>
+                            <div className="column">
+                                <div className="message">
+                                    <div className="message-header">
+                                        <p>L'écran de monitoring</p>
+                                    </div>
+                                    <div className="message-body">
+                                        <div className="columns">
+                                            <div className="column">
+                                                <img src={monitoringGif} alt="monitoring-gif" />
+                                            </div>
+                                            <div className="column">
+                                                Ici, le joueur <strong>Croc</strong> admire son vaisseau en train de se crasher.
+                                                <br/>
+                                                Les information de télémétrie sont affichées en différentes couleurs en fonction de la dangerosité de la situation : 
+                                                <ul>
+                                                    <li>
+                                                        <span className="tag is-light"><strong>Blanc</strong></span> : la situation ne présente aucun danger immédiat
+                                                    </li>
+                                                    <li>
+                                                        <span className="tag is-warning"><strong>Jaune</strong></span> : des corrections de trajectoire vont être nécessaires, mais le vaisseau est encore loin du sol
+                                                    </li>
+                                                    <li>
+                                                        <span className="tag is-danger"><strong>Rouge</strong></span> : si aucune action n'est prise, le vaisseau va s'écraser
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

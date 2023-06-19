@@ -217,6 +217,7 @@
 
 /* Animated moon at the bottom */
 .moon-image {
+    display: none;
     position: absolute;
     width: 60vw;
     height: 40vh;
