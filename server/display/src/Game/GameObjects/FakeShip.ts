@@ -16,6 +16,7 @@ export class FakeShip extends Phaser.GameObjects.Container {
     private fakeMainEngine!: FakeEngine;
     private fakeAuxEngineLeft!: FakeEngine;
     private fakeAuxEngineRight!: FakeEngine;
+    private angleTween!: Phaser.Tweens.Tween;
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y);
@@ -25,7 +26,7 @@ export class FakeShip extends Phaser.GameObjects.Container {
 
         // set from server config
         this.TWEEN_INTERVAL = this.scene.registry.get('MONITORING_HEART_BEAT_RATE');
-        
+
         this.SPRITE_COLORS = new Map();
         this.SPRITE_COLORS.set(LanderStatus.SPAWNED, 0x888888);
         this.SPRITE_COLORS.set(LanderStatus.ALIVE, 0xdddddd);
@@ -48,20 +49,31 @@ export class FakeShip extends Phaser.GameObjects.Container {
         this.scene.add.existing(this);
     }
 
-    update(status: LanderStatus, angle: number, actions: PlayerActions): void {
+    update(status: LanderStatus, targetAngle: number, actions: PlayerActions): void {
         // reset visibility if ship isn't crashed
         if (status !== LanderStatus.CRASHED) {
             this.each((c: GameObjects.Sprite) => c.setVisible(true));
         }
-        
-        // update ship parameters
-        // this.setAngle(this.angle);
-        this.scene.tweens.add({
-            targets: this,
-            angle: angle,
-            ease: 'linear',
-            duration: this.TWEEN_INTERVAL
-        });
+
+        // ugly hack : going from -180 to 180 (or inverse) with tween is a pain in the ass
+        if (this.angle * targetAngle < 0 && Math.abs(this.angle) > 90) {
+            this.angleTween?.stop();
+            if (this.angle < 0 && targetAngle > 0) {
+                // rotating COUNTERCLOCKWISE
+                this.angle = 179;
+            } else {
+                // rotating CLOCKWISE
+                this.angle = -179;
+            }
+        } else {
+            console.log('non')
+            this.angleTween = this.scene.tweens.add({
+                targets: this,
+                angle: targetAngle,
+                ease: 'linear',
+                duration: this.TWEEN_INTERVAL
+            });
+        }
 
         // update engine visibility
         this.enginesContainer.each((e: FakeEngine) => {

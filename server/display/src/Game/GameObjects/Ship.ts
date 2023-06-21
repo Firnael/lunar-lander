@@ -122,7 +122,7 @@ export class Ship extends Physics.Arcade.Sprite {
         // setup indicator
         this.indicator = new Indicator(scene, 0, 0, 'indicator', name, color)
         // setup flag
-        this.flag = new Flag(scene, 0, 0, 'flag', emoji)
+        this.flag = new Flag(scene, 0, 0, 'flag', emoji);
         this.flag.setVisible(false)
 
         // setup engines particules emitters
@@ -152,6 +152,7 @@ export class Ship extends Physics.Arcade.Sprite {
     }
 
     update(): void {
+        this.isInvincible = true;
         // do nothing if ship status is different from 'ALIVE'
         if (this.status !== LanderStatus.ALIVE) {
             return
@@ -309,22 +310,25 @@ export class Ship extends Physics.Arcade.Sprite {
         this.body.enable = false;
 
         // create explosion
-        const explosion = new Explosion(this.scene, this.x, this.y, this.shipType === ShipType.DISPLAY ? 'explosion' : 'blue_explosion');
+        new Explosion(this.scene, this.x, this.y, this.shipType === ShipType.DISPLAY ? 'explosion' : 'blue_explosion');
 
         // send parts flying
         for (let i = 0; i < 4; i++) {
-            const partSprite = this.scene.physics.add.sprite(this.x, this.y, 'shipParts', i)
-            partSprite.setBounce(0.5)
-            partSprite.setVelocity(Phaser.Math.Between(-180, 180), Phaser.Math.Between(-50, -200))
-            partSprite.setAngularVelocity(Phaser.Math.Between(-100, -100))
-            const tw = this.scene.tweens.add({
+            const partSprite = this.scene.physics.add.sprite(
+                this.x, this.y, this.shipType === ShipType.DISPLAY ? 'ship_parts' : 'training_ship_parts', i)
+                .setScale(this.scale)
+                .setBounce(0.5)
+                .setVelocity(Phaser.Math.Between(-180, 180), Phaser.Math.Between(-50, -200))
+                .setAngularVelocity(Phaser.Math.Between(-100, -100));
+
+            this.scene.tweens.add({
                 targets: partSprite,
                 alpha: 0,
                 ease: 'linear',
                 duration: this.FLYING_PARTS_FADE_DURATION,
                 loop: 0
-            })
-            tw.on('complete', () => partSprite.destroy())
+            }).on('complete', () => partSprite.destroy());
+
             this.parts.add(partSprite)
         }
 
@@ -435,7 +439,7 @@ export class Ship extends Physics.Arcade.Sprite {
         this.hud.update()
 
         // plant flag
-        this.flag.plant(this.x - this.width, this.y + this.height / 2)
+        this.flag.plant(this.x - this.displayWidth, this.y + this.displayHeight / 2)
 
         // send event to webapp
         this.scene.game.events.emit('SHIP_LANDED', { name: this.playerName, usedFuel: this.usedFuel })
@@ -448,6 +452,7 @@ export class Ship extends Physics.Arcade.Sprite {
         super.setScale(x, y);
         this.enginesContainer.setScale(x, y);
         this.hud.setScale(x, y);
+        this.flag.setScale(x, y);
         return this;
     }
 }

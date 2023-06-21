@@ -9,9 +9,10 @@ export class Flag extends Phaser.GameObjects.Sprite {
 		this.setOrigin(0, 1)
         scene.add.existing(this)
         
-        const textOptions = { font: 'bold 20px Arial' }
-        this.emojiText = scene.add.text(0, 0, playerEmoji, textOptions)
-        this.emojiText.setVisible(false)
+        this.emojiText = scene.add.text(0, 0, playerEmoji, { font: 'bold 20px Arial' })
+            .setOrigin(0.5, 0)
+            .setShadow(2, 2, 'rgba(0, 0, 0, 0.5)', 2)
+            .setVisible(false);
     }
 
     setVisible(value: boolean): this {
@@ -24,13 +25,19 @@ export class Flag extends Phaser.GameObjects.Sprite {
         this.setVisible(true)
         this.x = x
         this.y = y
-        this.emojiText.x = x + 25
-        this.emojiText.y = y - 70
+        this.emojiText.x = x + this.displayWidth / 2;
+        this.emojiText.y = y - this.displayHeight / 2 - this.displayHeight / 3.5;
     }
 
     destroy(): void {
         this.emojiText.destroy()
         super.destroy()
+    }
+
+    setScale(x: number, y?: number): this {
+        super.setScale(x, y);
+        this.emojiText.setScale(x, y);
+        return this;
     }
 
 }

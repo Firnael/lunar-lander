@@ -109,7 +109,7 @@ export class TrainingScene extends Phaser.Scene {
     private createShip() {
         this.ship = new Ship(
             this, 0, 0, 'trainingShip', this.blockFrame.height,
-            'TRAINING', '12345678', '🪆', '#FECB00', ShipType.TRAINING
+            'TRAINING', '12345678', '🤖', '#FECB00', ShipType.TRAINING
         ).setScale(2);
         this.ship.setPosition(
             this.CANVAS.width / 2 - this.ship.width / 2,
