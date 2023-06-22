@@ -152,7 +152,6 @@ export class Ship extends Physics.Arcade.Sprite {
     }
 
     update(): void {
-        this.isInvincible = true;
         // do nothing if ship status is different from 'ALIVE'
         if (this.status !== LanderStatus.ALIVE) {
             return
@@ -310,7 +309,8 @@ export class Ship extends Physics.Arcade.Sprite {
         this.body.enable = false;
 
         // create explosion
-        new Explosion(this.scene, this.x, this.y, this.shipType === ShipType.DISPLAY ? 'explosion' : 'blue_explosion');
+        new Explosion(this.scene, this.x, this.y, this.shipType === ShipType.DISPLAY ? 'explosion' : 'blue_explosion')
+            .setScale(this.scaleX, this.scaleY);
 
         // send parts flying
         for (let i = 0; i < 4; i++) {

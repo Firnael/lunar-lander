@@ -2,7 +2,7 @@ import { PlayerActions } from './models/player';
 import { LanderData, LanderRotation } from './models/lander';
 import io from './services/socket';
 
-const SERVER_URL = process.env.SERVER_URL || 'http://127.0.0.1:4000';
+const SERVER_URL = process.env.SERVER_URL || 'http://lunar.lander';
 const PLAYER_NAME = process.env.PLAYER_NAME || 'VOTRE_NOM';
 const PLAYER_EMOJI = process.env.PLAYER_EMOJI || '💩';
 const PLAYER_COLOR = process.env.PLAYER_COLOR || 'FFFFFF';
