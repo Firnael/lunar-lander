@@ -6,7 +6,7 @@ import monitoring_cursor_url from '../Assets/images/monitoring_cursor.png';
 export class MonitoringScene extends Phaser.Scene {
     private STROKE_COLOR: number = 0x76ce81;
     private UNIT_SIZE: number = 250;
-    private SKIP_BOOT_SEQUENCE: boolean = true;
+    private SKIP_BOOT_SEQUENCE: boolean = false;
     
     private monitoringScreen!: MonitoringScreen;
     private titleText!: Phaser.GameObjects.Text;

@@ -30,6 +30,6 @@
   "license": "MIT",
   "homepage": "https://github.com/Firnael/lunar-lander/blob/main/client/README.md",
   "volta": {
-    "node": "18.15.0"
+    "node": "16.20.1"
   }
 }

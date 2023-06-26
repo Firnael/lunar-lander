@@ -9,7 +9,7 @@ export class GameScene extends Phaser.Scene {
 	private TOGGLE_DEBUG!: Phaser.Input.Keyboard.Key
 	private CHANGE_SHIP_COLLISION_MODE!: Phaser.Input.Keyboard.Key
 
-	private shipCollisionMode: ShipCollisionMode = ShipCollisionMode.BUMP
+	private shipCollisionMode: ShipCollisionMode = ShipCollisionMode.NONE
 	
 	private ships: Ship[] = []
 	private shipsCollisionGroup!: Phaser.GameObjects.Group

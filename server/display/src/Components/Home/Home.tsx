@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import HttpService from '../../Services/HttpService';
-import moonImage from './moon.png';
 import './Home.css';
 
 export default function Home() {
@@ -27,23 +26,21 @@ export default function Home() {
                 <div className="home-title home-title-bottom">
                     <span className="home-title-hide">.</span>LUNAR LANDER<span className="home-title-hide">.</span>
                 </div>
-
+            
                 <div className="home-buttons-container">
-                    <a href="/how-to-play" target="_blank" className="btn btn-hover btn-anim btn-howtoplay">
-                        <div className="btn-label">Guide</div>
-                        <span className="btn-text">How to Play</span>
-                    </a>
-                    <a href="/training" target="_blank" className="btn btn-hover btn-anim btn-training">
+                    <div className="home-button-container">
+                        <span className="btn-label">Guide</span>
+                        <a href="/how-to-play" target="_blank" className="btn btn-hover btn-anim btn-howtoplay"></a>
+                    </div>
+                    <div className="home-button-container">
                         <span className="btn-label">Training</span>
-                        <span className="btn-text">With your keyboard</span>
-                    </a>
-                    <a href="/monitoring" target="_blank" className="btn btn-hover btn-anim btn-monitoring">
+                        <a href="/training" target="_blank" className="btn btn-hover btn-anim btn-training"></a>
+                    </div>
+                    <div className="home-button-container">
                         <span className="btn-label">Monitoring</span>
-                        <span className="btn-text">Back to the 70's</span>
-                    </a>
+                        <a href="/monitoring" target="_blank" className="btn btn-hover btn-anim btn-monitoring"></a>
+                    </div>
                 </div>
-
-                <img src={moonImage} className="moon-image" />
             </div>
             
         </main>

@@ -44,7 +44,9 @@ export class TrainingScene extends Phaser.Scene {
         this.enableCollisionsBetweenShipAndBlocks();
 
         const textOptions = { font: '30px Arial', color: '#dddddd' }
-        this.actionsText = this.add.text(20, 20, `actions: `, textOptions).setOrigin(0, 0);
+        this.actionsText = this.add.text(150, (this.cameras.main.height / 2) - 150, `actions: `, textOptions)
+            .setOrigin(0, 0)
+            .setShadow(1, 1, '#000000', 2);
 
         // Create key-binding
         this.mainEngineKeys = [
@@ -77,7 +79,7 @@ export class TrainingScene extends Phaser.Scene {
 
         this.ship.update();
         this.actionsText.setText(`
-        actions: 
+          ACTIONS
           - thrust: ${this.ship.actions.thrust} 
           - rotate: ${LanderRotation[this.ship.actions.rotate]}
         `,);
