@@ -12,11 +12,16 @@ let frameCounter = 0;
 const service = {
 
     start: function (endpoint: string, playerName: string, playerEmoji: string, playerColor: string) {
-        console.log('Connecting to server...')
+        console.log('Connecting to server...');
+        const uuid = randomUUID().split('-')[0];
+        if (playerName === 'LDR_') {
+            playerName += uuid;
+        }
+
         socket = io(endpoint, {
             query: {
                 clientName: playerName,
-                clientUuid: randomUUID().split('-')[0],
+                clientUuid: uuid,
                 clientEmoji: playerEmoji,
                 clientColor: playerColor
             },
