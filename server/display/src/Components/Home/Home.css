@@ -6,6 +6,7 @@
 
 body {
     background-image: url("background.jpeg");
+    background-size: cover;
 }
 
 :root {
