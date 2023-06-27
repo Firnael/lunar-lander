@@ -155,7 +155,7 @@ export default function HowToPlay() {
                                     <li>
                                         <strong>ZIP</strong>
                                         <br />  
-                                        Vous pouvez télécharger le projet au format ZIP en cliquant <a href="http://localhost/client.zip" download target="_blank">ici</a>.
+                                        Vous pouvez télécharger le projet au format ZIP en cliquant <a href="http://lunar.lander/client.zip" download target="_blank">ici</a>.
                                         <br/>
                                     </li>
                                     <li>
