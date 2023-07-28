@@ -6,7 +6,7 @@ export interface LanderData {
     angle: number;    // angle par rapport au sol, en radian (vaut 0 lorsque le vaisseau est parfaitement droit)
     altitude: number; // distance par rapport au sol, en px
     usedFuel: number; // quantité de combustible utilisé, unité arbitraire
-    status: number;   // état actuel (vivant, atteri, explosé, vient de respawn)
+    status: string;   // état actuel (vivant, atteri, explosé, vient de respawn)
     dangerStatus: string; // situation de danger potentielle (trop rapide, mauvais angle, ou tout va bien)
 }
 

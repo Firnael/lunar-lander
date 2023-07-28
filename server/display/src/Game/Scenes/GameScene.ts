@@ -85,7 +85,6 @@ export class GameScene extends Phaser.Scene {
 		else{
 			this.gameAi = new GameAi(20, this);
 		}
-
 	}
 
 	update(): void {

@@ -4,7 +4,7 @@ import { io, Socket } from "socket.io-client"
 import { LanderData } from "../models/lander"
 import { PlayerActions } from "../models/player"
 
-let sockets: Socket[] = [];
+let socket: Socket
 
 const LOG_EVERY_N_FRAMES = 10;
 let frameCounter = 0;
@@ -17,7 +17,7 @@ const service = {
             playerName += uuid;
         }
 
-        const socket = io(endpoint, {
+        socket = io(endpoint, {
             query: {
                 clientName: playerName,
                 clientUuid: uuid,
@@ -37,19 +37,17 @@ const service = {
         socket.on("disconnect", data => {
             console.log('Connection to server was lost 🔌')
         })
-
-        sockets.push(socket);
     },
 
     handleLander: function (callback: (data: LanderData) => PlayerActions) {
-        sockets.forEach(socket => socket.on("landerData", (payload: LanderData) => {
+        socket.on("landerData", (payload: LanderData) => {
             frameCounter++;
             if (frameCounter % LOG_EVERY_N_FRAMES === 0) {
                 const blank = '\n'.repeat(process.stdout.rows);
-                //console.log(blank);
+                console.log(blank);
                 readline.cursorTo(process.stdout, 0, 0);
                 readline.clearScreenDown(process.stdout);
-                //console.log('Your lander data arrived from the moon: ', payload);
+                console.log('Your lander data arrived from the moon: ', payload);
                 frameCounter = 0;
             }
             
@@ -58,7 +56,7 @@ const service = {
                 const actions: PlayerActions = callback(payload);
                 socket.emit('playerActions', actions);
             }
-        }))
+        })
     }
 }
 
