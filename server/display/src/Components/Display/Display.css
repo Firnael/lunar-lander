@@ -1,0 +1,121 @@
+body {
+    background-color: #222464;
+}
+
+.display-main-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+}
+
+.display-game-container {
+    width: 100%;
+}
+
+.display-ui-container {
+    min-width: 480px;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(90deg, #000000, #222464);
+}
+
+.display-ui-container > .table-container {
+    height: 100%;
+    max-height: 100%;
+    overflow-y: scroll;
+}
+
+.display-ui-container > .server-info-container {
+    min-height: 64px;
+    max-height: 64px;
+    color: linen;
+    background-color: rgba(255, 255, 255, 0.2);
+    font-weight: bold;
+}
+
+.server-info-container > .players-count {
+    padding: 5px;
+}
+
+.server-info-container > .server-ip {
+    padding: 5px;
+}
+
+/* Table */
+
+.table-container > table {
+    border-collapse: collapse;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    text-align: center;
+}
+
+th,
+td {
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    text-align: center;
+}
+
+thead th {
+    /* background-color: #55608f; */
+    font-size: 30px;
+}
+
+tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+tbody td {
+    position: relative;
+}
+
+tbody td:hover:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -9999px;
+    bottom: -9999px;
+    background-color: rgba(255, 255, 255, 0.2);
+    z-index: -1;
+}
+
+/* Animations */
+@keyframes pop-kf {
+    0% {
+        transform: scale(2, 2);
+    }
+
+    100% {
+        transform: none;
+    }
+}
+
+.pop {
+    font-weight: bold;
+    animation: pop-kf 0.5s ease-out;
+}
+
+/* Badges (using 'mark' html tag) */
+mark {
+    padding: 2px 5px;
+    border-radius: 5px;
+}
+mark.gold {
+    background-color: #C9B037;
+}
+mark.silver {
+    background-color: #B4B4B4;
+}
+mark.bronze {
+    background-color: #AD8A56;
+}
+mark.none {
+    background-color: rgba(0, 0, 0, 0);
+    color: white;
+    border: dashed;
+}
+

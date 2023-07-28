@@ -1,0 +1,11 @@
+body {
+    background-color: #000000;
+}
+
+.monitoring-main-container {
+    height: 100vh;
+}
+
+.monitoring-game-container {
+    width: 100%
+}

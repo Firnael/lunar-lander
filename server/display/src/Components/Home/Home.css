@@ -1,0 +1,174 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-image: url("background.jpeg");
+    background-size: cover;
+}
+
+:root {
+    --btn-border: 1px solid rgba(255, 255, 255, 0.2);
+    --btn-bg: transparent;
+    --btn-shadow: 1px 1px 15px 5px rgba(255, 255, 255, 0.5);
+    --btn-text-color: #f4f4f4;
+    --shine-degree: 120deg;
+    --shine-color: rgba(255, 255, 255, 0.2);
+    --shine-effect: linear-gradient(var(--shine-degree),
+            transparent,
+            var(--shine-color),
+            transparent);
+    --shine-transition: all 0.65s ease-in-out;
+}
+
+@font-face {
+    font-family: Retronoid;
+    src: url('RetronoidItalic.ttf');
+}
+
+.home-main-container {
+    overflow: hidden;
+}
+
+.home-titles-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.home-title {
+    font-family: Retronoid;
+    font-size: 8rem;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.3);
+    -webkit-text-stroke-width: 4px;
+    -webkit-text-stroke-color: white;
+}
+
+.home-title.home-title-top {
+    background-image: linear-gradient(#052364, #254488, #b8dbf6);
+}
+
+.home-title.home-title-bottom {
+    background-image: linear-gradient(#d2332b, #EC740A, #fddf1b);
+    margin-top: -60px;
+    margin-bottom: 30px;
+}
+
+.home-title-hide {
+    visibility: hidden;
+}
+
+/* Buttons, with shine & hover animations */
+
+.home-buttons-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.home-button-container {
+    margin: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.btn-label {
+    font-family: Retronoid;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
+    color: var(--btn-text-color);
+}
+
+.btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    font-family: Helvetica;
+    font-size: 2rem;
+    width: 400px;
+    height: 280px;
+    padding: 1rem 3rem;
+    border-radius: 4px;
+    text-shadow: 2px 2px 4px rgba(50, 50, 50, 0.8);
+    text-decoration: none;
+    border: var(--btn-border);
+    color: var(--btn-text-color);
+    background: var(--btn-bg);
+    background-position: center;
+    background-size: contain;
+}
+
+.btn:not(:last-child) {
+    margin-bottom: 3rem;
+}
+
+.btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--shine-effect);
+}
+
+.btn.btn-howtoplay {
+    background-image: url('howtoplay.gif');
+}
+
+.btn.btn-monitoring {
+    background-image: url('monitoring.gif');
+}
+
+.btn.btn-training {
+    background-image: url('training.gif');
+}
+
+.btn-hover::before {
+    left: -100%;
+    transition: var(--shine-transition);
+}
+
+.btn-hover:hover {
+    box-shadow: var(--btn-shadow);
+}
+
+.btn-hover:hover::before {
+    left: 100%;
+}
+
+.btn-anim::before {
+    -webkit-animation: shine 5s ease-in-out infinite;
+    animation: shine 5s ease-in-out infinite;
+}
+
+@-webkit-keyframes shine {
+    0% {
+        left: -100%;
+        transition-property: left;
+    }
+
+    11.5044247788%, 100% {
+        left: 100%;
+        transition-property: left;
+    }
+}
+
+@keyframes shine {
+    0% {
+        left: -100%;
+        transition-property: left;
+    }
+
+    11.5044247788%, 100% {
+        left: 100%;
+        transition-property: left;
+    }
+}

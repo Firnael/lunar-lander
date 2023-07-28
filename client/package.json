@@ -1,0 +1,35 @@
+{
+  "name": "lunar-lander-client",
+  "version": "1.2.0",
+  "description": "Lunar Lander (client)",
+  "main": "app.ts",
+  "private": true,
+  "scripts": {
+    "start": "npm run build && node dist/app.js",
+    "dev": "nodemon src/app.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "socket.io-client": "^4.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.6.1",
+    "ts-node": "^10.9.1",
+    "nodemon": "^2.0.19",
+    "typescript": "^4.6.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:Firnael/lunar-lander.git"
+  },
+  "keywords": [
+    "lunar-lander",
+    "client"
+  ],
+  "author": "Audron",
+  "license": "MIT",
+  "homepage": "https://github.com/Firnael/lunar-lander/blob/main/client/README.md",
+  "volta": {
+    "node": "16.20.1"
+  }
+}
