@@ -5,6 +5,8 @@ import { Indicator } from './Indicator';
 import { Hud } from './Hud';
 import { PlayerActions, LanderRotation, LanderStatus, LanderDangerStatus } from '../../Models/player';
 import { ShipType } from '../Types/ShipType';
+import { GameAi } from '../../Ai/game-ai';
+import { GeneticAlgo } from '../../Ai/genetic-algo';
 
 export class Ship extends Physics.Arcade.Sprite {
     // From server config
@@ -454,5 +456,67 @@ export class Ship extends Physics.Arcade.Sprite {
         this.hud.setScale(x, y);
         this.flag.setScale(x, y);
         return this;
+    }
+
+    setLevel(level: number): void {
+        /*if(level === 0){
+            GeneticAlgo.tauxMutation = 0.1;
+            this.LANDING_MAX_VELOCITY = new Phaser.Math.Vector2(
+                1000, 1000
+            );
+            this.LANDING_MAX_ANGLE = 100;
+        }if(level === 1){
+            GeneticAlgo.tauxMutation = 0.05;
+            this.LANDING_MAX_VELOCITY = new Phaser.Math.Vector2(
+                500, 500
+            );
+            this.LANDING_MAX_ANGLE = 100;
+        }else if(level === 2){
+            GeneticAlgo.tauxMutation = 0.05;
+            this.LANDING_MAX_VELOCITY = new Phaser.Math.Vector2(
+                300, 300
+            );
+            this.LANDING_MAX_ANGLE = 45;
+        }else if(level === 3){
+            GeneticAlgo.tauxMutation = 0.05;
+            this.LANDING_MAX_VELOCITY = new Phaser.Math.Vector2(
+                280, 280
+            );
+            this.LANDING_MAX_ANGLE = 30;
+        }
+        else if(level === 4){
+            GeneticAlgo.tauxMutation = 0.015;
+            this.LANDING_MAX_VELOCITY = new Phaser.Math.Vector2(
+                250, 250
+            );
+            this.LANDING_MAX_ANGLE = 20;
+        }*/
+
+        if(level <= 10){
+            this.LANDING_MAX_VELOCITY = new Phaser.Math.Vector2(
+                1000 / level, 1000 / level
+            );
+            this.LANDING_MAX_ANGLE = 100 / level;
+        }
+
+
+        /*if(level <= 16){
+            this.LANDING_MAX_VELOCITY = new Phaser.Math.Vector2(
+                1000 - level * 50, 1000 - level * 50
+            );
+            this.LANDING_MAX_ANGLE = 90 - level * 5;
+        }*/
+    }
+
+    getPosition(): number[] {
+        return [this.x, this.y];
+    }
+
+    getAngle() {
+        return this.angle;
+    }
+
+    getVelocity(): number[] {
+        return [this.body.velocity.x,this.body.velocity.y];
     }
 }

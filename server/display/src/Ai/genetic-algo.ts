@@ -2,8 +2,8 @@ import {GeneticSystem} from "./genetic-system";
 import {Population} from "./population";
 
 export class GeneticAlgo {
-    private tauxMutation: number = 0.015;
-    private tailleTournoi: number = 5;
+    public static tauxMutation: number = 0.015;
+    private tailleTournoi: number = 4;
 
     public evoluer(population: Population): Population {
         const nouvellePopulation: Population = new Population(population.taillePopulation(), false);
@@ -49,7 +49,7 @@ export class GeneticAlgo {
 
     public muter(system: GeneticSystem): void {
         for (let pos = 0; pos < system.length(); pos++) {
-            if (Math.random() < this.tauxMutation) {
+            if (Math.random() < GeneticAlgo.tauxMutation) {
                 system.setGeneAt(pos, (system.getGene(pos) + Math.random() * 2.0 - 1.0) / 2);
             }
         }

@@ -165,7 +165,16 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	public resetShips(): void{
-		this.ships.forEach(ship => ship.reset());
+		this.ships.forEach((ship, i) => {
+			ship.reset()
+			/*if(i > 0){
+				const pos = this.ships[0].getPosition();
+				const vitess = this.ships[0].getVelocity();
+				ship.setPosition(pos[0], pos[1]);
+				ship.setAngle(this.ships[0].getAngle());
+				ship.setVelocity(vitess[0], vitess[1]);
+			}*/
+		});
 	}
 	public resetShip(name: string): void{
 		this.ships.find(x => x.name === name)?.reset();
@@ -259,5 +268,9 @@ export class GameScene extends Phaser.Scene {
 				this.game.events.emit('SIMULATION_DATA', { landersData: data });
 			}
 		}
+	}
+
+	getShip(i: number): Ship {
+		return this.ships[i];
 	}
 }

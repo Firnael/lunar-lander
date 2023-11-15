@@ -13,6 +13,7 @@ export class GameAi{
     private scene: GameScene;
     private iteration = 1;
     private shipState: LanderStatus[];
+    private level = 0;
     public constructor(sizePop: number, scene: GameScene) {
         this.scene = scene;
         this.population = new Population(sizePop, true);
@@ -21,7 +22,7 @@ export class GameAi{
         for(let i = 0; i < this.population.taillePopulation(); i++){
             this.neuralNetworks[i] = new NeuralNetwork(
                 7,
-                [8, 8],
+                [16],
                 3,
                 this.population.getGeneticSystem(i));
             this.shipState[i] = LanderStatus.ALIVE;
@@ -29,8 +30,14 @@ export class GameAi{
                 name: 'AI' + i,
                 uuid: i.toFixed(),
                 emoji: '',
-                color: i === 0 ? 'FFFF00' : '0000FF'
+                color: i === 0 ? 'FFFF00' : '0000FF',
             });
+            if(i > 0){
+                const pos = this.scene.getShip(0).getPosition();
+                this.scene.getShip(i).setPosition(pos[0], pos[1]);
+                this.scene.getShip(i).setAngle(this.scene.getShip(0).getAngle());
+            }
+            this.scene.getShip(i).setLevel(this.level);
         }
 
         setInterval(this.nextGeneration.bind(this), 20000);
@@ -39,13 +46,31 @@ export class GameAi{
     public nextGeneration(): void{
         console.log("New iteration "+ (this.iteration++) + " : " + this.population.getFittest().getFittest());
 
+        let nbSuccess = 0;
+        for(let i = 0; i < this.population.taillePopulation(); i++){
+            const ship = this.population.getGeneticSystem(i).getFittest()
+            if(ship > 5){
+                nbSuccess++;
+            }
+        }
+
+        console.log(nbSuccess);
+
+        if(nbSuccess > this.population.taillePopulation() / 2){
+            this.levelUp();
+        }
+        if(nbSuccess <= 1){
+            GeneticAlgo.tauxMutation = (1 - (nbSuccess / this.population.taillePopulation())) / 4;
+        }
+
         const ga = new GeneticAlgo();
         this.population = ga.evoluer(this.population);
+
 
         for(let i = 0; i < this.population.taillePopulation(); i++){
             this.neuralNetworks[i] = new NeuralNetwork(
                 7,
-                [8, 8],
+                [16],
                 3,
                 this.population.getGeneticSystem(i));
             this.population.getGeneticSystem(i).resetScore();
@@ -62,6 +87,10 @@ export class GameAi{
         };
 
         const geneticSystem = this.population.getGeneticSystem(index);
+
+
+        const normalized = new LanderAiInputNormalized(ship);
+
         if(geneticSystem === undefined){
             return actions;
         }
@@ -69,26 +98,29 @@ export class GameAi{
             this.shipState[index] = LanderStatus.ALIVE;
         }
         if(ship.status === 3 && this.shipState[index] === LanderStatus.ALIVE){
-            geneticSystem.addScore(-Math.sqrt(ship.vx*ship.vx + ship.vy*ship.vy));
-            geneticSystem.addScore(-Math.abs(ship.angle))
+            geneticSystem.addScore(-normalized.vx - normalized.vy);
+            geneticSystem.addScore(-normalized.an)
             this.shipState[index] = LanderStatus.CRASHED;
         }
         if(ship.status === 2 && this.shipState[index] === LanderStatus.ALIVE){
             geneticSystem.addScore(10);
+            /*geneticSystem.addScore(-normalized.vx - normalized.vy);
+            geneticSystem.addScore(-normalized.an)*/
+            /*if(ship.fuel < 100 || ship.fuel > 1000){
+                geneticSystem.addScore(-1);
+            }*/
             this.shipState[index] = LanderStatus.LANDED;
         }
         if(ship.altitude > 1000){
             geneticSystem.addScore(-1)
             this.scene.resetShip('AI'+index);
         }
-        if(Math.sqrt(ship.vx*ship.vx + ship.vy*ship.vy) > 100){
-            geneticSystem.addScore(-1);
+        /*if(Math.sqrt(ship.vx*ship.vx + ship.vy*ship.vy) > 400){
+            geneticSystem.addScore(-0.0001);
             this.scene.resetShip('AI'+index);
-        }
+        }*/
 
         // Ici vous faites ce que vous voulez, mais vous DEVEZ return un objet PlayerActions
-
-        const normalized = new LanderAiInputNormalized(ship);
 
         const outputRaw = this.neuralNetworks[index].evaluate(normalized.toArray());
 
@@ -117,4 +149,11 @@ export class GameAi{
         return actions;
     }
 
+    private levelUp(): void {
+        this.level++;
+        console.log("Level up : " + this.level)
+        for(let i = 0; i < this.population.taillePopulation(); i++){
+            this.scene.getShip(i).setLevel(this.level);
+        }
+    }
 }

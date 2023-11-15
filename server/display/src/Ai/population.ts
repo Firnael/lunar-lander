@@ -10,7 +10,7 @@ export class Population {
         this.system = [];
 
         this.modelNbIn = 7;
-        this.modelNbHidden = [8, 8];
+        this.modelNbHidden = [16];
         this.modelNbOut = 3;
 
         if (init) {
