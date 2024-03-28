@@ -3,6 +3,7 @@ import { Ship } from '../GameObjects/Ship'
 import { PlayerJoins, PlayerLeaves, PlayerUpdates } from '../../Models/player'
 import { ShipCollisionMode } from '../Enums/admin'
 import { ShipType } from '../Types/ShipType'
+import { GameAi } from '../../Ai/game-ai';
 
 export class GameScene extends Phaser.Scene {
 	private CANVAS!: Phaser.Game["canvas"]
@@ -20,6 +21,9 @@ export class GameScene extends Phaser.Scene {
 
 	/** Server heartbeat timer */
 	private dataHeartBeat!: Phaser.Time.TimerEvent
+
+	private useAi = true;
+	private gameAi!: GameAi;
 
 	constructor() {
 		super({
@@ -72,7 +76,15 @@ export class GameScene extends Phaser.Scene {
 		this.shipsCollisionGroup = this.add.group()
 
 		// Init event listeners (use from outside Phaser to communicate with React)
-		this.initEventListeners()
+		if(!this.useAi){
+			this.initEventListeners()
+		}
+		//
+		//OR
+		// Use AI controller
+		else{
+			this.gameAi = new GameAi(20, this);
+		}
 	}
 
 	update(): void {
@@ -129,7 +141,7 @@ export class GameScene extends Phaser.Scene {
 		}
 	}
 
-	private createShip(data: PlayerJoins, x = 0, y = 0) {
+	public createShip(data: PlayerJoins, x = 0, y = 0) {
 		console.log(`[Phaser.Display] Create ship`, data);
 		// Add the ship to the scene
 		const ship: Ship = new Ship(
@@ -150,6 +162,22 @@ export class GameScene extends Phaser.Scene {
 		this.shipsCollisionGroup.add(ship)
 		// Enable collisions betweend ships
 		this.updateShipsColliders();
+	}
+
+	public resetShips(): void{
+		this.ships.forEach((ship, i) => {
+			ship.reset()
+			/*if(i > 0){
+				const pos = this.ships[0].getPosition();
+				const vitess = this.ships[0].getVelocity();
+				ship.setPosition(pos[0], pos[1]);
+				ship.setAngle(this.ships[0].getAngle());
+				ship.setVelocity(vitess[0], vitess[1]);
+			}*/
+		});
+	}
+	public resetShip(name: string): void{
+		this.ships.find(x => x.name === name)?.reset();
 	}
 
 	private updateShip(data: PlayerUpdates) {
@@ -227,7 +255,22 @@ export class GameScene extends Phaser.Scene {
 		}));
 
 		if (data.size >= 0) {
-			this.game.events.emit('SIMULATION_DATA', { landersData: data });
+			if(this.useAi){
+				const shipsActions = this.gameAi.update(data);
+				for (const shipActions of shipsActions) {
+					this.updateShip({
+						uuid: shipActions[0],
+						actions: shipActions[1],
+						color: '', emoji: '', name: 'AI' + shipActions[0]
+					});
+				}
+			}else{
+				this.game.events.emit('SIMULATION_DATA', { landersData: data });
+			}
 		}
+	}
+
+	getShip(i: number): Ship {
+		return this.ships[i];
 	}
 }

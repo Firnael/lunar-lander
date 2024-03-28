@@ -10,7 +10,6 @@ const LOG_EVERY_N_FRAMES = 10;
 let frameCounter = 0;
 
 const service = {
-
     start: function (endpoint: string, playerName: string, playerEmoji: string, playerColor: string) {
         console.log('Connecting to server...');
         const uuid = randomUUID().split('-')[0];
